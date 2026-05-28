@@ -161,7 +161,7 @@ export default function DashboardPage() {
             }}>
               Últimos Orçamentos
             </span>
-            <Link href="/orcamentos" style={{
+            <Link href="/admin/orcamentos" style={{
               fontSize: '12px',
               color: '#f5c518',
               textDecoration: 'none',
@@ -235,7 +235,7 @@ export default function DashboardPage() {
             }}>
               Últimas Ordens de Serviço
             </span>
-            <Link href="/ordens-servico" style={{
+            <Link href="/admin/ordens-servico" style={{
               fontSize: '12px',
               color: '#f5c518',
               textDecoration: 'none',

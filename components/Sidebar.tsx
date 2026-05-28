@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 const navItems = [
   {
     label: 'Dashboard',
-    href: '/',
+    href: '/admin',
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
@@ -17,7 +17,7 @@ const navItems = [
   },
   {
     label: 'Orçamentos',
-    href: '/orcamentos',
+    href: '/admin/orcamentos',
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -27,7 +27,7 @@ const navItems = [
   },
   {
     label: 'Ordens de Serviço',
-    href: '/ordens-servico',
+    href: '/admin/ordens-servico',
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { signOut } = useAuth();
 
   const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
+    if (href === '/admin') return pathname === '/admin';
     return pathname.startsWith(href);
   };
 

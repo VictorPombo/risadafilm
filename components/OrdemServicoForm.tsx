@@ -105,7 +105,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
           total_metros: parseDecimal(row.total_metros) || null, valor_total: parseDecimal(row.valor_total),
         })));
       }
-      router.push('/ordens-servico'); router.refresh();
+      router.push('/admin/ordens-servico'); router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar.');
     } finally { setSaving(false); }

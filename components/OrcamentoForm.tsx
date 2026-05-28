@@ -108,7 +108,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
           valor_metro: parseDecimal(row.valor_metro),
         })));
       }
-      router.push('/orcamentos'); router.refresh();
+      router.push('/admin/orcamentos'); router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar.');
     } finally { setSaving(false); }
