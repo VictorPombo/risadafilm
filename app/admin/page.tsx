@@ -196,7 +196,7 @@ export default function DashboardPage() {
               {recentOrc.map((orc) => (
                 <Link
                   key={orc.id}
-                  href={`/orcamentos/${orc.id}`}
+                  href={`/admin/orcamentos/${orc.id}`}
                   className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-[#222222] last:border-b-0 hover:bg-[#1a1a1a] transition-colors duration-150"
                 >
                   <div className="flex-1 min-w-0">
@@ -270,7 +270,7 @@ export default function DashboardPage() {
               {recentOS.map((os) => (
                 <Link
                   key={os.id}
-                  href={`/ordens-servico/${os.id}`}
+                  href={`/admin/ordens-servico/${os.id}`}
                   className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-[#222222] last:border-b-0 hover:bg-[#1a1a1a] transition-colors duration-150"
                 >
                   <div className="flex-1 min-w-0">

@@ -106,7 +106,7 @@ export default function OrcamentosPage() {
                     <td className="px-5 py-3 text-center"><StatusBadge status={orc.status} /></td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex gap-1.5 justify-end">
-                        <Link href={`/orcamentos/${orc.id}`} className="px-2.5 py-1 rounded-[4px] text-xs font-medium border border-[#222222] text-[#888888] hover:border-[#f5c518] hover:text-[#f5c518] transition-colors duration-150">Editar</Link>
+                        <Link href={`/admin/orcamentos/${orc.id}`} className="px-2.5 py-1 rounded-[4px] text-xs font-medium border border-[#222222] text-[#888888] hover:border-[#f5c518] hover:text-[#f5c518] transition-colors duration-150">Editar</Link>
                         <button onClick={() => handleExportPDF(orc.id)} className="px-2.5 py-1 rounded-[4px] text-xs font-medium border border-[#222222] text-[#888888] hover:border-[#f5c518] hover:text-[#f5c518] transition-colors duration-150 cursor-pointer">PDF</button>
                         <button onClick={() => handleDelete(orc.id)} className="px-2.5 py-1 rounded-[4px] text-xs font-medium border border-[#e53e3e] text-[#e53e3e] cursor-pointer transition-colors duration-150">Excluir</button>
                       </div>
@@ -136,7 +136,7 @@ export default function OrcamentosPage() {
                   </div>
                   
                   <div className="grid grid-cols-3 gap-2">
-                    <Link href={`/orcamentos/${orc.id}`} className="flex justify-center items-center py-2.5 rounded-[6px] text-[13px] font-semibold border border-[#222222] bg-[#1a1a1a] text-[#888888] active:bg-[#222]">
+                    <Link href={`/admin/orcamentos/${orc.id}`} className="flex justify-center items-center py-2.5 rounded-[6px] text-[13px] font-semibold border border-[#222222] bg-[#1a1a1a] text-[#888888] active:bg-[#222]">
                       Editar
                     </Link>
                     <button onClick={() => handleExportPDF(orc.id)} className="flex justify-center items-center py-2.5 rounded-[6px] text-[13px] font-semibold border border-[#222222] bg-[#1a1a1a] text-[#888888] active:bg-[#222]">
