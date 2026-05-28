@@ -2,6 +2,13 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Só proteger rotas /admin (exceto login)
+  if (!pathname.startsWith('/admin')) {
+    return NextResponse.next();
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -25,21 +32,15 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Se não autenticado e não está na página de login → redireciona
-  if (!user && !request.nextUrl.pathname.startsWith('/login')) {
+  // Se não autenticado → redireciona pro login
+  if (!user) {
     const loginUrl = new URL('/login', request.url);
     return NextResponse.redirect(loginUrl);
-  }
-
-  // Se autenticado e está na página de login → redireciona ao dashboard
-  if (user && request.nextUrl.pathname.startsWith('/login')) {
-    const dashUrl = new URL('/', request.url);
-    return NextResponse.redirect(dashUrl);
   }
 
   return supabaseResponse;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: ['/admin/:path*'],
 };
