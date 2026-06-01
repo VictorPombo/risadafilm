@@ -13,11 +13,10 @@ interface ItemRow {
   id?: string;
   qtd: string;
   descricao: string;
-  metros_quadrados: string;
   valor_metro: string;
 }
 
-const emptyRow = (): ItemRow => ({ qtd: '1', descricao: '', metros_quadrados: '', valor_metro: '' });
+const emptyRow = (): ItemRow => ({ qtd: '1', descricao: '', valor_metro: '' });
 
 const labelCls = "block text-[11px] uppercase tracking-[0.08em] text-[#888888] mb-2 font-medium";
 const inputCls = "w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-[6px] px-4 py-3 text-sm text-[#f0f0f0] focus:outline-none focus:border-[#f5c518] transition-colors duration-150";
@@ -44,14 +43,28 @@ export default function OrcamentoForm({ orcamento }: Props) {
     if (orcamento?.itens && orcamento.itens.length > 0) {
       setItens(orcamento.itens.sort((a, b) => a.ordem - b.ordem).map((item) => ({
         id: item.id, qtd: item.qtd.toString(), descricao: item.descricao,
-        metros_quadrados: formatDecimal(item.metros_quadrados), valor_metro: formatDecimal(item.valor_metro),
+        valor_metro: formatDecimal(item.valor_metro),
       })));
     }
   }, [orcamento]);
 
+  /** Extrai m² da descrição (ex: 765 x 2545 → 1,95 m² | 200x200 → 4,00 m²) */
+  function calcM2(desc: string): number {
+    const match = desc.match(/(\d+)\s*[xX×]\s*(\d+)/);
+    if (match) {
+      const val1 = parseFloat(match[1]);
+      const val2 = parseFloat(match[2]);
+      // Se alguma dimensão > 500, assume milímetros; senão, centímetros
+      const divisor = (val1 > 500 || val2 > 500) ? 1000 : 100;
+      return (val1 / divisor) * (val2 / divisor);
+    }
+    return 0;
+  }
+
   const calcRowTotal = (row: ItemRow): number => {
     const qtd = row.qtd === '' ? 1 : (parseInt(row.qtd) || 0);
-    return qtd * parseDecimal(row.metros_quadrados) * parseDecimal(row.valor_metro);
+    const m2 = calcM2(row.descricao);
+    return qtd * m2 * parseDecimal(row.valor_metro);
   };
 
   const totalGeral = itens.reduce((sum, r) => sum + calcRowTotal(r), 0);
@@ -69,7 +82,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
     for (const [i, row] of valid.entries()) {
       const qtd = row.qtd === '' ? 1 : (parseInt(row.qtd) || 0);
       if (qtd <= 0) return `Item ${i + 1}: Qtd > 0.`;
-      if (parseDecimal(row.metros_quadrados) <= 0) return `Item ${i + 1}: m² > 0.`;
+      if (calcM2(row.descricao) <= 0) return `Item ${i + 1}: Inclua medidas na descrição (ex: 765 x 2545).`;
       if (parseDecimal(row.valor_metro) <= 0) return `Item ${i + 1}: Valor m² > 0.`;
     }
     return null;
@@ -92,7 +105,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
         await supabase.from('orcamento_itens').delete().eq('orcamento_id', orcamento!.id);
         await supabase.from('orcamento_itens').insert(valid.map((row, i) => ({
           orcamento_id: orcamento!.id, ordem: i, qtd: row.qtd === '' ? 1 : (parseInt(row.qtd) || 0),
-          descricao: row.descricao, metros_quadrados: parseDecimal(row.metros_quadrados),
+          descricao: row.descricao, metros_quadrados: calcM2(row.descricao),
           valor_metro: parseDecimal(row.valor_metro),
         })));
       } else {
@@ -104,7 +117,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
         }).select('id').single();
         if (orcData) await supabase.from('orcamento_itens').insert(valid.map((row, i) => ({
           orcamento_id: orcData.id, ordem: i, qtd: row.qtd === '' ? 1 : (parseInt(row.qtd) || 0),
-          descricao: row.descricao, metros_quadrados: parseDecimal(row.metros_quadrados),
+          descricao: row.descricao, metros_quadrados: calcM2(row.descricao),
           valor_metro: parseDecimal(row.valor_metro),
         })));
       }
@@ -173,7 +186,6 @@ export default function OrcamentoForm({ orcamento }: Props) {
               <tr className="border-b border-[#222222]">
                 <th className="px-2 py-3 text-left text-[11px] font-medium uppercase tracking-[0.1em] text-[#888888] w-20">Qtd</th>
                 <th className="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-[0.1em] text-[#888888]">Descrição</th>
-                <th className="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-[0.1em] text-[#888888] w-32">Metros (m²)</th>
                 <th className="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-[0.1em] text-[#888888] w-40">Valor / m²</th>
                 <th className="px-4 py-3 text-right text-[11px] font-medium uppercase tracking-[0.1em] text-[#f5c518] w-40">Total</th>
                 <th className="w-12"></th>
@@ -183,8 +195,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
               {itens.map((row, i) => (
                 <tr key={i} className="group hover:bg-[#1a1a1a]/50 transition-colors">
                   <td className="px-2 py-3"><input type="number" min="1" value={row.qtd} onChange={e => updateItem(i, 'qtd', e.target.value)} className="w-full px-3 py-2.5 text-sm text-center bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="1" /></td>
-                  <td className="px-4 py-3"><input value={row.descricao} onChange={e => updateItem(i, 'descricao', e.target.value)} className="w-full px-3 py-2.5 text-sm bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="Ex: Película Solar" /></td>
-                  <td className="px-4 py-3"><input value={row.metros_quadrados} onChange={e => updateItem(i, 'metros_quadrados', e.target.value)} className="w-full px-3 py-2.5 text-sm text-right bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="0,00" /></td>
+                  <td className="px-4 py-3"><input value={row.descricao} onChange={e => updateItem(i, 'descricao', e.target.value)} className="w-full px-3 py-2.5 text-sm bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="Ex: Película 765 x 2545" /></td>
                   <td className="px-4 py-3"><input value={row.valor_metro} onChange={e => updateItem(i, 'valor_metro', e.target.value)} className="w-full px-3 py-2.5 text-sm text-right bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="R$ 0,00" /></td>
                   <td className="px-4 py-3 text-right font-mono text-[15px] font-bold text-[#f5c518] align-middle">{formatCurrency(calcRowTotal(row))}</td>
                   <td className="px-2 py-3 text-center">
@@ -199,7 +210,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
             </tbody>
             <tfoot>
               <tr className="border-t border-[#2a2a2a] bg-[#1a1a1a]/30">
-                <td colSpan={4} className="px-4 py-5 text-right text-sm font-bold uppercase tracking-widest text-[#888888]">Valor Total</td>
+                <td colSpan={3} className="px-4 py-5 text-right text-sm font-bold uppercase tracking-widest text-[#888888]">Valor Total</td>
                 <td className="px-4 py-5 text-right font-mono text-xl font-bold text-[#f5c518]">{formatCurrency(totalGeral)}</td>
                 <td></td>
               </tr>
@@ -220,14 +231,10 @@ export default function OrcamentoForm({ orcamento }: Props) {
                   <label className="block text-[10px] uppercase tracking-wider text-[#666] mb-1">Descrição</label>
                   <input value={row.descricao} onChange={e => updateItem(i, 'descricao', e.target.value)} className={inputCls} placeholder="O que será feito?" />
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[10px] uppercase tracking-wider text-[#666] mb-1">Qtd</label>
                     <input type="number" min="1" value={row.qtd} onChange={e => updateItem(i, 'qtd', e.target.value)} className={inputCls} placeholder="1" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-[#666] mb-1">m²</label>
-                    <input value={row.metros_quadrados} onChange={e => updateItem(i, 'metros_quadrados', e.target.value)} className={inputCls} placeholder="0,00" />
                   </div>
                   <div>
                     <label className="block text-[10px] uppercase tracking-wider text-[#666] mb-1">R$/m²</label>

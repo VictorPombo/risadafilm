@@ -41,7 +41,7 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
   // ===== TÍTULO =====
   doc.setFont('times', 'bolditalic');
   doc.setFontSize(16);
-  doc.text('Ordem de serviçO', pw / 2, y, { align: 'center' });
+  doc.text('ORDEM DE SERVIÇO', pw / 2, y, { align: 'center' });
   
   y += 15;
 
@@ -61,18 +61,17 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
   y += 10;
 
   // ===== TABELA DE ITENS =====
-  const tableHeaders = [['Quant', 'Descrição', 'Medidas', 'Total de Mts', 'Valor T']];
+  const tableHeaders = [['Quant', 'Descrição', 'Total de Mts', 'Valor T']];
 
   const tableRows = os.itens.map(item => [
     item.quant.toString(),
     item.descricao,
-    item.medidas || '',
     item.total_metros ? formatDecimal(item.total_metros) : '',
     formatCurrencyPDF(item.valor_total),
   ]);
 
   // Adicionar a linha de Total dentro da tabela conforme o DOCX
-  tableRows.push(['', 'TOTAL', '', '', formatCurrencyPDF(os.total_geral)]);
+  tableRows.push(['', 'TOTAL', '', formatCurrencyPDF(os.total_geral)]);
 
   autoTable(doc, {
     startY: y,
@@ -105,9 +104,8 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
     columnStyles: {
       0: { halign: 'center', cellWidth: 15 },
       1: { cellWidth: 'auto' },
-      2: { halign: 'center', cellWidth: 25 },
-      3: { halign: 'center', cellWidth: 25 },
-      4: { halign: 'right', cellWidth: 35, fontStyle: 'bold' },
+      2: { halign: 'center', cellWidth: 30 },
+      3: { halign: 'right', cellWidth: 40, fontStyle: 'bold' },
     },
   });
 

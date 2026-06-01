@@ -8,10 +8,10 @@ import StatusBadge from '@/components/StatusBadge';
 import type { OrdemServico, OSStatus } from '@/types';
 
 interface Props { ordemServico?: OrdemServico; }
-interface ItemRow { id?: string; quant: string; descricao: string; medidas: string; total_metros: string; valor_total: string; }
+interface ItemRow { id?: string; quant: string; descricao: string; total_metros: string; valor_total: string; }
 interface OrcamentoOption { id: string; numero: string; cliente: string; }
 
-const emptyRow = (): ItemRow => ({ quant: '1', descricao: '', medidas: '', total_metros: '', valor_total: '' });
+const emptyRow = (): ItemRow => ({ quant: '1', descricao: '', total_metros: '', valor_total: '' });
 
 const labelCls = "block text-[11px] uppercase tracking-[0.08em] text-[#888888] mb-2 font-medium";
 const inputCls = "w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-[6px] px-4 py-3 text-sm text-[#f0f0f0] focus:outline-none focus:border-[#f5c518] transition-colors duration-150";
@@ -42,7 +42,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
     if (ordemServico?.itens && ordemServico.itens.length > 0) {
       setItens(ordemServico.itens.sort((a, b) => a.ordem - b.ordem).map((item) => ({
         id: item.id, quant: item.quant.toString(), descricao: item.descricao,
-        medidas: item.medidas || '', total_metros: item.total_metros ? formatDecimal(item.total_metros) : '',
+        total_metros: item.total_metros ? formatDecimal(item.total_metros) : '',
         valor_total: formatDecimal(item.valor_total),
       })));
     }
@@ -88,7 +88,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
         await supabase.from('os_itens').delete().eq('ordem_servico_id', ordemServico!.id);
         await supabase.from('os_itens').insert(valid.map((row, i) => ({
           ordem_servico_id: ordemServico!.id, ordem: i, quant: row.quant === '' ? 1 : parseInt(row.quant),
-          descricao: row.descricao, medidas: row.medidas || null,
+          descricao: row.descricao,
           total_metros: parseDecimal(row.total_metros) || null, valor_total: parseDecimal(row.valor_total),
         })));
       } else {
@@ -101,7 +101,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
         }).select('id').single();
         if (osData) await supabase.from('os_itens').insert(valid.map((row, i) => ({
           ordem_servico_id: osData.id, ordem: i, quant: row.quant === '' ? 1 : parseInt(row.quant),
-          descricao: row.descricao, medidas: row.medidas || null,
+          descricao: row.descricao,
           total_metros: parseDecimal(row.total_metros) || null, valor_total: parseDecimal(row.valor_total),
         })));
       }
@@ -180,7 +180,6 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
               <tr className="border-b border-[#222222]">
                 <th className="px-2 py-3 text-left text-[11px] font-medium uppercase tracking-[0.1em] text-[#888888] w-20">Quant</th>
                 <th className="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-[0.1em] text-[#888888]">Descrição</th>
-                <th className="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-[0.1em] text-[#888888] w-32">Medidas</th>
                 <th className="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-[0.1em] text-[#888888] w-32">Total de Mts</th>
                 <th className="px-4 py-3 text-right text-[11px] font-medium uppercase tracking-[0.1em] text-[#f5c518] w-40">Valor T.</th>
                 <th className="w-12"></th>
@@ -190,8 +189,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
               {itens.map((row, i) => (
                 <tr key={i} className="group hover:bg-[#1a1a1a]/50 transition-colors">
                   <td className="px-2 py-3"><input type="number" min="1" value={row.quant} onChange={e => updateItem(i, 'quant', e.target.value)} className="w-full px-3 py-2.5 text-sm text-center bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="1" /></td>
-                  <td className="px-4 py-3"><input value={row.descricao} onChange={e => updateItem(i, 'descricao', e.target.value)} className="w-full px-3 py-2.5 text-sm bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="Ex: Aplicação de Película" /></td>
-                  <td className="px-4 py-3"><input value={row.medidas} onChange={e => updateItem(i, 'medidas', e.target.value)} className="w-full px-3 py-2.5 text-sm bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="1,20x0,80" /></td>
+                  <td className="px-4 py-3"><input value={row.descricao} onChange={e => updateItem(i, 'descricao', e.target.value)} className="w-full px-3 py-2.5 text-sm bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="Ex: Película 765 x 2545" /></td>
                   <td className="px-4 py-3"><input value={row.total_metros} onChange={e => updateItem(i, 'total_metros', e.target.value)} className="w-full px-3 py-2.5 text-sm text-right bg-[#0a0a0a] border border-[#2a2a2a] rounded-[4px] text-[#f0f0f0] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="0,00" /></td>
                   <td className="px-4 py-3"><input value={row.valor_total} onChange={e => updateItem(i, 'valor_total', e.target.value)} className="w-full px-3 py-2.5 text-sm text-right font-mono font-bold bg-[#0a0a0a] text-[#f5c518] border border-[#2a2a2a] rounded-[4px] focus:border-[#f5c518] focus:outline-none transition-colors" placeholder="R$ 0,00" /></td>
                   <td className="px-2 py-3 text-center">
@@ -206,7 +204,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
             </tbody>
             <tfoot>
               <tr className="border-t border-[#2a2a2a] bg-[#1a1a1a]/30">
-                <td colSpan={4} className="px-4 py-5 text-right text-sm font-bold uppercase tracking-widest text-[#888888]">Valor Total</td>
+                <td colSpan={3} className="px-4 py-5 text-right text-sm font-bold uppercase tracking-widest text-[#888888]">Valor Total</td>
                 <td className="px-4 py-5 text-right font-mono text-xl font-bold text-[#f5c518]">{formatCurrency(totalGeral)}</td>
                 <td></td>
               </tr>
@@ -233,19 +231,13 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
                     <input type="number" min="1" value={row.quant} onChange={e => updateItem(i, 'quant', e.target.value)} className={inputCls} placeholder="1" />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-[#666] mb-1">Medidas</label>
-                    <input value={row.medidas} onChange={e => updateItem(i, 'medidas', e.target.value)} className={inputCls} placeholder="Ex: 1x2" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
                     <label className="block text-[10px] uppercase tracking-wider text-[#666] mb-1">Total de Mts</label>
                     <input value={row.total_metros} onChange={e => updateItem(i, 'total_metros', e.target.value)} className={inputCls} placeholder="0,00" />
                   </div>
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-[#666] mb-1">Valor T.</label>
-                    <input value={row.valor_total} onChange={e => updateItem(i, 'valor_total', e.target.value)} className={inputCls} placeholder="R$" />
-                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-wider text-[#666] mb-1">Valor T.</label>
+                  <input value={row.valor_total} onChange={e => updateItem(i, 'valor_total', e.target.value)} className={inputCls} placeholder="R$" />
                 </div>
               </div>
             </div>

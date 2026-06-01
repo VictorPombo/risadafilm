@@ -39,7 +39,7 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   // ===== TÍTULO ORÇAMENTO =====
   doc.setFont('times', 'bolditalic');
   doc.setFontSize(18);
-  doc.text('ORÇAmento', pw / 2, y, { align: 'center' });
+  doc.text('ORÇAMENTO', pw / 2, y, { align: 'center' });
   y += 10;
 
   // ===== A/C =====
@@ -52,19 +52,46 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   y += 8;
 
   // ===== TABELA DE ITENS =====
-  const tableHeaders = [['Qtd', 'Descrição', 'mts²', 'Valor mts²', 'Total']];
-  const tableRows = orc.itens.map(item => [
-    item.qtd.toString(),
-    item.descricao,
-    formatDecimal(item.metros_quadrados),
-    formatCurrencyPDF(item.valor_metro),
-    formatCurrencyPDF(item.qtd * item.metros_quadrados * item.valor_metro),
-  ]);
+  const tableHeaders = [['Qtd', 'Descrição', 'Total MTs', 'Valor mts²', 'Total']];
+
+  /**
+   * Extrai dimensões da descrição (ex: "765 x 2545" ou "200x200").
+   * Se alguma dimensão > 500, assume mm (÷1000); senão, cm (÷100).
+   */
+  function calcM2FromDesc(descricao: string, fallbackM2: number): number {
+    const match = descricao.match(/(\d+)\s*[xX×]\s*(\d+)/);
+    if (match) {
+      const val1 = parseFloat(match[1]);
+      const val2 = parseFloat(match[2]);
+      const divisor = (val1 > 500 || val2 > 500) ? 1000 : 100;
+      return (val1 / divisor) * (val2 / divisor);
+    }
+    return fallbackM2;
+  }
+
+  const tableRows: string[][] = [];
+  let totalGeralRecalculado = 0;
+
+  orc.itens.forEach(item => {
+    const m2 = calcM2FromDesc(item.descricao, item.metros_quadrados);
+    const totalItem = item.qtd * m2 * item.valor_metro;
+    totalGeralRecalculado += totalItem;
+    tableRows.push([
+      item.qtd.toString(),
+      item.descricao,
+      formatDecimal(m2),
+      formatCurrencyPDF(item.valor_metro),
+      formatCurrencyPDF(totalItem),
+    ]);
+  });
 
   // Preencher linhas vazias para chegar a 10 linhas como o DOCX
   while (tableRows.length < 10) {
     tableRows.push(['', '', '', '', '']);
   }
+
+  // Adicionar linha de TOTAL GERAL dentro da tabela
+  tableRows.push(['', '', '', 'TOTAL GERAL:', formatCurrencyPDF(totalGeralRecalculado)]);
 
   autoTable(doc, {
     startY: y,
@@ -88,6 +115,12 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
       lineColor: [0, 0, 0],
       minCellHeight: 8,
     },
+    willDrawCell: (data) => {
+      // Deixar a linha do TOTAL em negrito
+      if (data.row.index === tableRows.length - 1) {
+        doc.setFont('helvetica', 'bold');
+      }
+    },
     columnStyles: {
       0: { halign: 'center', cellWidth: 15 },
       1: { cellWidth: 'auto' },
@@ -99,12 +132,6 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   y = (doc as any).lastAutoTable.finalY + 8;
-
-  // ===== TOTAL GERAL =====
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('TOTAL GERAL:', pw - margin - 45, y, { align: 'right' });
-  doc.text(formatCurrencyPDF(orc.total_geral), pw - margin, y, { align: 'right' });
 
   y += 10;
 
