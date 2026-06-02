@@ -61,17 +61,16 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
   y += 10;
 
   // ===== TABELA DE ITENS =====
-  const tableHeaders = [['Quant', 'Descrição', 'Total de Mts', 'Valor T']];
+  const tableHeaders = [['Quant', 'Descrição', 'Valor T']];
 
   const tableRows = os.itens.map(item => [
     item.quant.toString(),
     item.descricao,
-    item.total_metros ? formatDecimal(item.total_metros) : '',
     formatCurrencyPDF(item.valor_total),
   ]);
 
   // Adicionar a linha de Total dentro da tabela conforme o DOCX
-  tableRows.push(['', 'TOTAL', '', formatCurrencyPDF(os.total_geral)]);
+  tableRows.push(['', 'TOTAL', formatCurrencyPDF(os.total_geral)]);
 
   autoTable(doc, {
     startY: y,
@@ -104,8 +103,7 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
     columnStyles: {
       0: { halign: 'center', cellWidth: 15 },
       1: { cellWidth: 'auto' },
-      2: { halign: 'center', cellWidth: 30 },
-      3: { halign: 'right', cellWidth: 40, fontStyle: 'bold' },
+      2: { halign: 'right', cellWidth: 40, fontStyle: 'bold' },
     },
   });
 
@@ -134,16 +132,22 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
 
   y += 8;
   doc.setFont('helvetica', 'bold');
-  doc.text('DADOS PARA DEPOSITO BANCO ITAU S/ A', margin, y);
+  doc.text('DADOS PARA PAGAMENTO:', margin, y);
   
   y += 6;
   doc.setFont('helvetica', 'normal');
-  doc.text('AG. 0149 C/ C 26. 121 - 6 EM NOME DE RISADA COMERCIO DE PELICULA SOLAR LTDA ME', margin, y);
+  doc.text('Banco: Itaú Unibanco (341)  |  Agência: 0140  |  Conta: 98105-1', margin, y);
   
   y += 6;
-  doc.text('Ou faça pix pelo CNPJ ', margin, y);
+  doc.text('Favorecido: Risada Comercio De Pelicula So', margin, y);
+  
+  y += 6;
+  doc.text('CNPJ: 33.574.274/0001-43', margin, y);
+
+  y += 6;
+  doc.text('Chave PIX (CNPJ): ', margin, y);
   doc.setFont('helvetica', 'bold');
-  doc.text('335742740001/43', margin + 45, y);
+  doc.text('33.574.274/0001-43', margin + 35, y);
 
   // ===== IMAGEM: ASSINATURAS =====
   const assHeight = 40;

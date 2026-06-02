@@ -42,12 +42,20 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   doc.text('ORÇAMENTO', pw / 2, y, { align: 'center' });
   y += 10;
 
+  // ===== CLIENTE (EMPRESA) =====
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('CLIENTE:', margin, y);
+  doc.setFont('helvetica', 'normal');
+  doc.text(orc.cliente.toUpperCase(), margin + 20, y);
+  y += 6;
+
   // ===== A/C =====
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.text('A/C.', margin, y);
   doc.setFont('helvetica', 'normal');
-  doc.text(`  ${orc.atencao || orc.cliente}`, margin + 12, y);
+  doc.text(`  ${orc.atencao || ''}`, margin + 12, y);
 
   y += 8;
 
@@ -79,7 +87,7 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
     tableRows.push([
       item.qtd.toString(),
       item.descricao,
-      formatDecimal(m2),
+      formatDecimal(m2) + ' m²',
       formatCurrencyPDF(item.valor_metro),
       formatCurrencyPDF(totalItem),
     ]);
@@ -159,6 +167,25 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   y += 8;
   doc.setFont('helvetica', 'bold');
   doc.text(`PRAZO DE INSTALAÇÃO. É DE ${orc.prazo_instalacao.toUpperCase()}`, margin, y);
+
+  y += 10;
+  doc.setFont('helvetica', 'bold');
+  doc.text('DADOS PARA PAGAMENTO:', margin, y);
+  
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.text('Banco: Itaú Unibanco (341)  |  Agência: 0140  |  Conta: 98105-1', margin, y);
+  
+  y += 6;
+  doc.text('Favorecido: Risada Comercio De Pelicula So', margin, y);
+  
+  y += 6;
+  doc.text('CNPJ: 33.574.274/0001-43', margin, y);
+
+  y += 6;
+  doc.text('Chave PIX (CNPJ): ', margin, y);
+  doc.setFont('helvetica', 'bold');
+  doc.text('33.574.274/0001-43', margin + 35, y);
 
   // ===== IMAGEM: ASSINATURAS =====
   const assHeight = 40;
