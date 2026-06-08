@@ -99,11 +99,6 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
     ]);
   });
 
-  // Preencher linhas vazias para chegar a 10 linhas como o DOCX
-  while (tableRows.length < 10) {
-    tableRows.push(['', '', '', '', '']);
-  }
-
   // Adicionar linha de TOTAL GERAL dentro da tabela
   tableRows.push(['', '', '', 'TOTAL GERAL:', formatCurrencyPDF(totalGeralRecalculado)]);
 
