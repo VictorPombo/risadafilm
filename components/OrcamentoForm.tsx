@@ -48,17 +48,15 @@ export default function OrcamentoForm({ orcamento }: Props) {
     }
   }, [orcamento]);
 
-  /** Extrai m² da descrição (ex: 765 x 2545 → 1,95 m² | 200x200 → 4,00 m²) */
+  /** Extrai m² da descrição (ex: 765 x 2545 → 1,95 m²). Padrão sempre em milímetros. */
   function calcM2(desc: string): number {
-    const match = desc.match(/(\d+)\s*[xX×]\s*(\d+)/);
-    if (match) {
-      const val1 = parseFloat(match[1]);
-      const val2 = parseFloat(match[2]);
-      // Se alguma dimensão > 500, assume milímetros; senão, centímetros
-      const divisor = (val1 > 500 || val2 > 500) ? 1000 : 100;
-      return (val1 / divisor) * (val2 / divisor);
+    const regex = /(\d+)\s*[xX×]\s*(\d+)/g;
+    let total = 0;
+    let match;
+    while ((match = regex.exec(desc)) !== null) {
+      total += (parseFloat(match[1]) / 1000) * (parseFloat(match[2]) / 1000);
     }
-    return 0;
+    return total;
   }
 
   const calcRowTotal = (row: ItemRow): number => {
@@ -173,7 +171,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 border-b border-[#1f1f1f] pb-4">
           <h2 className="font-display text-[15px] font-semibold text-[#f0f0f0]">Itens do Orçamento</h2>
           <button type="button" onClick={addRow}
-            className="mt-3 sm:mt-0 px-5 py-2.5 rounded-lg text-[13px] font-bold uppercase tracking-wider cursor-pointer bg-[#2a2a2a] text-[#f0f0f0] hover:bg-[#3a3a3a] hover:text-[#f5c518] transition-all duration-200 flex items-center gap-2">
+            className="mt-4 sm:mt-0 px-5 py-3.5 sm:py-2.5 w-full sm:w-auto justify-center rounded-lg text-[14px] sm:text-[13px] font-bold uppercase tracking-wider cursor-pointer bg-[#2a2a2a] text-[#f0f0f0] hover:bg-[#3a3a3a] hover:text-[#f5c518] transition-all duration-200 flex items-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Adicionar Item
           </button>
@@ -224,8 +222,8 @@ export default function OrcamentoForm({ orcamento }: Props) {
         <div className="md:hidden divide-y divide-[#222222]">
           {itens.map((row, i) => (
             <div key={i} className="py-5 relative">
-              {itens.length > 1 && <button type="button" onClick={() => removeRow(i)} className="absolute top-5 right-1 p-2 cursor-pointer text-[#e53e3e] hover:bg-[#e53e3e]/10 rounded-full flex items-center justify-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              {itens.length > 1 && <button type="button" onClick={() => removeRow(i)} className="absolute top-4 right-0 p-3 cursor-pointer text-[#e53e3e] hover:bg-[#e53e3e]/10 rounded-full flex items-center justify-center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>}
               <p className="text-[11px] font-bold uppercase tracking-wider text-[#888] mb-4">Item {i + 1}</p>
               <div className="space-y-5">

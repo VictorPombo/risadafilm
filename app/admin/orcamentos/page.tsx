@@ -50,9 +50,9 @@ export default function OrcamentosPage() {
           <p className="text-[#888888] text-sm mt-0.5">{orcamentos.length} registrado(s)</p>
         </div>
         <Link href="/admin/orcamentos/novo"
-          className="bg-[#f5c518] text-black font-semibold text-sm px-4 py-2 rounded-[4px] hover:bg-[#e6b800] transition-colors duration-150 flex items-center gap-2">
+          className="bg-[#f5c518] text-black font-semibold text-sm px-5 py-3 sm:px-4 sm:py-2 rounded-[4px] hover:bg-[#e6b800] transition-colors duration-150 flex items-center gap-2">
           <span className="hidden sm:inline">+ Novo Orçamento</span>
-          <span className="sm:hidden text-lg">+</span>
+          <span className="sm:hidden text-lg leading-none">+</span>
         </Link>
       </div>
 
@@ -61,7 +61,7 @@ export default function OrcamentosPage() {
         <div className="flex gap-2 overflow-x-auto pb-1 w-full sm:w-auto scrollbar-hide">
           {statuses.map(s => (
             <button key={s} onClick={() => setFilterStatus(s)}
-              className={`px-3 py-1.5 rounded-[4px] text-[11px] font-semibold uppercase tracking-wider cursor-pointer whitespace-nowrap transition-colors duration-150 ${
+              className={`px-4 py-2 sm:px-3 sm:py-1.5 rounded-[4px] text-[12px] sm:text-[11px] font-semibold uppercase tracking-wider cursor-pointer whitespace-nowrap transition-colors duration-150 ${
                 filterStatus === s
                   ? 'bg-[#f5c518] text-black'
                   : 'bg-transparent border border-[#222222] text-[#888888] hover:border-[#f5c518] hover:text-[#f5c518]'
@@ -123,8 +123,8 @@ export default function OrcamentosPage() {
               <div key={orc.id} className="rounded-[8px] p-4 bg-[#111111] border border-[#222222] shadow-lg">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <span className="text-sm font-semibold text-[#f5c518]">{orc.numero}</span>
-                    <p className="text-base font-medium mt-1 leading-tight">{orc.cliente}</p>
+                    <span className="text-sm font-semibold text-[#f5c518] break-words">{orc.numero}</span>
+                    <p className="text-base font-medium mt-1 leading-tight break-words">{orc.cliente}</p>
                   </div>
                   <div className="ml-3 shrink-0"><StatusBadge status={orc.status} /></div>
                 </div>
@@ -135,14 +135,14 @@ export default function OrcamentosPage() {
                     <span className="text-sm text-[#888888]">{formatDate(orc.data_emissao)}</span>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-2">
-                    <Link href={`/admin/orcamentos/${orc.id}`} className="flex justify-center items-center py-2.5 rounded-[6px] text-[13px] font-semibold border border-[#222222] bg-[#1a1a1a] text-[#888888] active:bg-[#222]">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link href={`/admin/orcamentos/${orc.id}`} className="flex justify-center items-center py-3 rounded-[6px] text-[14px] font-semibold border border-[#222222] bg-[#1a1a1a] text-[#888888] active:bg-[#222]">
                       Editar
                     </Link>
-                    <button onClick={() => handleExportPDF(orc.id)} className="flex justify-center items-center py-2.5 rounded-[6px] text-[13px] font-semibold border border-[#222222] bg-[#1a1a1a] text-[#888888] active:bg-[#222]">
+                    <button onClick={() => handleExportPDF(orc.id)} className="flex justify-center items-center py-3 rounded-[6px] text-[14px] font-semibold border border-[#222222] bg-[#1a1a1a] text-[#888888] active:bg-[#222]">
                       Gerar PDF
                     </button>
-                    <button onClick={() => handleDelete(orc.id)} className="flex justify-center items-center py-2.5 rounded-[6px] text-[13px] font-semibold border border-[#e53e3e] bg-[rgba(229,62,62,0.05)] text-[#e53e3e] active:bg-[rgba(229,62,62,0.15)]">
+                    <button onClick={() => handleDelete(orc.id)} className="col-span-2 flex justify-center items-center py-3 rounded-[6px] text-[14px] font-semibold border border-[#e53e3e] bg-[rgba(229,62,62,0.05)] text-[#e53e3e] active:bg-[rgba(229,62,62,0.15)]">
                       Excluir
                     </button>
                   </div>

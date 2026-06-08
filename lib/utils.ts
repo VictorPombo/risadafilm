@@ -32,10 +32,10 @@ export function parseDecimal(value: string): number {
 /**
  * Formata número para exibição com vírgula: 1234.56 → "1.234,56"
  */
-export function formatDecimal(value: number): string {
+export function formatDecimal(value: number, fractionDigits = 2): string {
   return new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
   }).format(value);
 }
 

@@ -8,10 +8,10 @@ import StatusBadge from '@/components/StatusBadge';
 import type { OrdemServico, OSStatus } from '@/types';
 
 interface Props { ordemServico?: OrdemServico; }
-interface ItemRow { id?: string; quant: string; descricao: string; total_metros: string; valor_total: string; }
+interface ItemRow { id?: string; quant: string; descricao: string; total_metros: string; valor_metro: string; valor_total: string; }
 interface OrcamentoOption { id: string; numero: string; cliente: string; }
 
-const emptyRow = (): ItemRow => ({ quant: '1', descricao: '', total_metros: '', valor_total: '' });
+const emptyRow = (): ItemRow => ({ quant: '1', descricao: '', total_metros: '', valor_metro: '', valor_total: '' });
 
 const labelCls = "block text-[12px] uppercase tracking-[0.08em] text-[#888888] mb-2 font-semibold";
 const inputCls = "w-full bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg px-4 py-3.5 text-[15px] text-[#f0f0f0] focus:outline-none focus:border-[#f5c518] focus:bg-[#141414] transition-all duration-200 placeholder:text-[#555]";
@@ -40,11 +40,17 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
   useEffect(() => { loadOrcamentos(); }, []);
   useEffect(() => {
     if (ordemServico?.itens && ordemServico.itens.length > 0) {
-      setItens(ordemServico.itens.sort((a, b) => a.ordem - b.ordem).map((item) => ({
-        id: item.id, quant: item.quant.toString(), descricao: item.descricao,
-        total_metros: item.total_metros ? formatDecimal(item.total_metros) : '',
-        valor_total: formatDecimal(item.valor_total),
-      })));
+      setItens(ordemServico.itens.sort((a, b) => a.ordem - b.ordem).map((item) => {
+        const tm = item.total_metros || 0;
+        const vt = item.valor_total || 0;
+        const vm = tm > 0 ? vt / tm : 0;
+        return {
+          id: item.id, quant: item.quant.toString(), descricao: item.descricao,
+          total_metros: item.total_metros ? formatDecimal(item.total_metros, 3) : '',
+          valor_metro: vm > 0 ? formatDecimal(vm) : '',
+          valor_total: formatDecimal(item.valor_total),
+        };
+      }));
     }
   }, [ordemServico]);
 
@@ -53,8 +59,62 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
     setOrcamentos(data || []);
   }
 
+  function calcM2(desc: string): number {
+    const regex = /(\d+)\s*[xX×]\s*(\d+)/g;
+    let total = 0;
+    let match;
+    while ((match = regex.exec(desc)) !== null) {
+      total += (parseFloat(match[1]) / 1000) * (parseFloat(match[2]) / 1000);
+    }
+    return total;
+  }
+
   const totalGeral = itens.reduce((sum, r) => sum + parseDecimal(r.valor_total), 0);
-  const updateItem = (i: number, field: keyof ItemRow, value: string) => { const n = [...itens]; n[i] = { ...n[i], [field]: value }; setItens(n); };
+  
+  const updateItem = (i: number, field: keyof ItemRow, value: string) => { 
+    const n = [...itens]; 
+    n[i] = { ...n[i], [field]: value };
+    
+    // Auto-calculate MTS when changing quant
+    if (field === 'quant' && n[i].descricao) {
+      const m2 = calcM2(n[i].descricao);
+      if (m2 > 0) {
+        const quant = parseInt(value) || 1;
+        n[i].total_metros = formatDecimal(m2 * quant, 3);
+      }
+    }
+    
+    // Auto-calculate Valor Total when dependencies change
+    if (field === 'total_metros' || field === 'valor_metro' || field === 'quant') {
+      const tm = parseDecimal(n[i].total_metros);
+      const vm = parseDecimal(n[i].valor_metro);
+      if (tm > 0 && vm > 0) {
+        n[i].valor_total = formatDecimal(tm * vm);
+      }
+    }
+    
+    setItens(n); 
+  };
+
+  const updateDescricao = (i: number, value: string) => {
+    const n = [...itens];
+    n[i].descricao = value;
+    const m2 = calcM2(value);
+    if (m2 > 0) {
+      const quant = parseInt(n[i].quant) || 1;
+      n[i].total_metros = formatDecimal(m2 * quant, 3);
+      
+      const tm = m2 * quant;
+      const vm = parseDecimal(n[i].valor_metro);
+      if (tm > 0 && vm > 0) {
+        n[i].valor_total = formatDecimal(tm * vm);
+      }
+    } else if (value.trim() === '') {
+      n[i].total_metros = '';
+    }
+    setItens(n);
+  };
+
   const addRow = () => setItens([...itens, emptyRow()]);
   const removeRow = (i: number) => { if (itens.length > 1) setItens(itens.filter((_, idx) => idx !== i)); };
 
@@ -167,7 +227,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 border-b border-[#1f1f1f] pb-4">
           <h2 className="font-display text-[15px] font-semibold text-[#f0f0f0]">Itens da Ordem de Serviço</h2>
           <button type="button" onClick={addRow}
-            className="mt-3 sm:mt-0 px-5 py-2.5 rounded-lg text-[13px] font-bold uppercase tracking-wider cursor-pointer bg-[#2a2a2a] text-[#f0f0f0] hover:bg-[#3a3a3a] hover:text-[#f5c518] transition-all duration-200 flex items-center gap-2">
+            className="mt-4 sm:mt-0 px-5 py-3.5 sm:py-2.5 w-full sm:w-auto justify-center rounded-lg text-[14px] sm:text-[13px] font-bold uppercase tracking-wider cursor-pointer bg-[#2a2a2a] text-[#f0f0f0] hover:bg-[#3a3a3a] hover:text-[#f5c518] transition-all duration-200 flex items-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Adicionar Item
           </button>
@@ -178,10 +238,11 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
           <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-[#222222]">
-                <th className="px-2 py-4 text-left text-[12px] font-semibold uppercase tracking-[0.1em] text-[#888888] w-24">Quant</th>
+                <th className="px-2 py-4 text-left text-[12px] font-semibold uppercase tracking-[0.1em] text-[#888888] w-20">Quant</th>
                 <th className="px-4 py-4 text-left text-[12px] font-semibold uppercase tracking-[0.1em] text-[#888888]">Descrição</th>
-                <th className="px-4 py-4 text-left text-[12px] font-semibold uppercase tracking-[0.1em] text-[#888888] w-36">Total de Mts</th>
-                <th className="px-4 py-4 text-right text-[12px] font-semibold uppercase tracking-[0.1em] text-[#f5c518] w-44">Valor T.</th>
+                <th className="px-4 py-4 text-center text-[12px] font-semibold uppercase tracking-[0.1em] text-[#888888] w-32">Total de Mts</th>
+                <th className="px-4 py-4 text-right text-[12px] font-semibold uppercase tracking-[0.1em] text-[#888888] w-36">Valor / m²</th>
+                <th className="px-4 py-4 text-right text-[12px] font-semibold uppercase tracking-[0.1em] text-[#f5c518] w-40">Valor T.</th>
                 <th className="w-12"></th>
               </tr>
             </thead>
@@ -189,8 +250,9 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
               {itens.map((row, i) => (
                 <tr key={i} className="group hover:bg-[#1a1a1a]/50 transition-colors">
                   <td className="px-2 py-4"><input type="number" min="1" value={row.quant} onChange={e => updateItem(i, 'quant', e.target.value)} className="w-full px-4 py-3 text-[15px] text-center bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200" placeholder="1" /></td>
-                  <td className="px-4 py-4"><input value={row.descricao} onChange={e => updateItem(i, 'descricao', e.target.value)} className="w-full px-4 py-3 text-[15px] bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200 placeholder:text-[#555]" placeholder="Ex: Película 765 x 2545" /></td>
-                  <td className="px-4 py-4"><input value={row.total_metros} onChange={e => updateItem(i, 'total_metros', e.target.value)} className="w-full px-4 py-3 text-[15px] text-right bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200 placeholder:text-[#555]" placeholder="0,00" /></td>
+                  <td className="px-4 py-4"><input value={row.descricao} onChange={e => updateDescricao(i, e.target.value)} className="w-full px-4 py-3 text-[15px] bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200 placeholder:text-[#555]" placeholder="Ex: Película 765 x 2545" /></td>
+                  <td className="px-4 py-4"><input value={row.total_metros} onChange={e => updateItem(i, 'total_metros', e.target.value)} className="w-full px-4 py-3 text-[15px] text-center bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200 placeholder:text-[#555]" placeholder="0,000" /></td>
+                  <td className="px-4 py-4"><input value={row.valor_metro} onChange={e => updateItem(i, 'valor_metro', e.target.value)} className="w-full px-4 py-3 text-[15px] text-right bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200 placeholder:text-[#555]" placeholder="R$ 0,00" /></td>
                   <td className="px-4 py-4"><input value={row.valor_total} onChange={e => updateItem(i, 'valor_total', e.target.value)} className="w-full px-4 py-3 text-[15px] text-right font-mono font-bold bg-[#0f0f0f] text-[#f5c518] border-2 border-[#2a2a2a] rounded-lg focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200 placeholder:text-[#555]" placeholder="R$ 0,00" /></td>
                   <td className="px-2 py-4 text-center align-middle">
                     {itens.length > 1 && (
@@ -204,7 +266,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-[#2a2a2a] bg-[#1a1a1a]/30">
-                <td colSpan={3} className="px-4 py-6 text-right text-[15px] font-bold uppercase tracking-widest text-[#888888]">Valor Total</td>
+                <td colSpan={4} className="px-4 py-6 text-right text-[15px] font-bold uppercase tracking-widest text-[#888888]">Valor Total</td>
                 <td className="px-4 py-6 text-right font-mono text-2xl font-bold text-[#f5c518]">{formatCurrency(totalGeral)}</td>
                 <td></td>
               </tr>
@@ -216,14 +278,14 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
         <div className="md:hidden divide-y divide-[#222222]">
           {itens.map((row, i) => (
             <div key={i} className="py-5 relative">
-              {itens.length > 1 && <button type="button" onClick={() => removeRow(i)} className="absolute top-5 right-1 p-2 cursor-pointer text-[#e53e3e] hover:bg-[#e53e3e]/10 rounded-full flex items-center justify-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              {itens.length > 1 && <button type="button" onClick={() => removeRow(i)} className="absolute top-4 right-0 p-3 cursor-pointer text-[#e53e3e] hover:bg-[#e53e3e]/10 rounded-full flex items-center justify-center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>}
               <p className="text-[11px] font-bold uppercase tracking-wider text-[#888] mb-4">Item {i + 1}</p>
               <div className="space-y-5">
                 <div>
                   <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#888] mb-2">Descrição</label>
-                  <input value={row.descricao} onChange={e => updateItem(i, 'descricao', e.target.value)} className={inputCls} placeholder="O que será feito?" />
+                  <input value={row.descricao} onChange={e => updateDescricao(i, e.target.value)} className={inputCls} placeholder="O que será feito?" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -232,12 +294,18 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
                   </div>
                   <div>
                     <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#888] mb-2">Total de Mts</label>
-                    <input value={row.total_metros} onChange={e => updateItem(i, 'total_metros', e.target.value)} className={inputCls} placeholder="0,00" />
+                    <input value={row.total_metros} onChange={e => updateItem(i, 'total_metros', e.target.value)} className={inputCls} placeholder="0,000" />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#888] mb-2">Valor T.</label>
-                  <input value={row.valor_total} onChange={e => updateItem(i, 'valor_total', e.target.value)} className={inputCls} placeholder="R$" />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#888] mb-2">Valor / m²</label>
+                    <input value={row.valor_metro} onChange={e => updateItem(i, 'valor_metro', e.target.value)} className={inputCls} placeholder="R$" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#888] mb-2">Valor T.</label>
+                    <input value={row.valor_total} onChange={e => updateItem(i, 'valor_total', e.target.value)} className={`${inputCls} font-mono font-bold text-[#f5c518]`} placeholder="R$" />
+                  </div>
                 </div>
               </div>
             </div>

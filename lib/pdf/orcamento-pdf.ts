@@ -8,6 +8,12 @@ function formatCurrencyPDF(value: number): string {
   return 'R$ ' + formatDecimal(value);
 }
 
+function formatDatePDF(dateStr: string): string {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
 export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }) {
   const doc = new jsPDF('p', 'mm', 'a4');
   const pw = doc.internal.pageSize.getWidth();
@@ -31,8 +37,7 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  // Usa o ano atual caso precise, ou string bruta.
-  doc.text(`São Paulo, ${new Date().getFullYear()}`, pw - margin, y + 10, { align: 'right' });
+  doc.text(`São Paulo, ${formatDatePDF(orc.data_emissao)}`, pw - margin, y + 10, { align: 'right' });
   
   y += 25;
 
@@ -63,18 +68,19 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   const tableHeaders = [['Qtd', 'Descrição', 'Total MTs', 'Valor mts²', 'Total']];
 
   /**
-   * Extrai dimensões da descrição (ex: "765 x 2545" ou "200x200").
-   * Se alguma dimensão > 500, assume mm (÷1000); senão, cm (÷100).
+   * Extrai dimensões da descrição (ex: "765 x 2545").
+   * Sempre considera entrada em milímetros.
    */
   function calcM2FromDesc(descricao: string, fallbackM2: number): number {
-    const match = descricao.match(/(\d+)\s*[xX×]\s*(\d+)/);
-    if (match) {
-      const val1 = parseFloat(match[1]);
-      const val2 = parseFloat(match[2]);
-      const divisor = (val1 > 500 || val2 > 500) ? 1000 : 100;
-      return (val1 / divisor) * (val2 / divisor);
+    const regex = /(\d+)\s*[xX×]\s*(\d+)/g;
+    let total = 0;
+    let match;
+    let found = false;
+    while ((match = regex.exec(descricao)) !== null) {
+      found = true;
+      total += (parseFloat(match[1]) / 1000) * (parseFloat(match[2]) / 1000);
     }
-    return fallbackM2;
+    return found ? total : fallbackM2;
   }
 
   const tableRows: string[][] = [];
