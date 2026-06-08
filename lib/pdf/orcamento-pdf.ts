@@ -195,8 +195,17 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
 
   // ===== IMAGEM: ASSINATURAS =====
   const assHeight = 40;
-  // Colocamos as assinaturas fixas na parte de baixo para ficar exato com o DOCX
-  doc.addImage(ASSINATURAS_B64, 'JPEG', margin, 297 - margin - assHeight, pw - margin * 2, assHeight);
+  let sigY = 297 - margin - assHeight;
+  
+  if (y > sigY - 10) {
+    sigY = y + 10;
+    if (sigY + assHeight > 297 - margin) {
+      doc.addPage();
+      sigY = margin;
+    }
+  }
+
+  doc.addImage(ASSINATURAS_B64, 'JPEG', margin, sigY, pw - margin * 2, assHeight);
 
   // Download
   doc.save(`Orcamento_${orc.numero.replace('/', '-')}_${orc.cliente.replace(/\s+/g, '_')}.pdf`);

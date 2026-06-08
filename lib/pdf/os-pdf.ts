@@ -61,16 +61,26 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
   y += 10;
 
   // ===== TABELA DE ITENS =====
-  const tableHeaders = [['Quant', 'Descrição', 'Valor T']];
+  const tableHeaders = [['Qtd', 'Descrição', 'Total MTs', 'Valor mts²', 'Total']];
 
-  const tableRows = os.itens.map(item => [
-    item.quant.toString(),
-    item.descricao,
-    formatCurrencyPDF(item.valor_total),
-  ]);
+  const tableRows: string[][] = [];
 
-  // Adicionar a linha de Total dentro da tabela conforme o DOCX
-  tableRows.push(['', 'TOTAL', formatCurrencyPDF(os.total_geral)]);
+  os.itens.forEach(item => {
+    const tm = item.total_metros || 0;
+    const vt = item.valor_total || 0;
+    const vm = tm > 0 ? vt / tm : 0;
+
+    tableRows.push([
+      item.quant.toString(),
+      item.descricao,
+      tm > 0 ? formatDecimal(tm, 3) + ' m²' : '',
+      vm > 0 ? formatCurrencyPDF(vm) : '',
+      formatCurrencyPDF(vt),
+    ]);
+  });
+
+  // Adicionar a linha de Total dentro da tabela
+  tableRows.push(['', '', '', 'TOTAL GERAL:', formatCurrencyPDF(os.total_geral)]);
 
   autoTable(doc, {
     startY: y,
@@ -103,7 +113,9 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
     columnStyles: {
       0: { halign: 'center', cellWidth: 15 },
       1: { cellWidth: 'auto' },
-      2: { halign: 'right', cellWidth: 40, fontStyle: 'bold' },
+      2: { halign: 'center', cellWidth: 25 },
+      3: { halign: 'center', cellWidth: 35 },
+      4: { halign: 'center', cellWidth: 35, fontStyle: 'bold' },
     },
   });
 
@@ -151,8 +163,19 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
 
   // ===== IMAGEM: ASSINATURAS =====
   const assHeight = 40;
-  // Colocamos as assinaturas fixas na parte de baixo para ficar exato com o DOCX
-  doc.addImage(ASSINATURAS_B64, 'JPEG', margin, 297 - margin - assHeight, pw - margin * 2, assHeight);
+  let sigY = 297 - margin - assHeight;
+  
+  // Se o conteúdo chegar muito perto ou ultrapassar o local da assinatura,
+  // jogamos a assinatura mais para baixo ou para a próxima página.
+  if (y > sigY - 10) {
+    sigY = y + 10;
+    if (sigY + assHeight > 297 - margin) {
+      doc.addPage();
+      sigY = margin;
+    }
+  }
+
+  doc.addImage(ASSINATURAS_B64, 'JPEG', margin, sigY, pw - margin * 2, assHeight);
 
   // Download
   doc.save(`OS_${os.numero.replace('/', '-')}_${os.cliente.replace(/\s+/g, '_')}.pdf`);
