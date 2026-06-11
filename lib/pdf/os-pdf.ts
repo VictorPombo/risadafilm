@@ -178,5 +178,7 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
   doc.addImage(ASSINATURAS_B64, 'JPEG', margin, sigY, pw - margin * 2, assHeight);
 
   // Download
-  doc.save(`OS_${os.numero.replace('/', '-')}_${os.cliente.replace(/\s+/g, '_')}.pdf`);
+  const safeNumero = (os.numero || '').replace(/[^a-zA-Z0-9]/g, '-');
+  const safeCliente = (os.cliente || '').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 60);
+  doc.save(`OS_${safeNumero}_${safeCliente}.pdf`);
 }

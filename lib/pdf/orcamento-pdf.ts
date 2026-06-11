@@ -218,5 +218,7 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   doc.addImage(ASSINATURAS_B64, 'JPEG', margin, sigY, pw - margin * 2, assHeight);
 
   // Download
-  doc.save(`Orcamento_${orc.numero.replace('/', '-')}_${orc.cliente.replace(/\s+/g, '_')}.pdf`);
+  const safeNumero = (orc.numero || '').replace(/[^a-zA-Z0-9]/g, '-');
+  const safeCliente = (orc.cliente || '').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 60);
+  doc.save(`Orcamento_${safeNumero}_${safeCliente}.pdf`);
 }
