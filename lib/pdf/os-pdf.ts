@@ -132,47 +132,42 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
   doc.text('Termino Serviço', pw / 2, y);
   doc.text(formatDatePDF(os.data_termino || ''), (pw / 2) + 35, y);
   
-  y += 8;
+  y += 7;
   doc.text('Material Aplicado :', margin, y);
   doc.text(os.material_aplicado || '', margin + 35, y);
 
-  y += 12;
+  y += 10;
   
   // Dados de Pagamento
   doc.text('Data Prevista Para Pagamento', margin, y);
   doc.text(formatDatePDF(os.data_prevista_pagamento || ''), margin + 60, y);
 
-  y += 8;
+  y += 7;
   doc.setFont('helvetica', 'bold');
   doc.text('DADOS PARA PAGAMENTO:', margin, y);
   
-  y += 6;
+  y += 5;
   doc.setFont('helvetica', 'normal');
   doc.text('Banco: Itaú Unibanco (341)  |  Agência: 0140  |  Conta: 98105-1', margin, y);
   
-  y += 6;
+  y += 5;
   doc.text('Favorecido: Risada Comercio De Pelicula So', margin, y);
   
-  y += 6;
+  y += 5;
   doc.text('CNPJ: 33.574.274/0001-43', margin, y);
 
-  y += 6;
+  y += 5;
   doc.text('Chave PIX (CNPJ): ', margin, y);
   doc.setFont('helvetica', 'bold');
   doc.text('33.574.274/0001-43', margin + 35, y);
 
   // ===== IMAGEM: ASSINATURAS =====
-  const assHeight = 40;
-  let sigY = 297 - margin - assHeight;
+  const assHeight = 35;
+  let sigY = y + 15;
   
-  // Se o conteúdo chegar muito perto ou ultrapassar o local da assinatura,
-  // jogamos a assinatura mais para baixo ou para a próxima página.
-  if (y > sigY - 10) {
-    sigY = y + 10;
-    if (sigY + assHeight > 297 - margin) {
-      doc.addPage();
-      sigY = margin;
-    }
+  if (sigY + assHeight > 297 - margin) {
+    doc.addPage();
+    sigY = margin;
   }
 
   doc.addImage(ASSINATURAS_B64, 'JPEG', margin, sigY, pw - margin * 2, assHeight);
