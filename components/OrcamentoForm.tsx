@@ -66,6 +66,11 @@ export default function OrcamentoForm({ orcamento }: Props) {
   };
 
   const totalGeral = itens.reduce((sum, r) => sum + calcRowTotal(r), 0);
+  const totalQtd = itens.reduce((sum, r) => sum + (r.qtd === '' ? 1 : (parseInt(r.qtd) || 0)), 0);
+  const totalM2 = itens.reduce((sum, r) => {
+    const qtd = r.qtd === '' ? 1 : (parseInt(r.qtd) || 0);
+    return sum + (calcM2(r.descricao) * qtd);
+  }, 0);
 
   const updateItem = (i: number, field: keyof ItemRow, value: string) => {
     const n = [...itens]; n[i] = { ...n[i], [field]: value }; setItens(n);
@@ -210,7 +215,10 @@ export default function OrcamentoForm({ orcamento }: Props) {
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-[#2a2a2a] bg-[#1a1a1a]/30">
-                <td colSpan={4} className="px-4 py-6 text-right text-[15px] font-bold uppercase tracking-widest text-[#888888]">Valor Total</td>
+                <td className="px-2 py-6 text-center text-[15px] font-bold text-[#f0f0f0]">{totalQtd}</td>
+                <td className="px-4 py-6 text-right text-[15px] font-bold uppercase tracking-widest text-[#888888]">TOTAL GERAL:</td>
+                <td className="px-4 py-6 text-center text-[15px] font-bold text-[#f0f0f0]">{formatDecimal(totalM2)} m²</td>
+                <td className="px-4 py-6"></td>
                 <td className="px-4 py-6 text-right font-mono text-2xl font-bold text-[#f5c518]">{formatCurrency(totalGeral)}</td>
                 <td></td>
               </tr>

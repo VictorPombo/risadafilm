@@ -85,11 +85,17 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
 
   const tableRows: string[][] = [];
   let totalGeralRecalculado = 0;
+  let totalQtd = 0;
+  let totalM2 = 0;
 
   orc.itens.forEach(item => {
     const m2 = calcM2FromDesc(item.descricao, item.metros_quadrados);
     const totalItem = item.qtd * m2 * item.valor_metro;
+    
     totalGeralRecalculado += totalItem;
+    totalQtd += item.qtd;
+    totalM2 += m2 * item.qtd;
+
     tableRows.push([
       item.qtd.toString(),
       item.descricao,
@@ -100,7 +106,13 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   });
 
   // Adicionar linha de TOTAL GERAL dentro da tabela
-  tableRows.push(['', '', '', 'TOTAL GERAL:', formatCurrencyPDF(totalGeralRecalculado)]);
+  tableRows.push([
+    totalQtd.toString(),
+    'TOTAL GERAL:',
+    formatDecimal(totalM2) + ' m²',
+    '',
+    formatCurrencyPDF(totalGeralRecalculado)
+  ]);
 
   autoTable(doc, {
     startY: y,
@@ -128,6 +140,9 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
       // Deixar a linha do TOTAL em negrito
       if (data.row.index === tableRows.length - 1) {
         doc.setFont('helvetica', 'bold');
+        if (data.column.index === 1) {
+          data.cell.styles.halign = 'right';
+        }
       }
     },
     columnStyles: {
