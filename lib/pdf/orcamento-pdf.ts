@@ -155,55 +155,55 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  y = (doc as any).lastAutoTable.finalY + 10;
+  y = (doc as any).lastAutoTable.finalY + 6;
 
   // ===== OBSERVAÇÕES E CONDIÇÕES =====
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.text('OBS.', margin, y);
   
   if (orc.observacoes) {
-    y += 5;
+    y += 4;
     doc.setFont('helvetica', 'normal');
     const obsLines = doc.splitTextToSize(orc.observacoes, pw - margin * 2);
     doc.text(obsLines, margin, y);
-    y += obsLines.length * 5;
+    y += obsLines.length * 4;
   } else {
-    y += 8;
+    y += 5;
   }
 
   doc.setFont('helvetica', 'bold');
   doc.text('CONDIÇOES DE PAGAMENTOS:', margin, y);
-  y += 5;
+  y += 4;
   doc.setFont('helvetica', 'normal');
   doc.text(orc.condicoes_pagamento.toUpperCase(), margin, y);
 
-  y += 7;
+  y += 6;
   doc.setFont('helvetica', 'bold');
   doc.text(`PRAZO DE INSTALAÇÃO. É DE ${orc.prazo_instalacao.toUpperCase()}`, margin, y);
 
-  y += 8;
+  y += 6;
   doc.setFont('helvetica', 'bold');
   doc.text('DADOS PARA PAGAMENTO:', margin, y);
   
-  y += 5;
+  y += 4;
   doc.setFont('helvetica', 'normal');
   doc.text('Banco: Itaú Unibanco (341)  |  Agência: 0140  |  Conta: 98105-1', margin, y);
   
-  y += 5;
+  y += 4;
   doc.text('Favorecido: Risada Comercio De Pelicula So', margin, y);
   
-  y += 5;
+  y += 4;
   doc.text('CNPJ: 33.574.274/0001-43', margin, y);
 
-  y += 5;
+  y += 4;
   doc.text('Chave PIX (CNPJ): ', margin, y);
   doc.setFont('helvetica', 'bold');
-  doc.text('33.574.274/0001-43', margin + 35, y);
+  doc.text('33.574.274/0001-43', margin + 31, y);
 
   // ===== IMAGEM: ASSINATURAS =====
-  const assHeight = 35;
-  let sigY = y + 15;
+  const assHeight = 28;
+  let sigY = y + 8;
   
   if (sigY + assHeight > 297 - margin) {
     doc.addPage();
