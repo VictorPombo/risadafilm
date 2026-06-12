@@ -99,7 +99,7 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
     tableRows.push([
       item.qtd.toString(),
       item.descricao,
-      formatDecimal(m2) + ' m²',
+      formatDecimal(m2 * item.qtd) + ' m²',
       formatCurrencyPDF(item.valor_metro),
       formatCurrencyPDF(totalItem),
     ]);
@@ -107,8 +107,8 @@ export function generateOrcamentoPDF(orc: Orcamento & { itens: OrcamentoItem[] }
 
   // Adicionar linha de TOTAL GERAL dentro da tabela
   tableRows.push([
-    totalQtd.toString(),
-    'TOTAL GERAL:',
+    '',
+    '',
     formatDecimal(totalM2) + ' m²',
     '',
     formatCurrencyPDF(totalGeralRecalculado)

@@ -200,7 +200,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
                 <tr key={i} className="group hover:bg-[#1a1a1a]/50 transition-colors">
                   <td className="px-2 py-4"><input type="number" min="1" value={row.qtd} onChange={e => updateItem(i, 'qtd', e.target.value)} className="w-full px-4 py-3 text-[15px] text-center bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200" placeholder="1" /></td>
                   <td className="px-4 py-4"><input value={row.descricao} onChange={e => updateItem(i, 'descricao', e.target.value)} className="w-full px-4 py-3 text-[15px] bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200 placeholder:text-[#555]" placeholder="Ex: Película 765 x 2545" /></td>
-                  <td className="px-4 py-4 text-center font-medium text-[15px] text-[#aaa] align-middle">{formatDecimal(calcM2(row.descricao))} m²</td>
+                  <td className="px-4 py-4 text-center font-medium text-[15px] text-[#aaa] align-middle">{formatDecimal(calcM2(row.descricao) * (row.qtd === '' ? 1 : (parseInt(row.qtd) || 0)))} m²</td>
                   <td className="px-4 py-4"><input value={row.valor_metro} onChange={e => updateItem(i, 'valor_metro', e.target.value)} className="w-full px-4 py-3 text-[15px] text-right bg-[#0f0f0f] border-2 border-[#2a2a2a] rounded-lg text-[#f0f0f0] focus:border-[#f5c518] focus:bg-[#141414] focus:outline-none transition-all duration-200 placeholder:text-[#555]" placeholder="R$ 0,00" /></td>
                   <td className="px-4 py-4 text-right font-mono text-[16px] font-bold text-[#f5c518] align-middle">{formatCurrency(calcRowTotal(row))}</td>
                   <td className="px-2 py-4 text-center align-middle">
@@ -215,8 +215,8 @@ export default function OrcamentoForm({ orcamento }: Props) {
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-[#2a2a2a] bg-[#1a1a1a]/30">
-                <td className="px-2 py-6 text-center text-[15px] font-bold text-[#f0f0f0]">{totalQtd}</td>
-                <td className="px-4 py-6 text-right text-[15px] font-bold uppercase tracking-widest text-[#888888]">TOTAL GERAL:</td>
+                <td className="px-2 py-6"></td>
+                <td className="px-4 py-6"></td>
                 <td className="px-4 py-6 text-center text-[15px] font-bold text-[#f0f0f0]">{formatDecimal(totalM2)} m²</td>
                 <td className="px-4 py-6"></td>
                 <td className="px-4 py-6 text-right font-mono text-2xl font-bold text-[#f5c518]">{formatCurrency(totalGeral)}</td>
@@ -247,7 +247,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
                   <div>
                     <label className="block text-[12px] font-semibold uppercase tracking-wider text-[#888] mb-2">m²</label>
                     <div className="w-full bg-[#0a0a0a] border-2 border-[#1a1a1a] rounded-lg px-4 py-3.5 text-[15px] text-[#aaa] text-center font-medium">
-                      {formatDecimal(calcM2(row.descricao))}
+                      {formatDecimal(calcM2(row.descricao) * (row.qtd === '' ? 1 : (parseInt(row.qtd) || 0)))}
                     </div>
                   </div>
                   <div>
