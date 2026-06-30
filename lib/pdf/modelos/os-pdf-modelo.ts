@@ -2,7 +2,8 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { OrdemServico, OSItem } from '@/types';
 import { formatDecimal } from '@/lib/utils';
-import { CABECALHO_B64, LOGO_3M_B64, ASSINATURAS_B64 } from './images';
+import { LOGO_NOVO_RISADA_B64 } from './images-novo-logo';
+import { LOGO_3M_B64, ASSINATURAS_B64 } from '../images';
 
 function formatCurrencyPDF(value: number): string {
   return 'R$ ' + formatDecimal(value);
@@ -14,16 +15,31 @@ function formatDatePDF(dateStr: string): string {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
+export function generateOSPDFModelo(os: OrdemServico & { itens: OSItem[] }) {
   const doc = new jsPDF('p', 'mm', 'a4');
   const pw = doc.internal.pageSize.getWidth();
   const margin = 20;
-  let y = 15;
+  let y = 10;
 
-  // ===== IMAGEM: CABEÇALHO =====
-  const cabecalhoHeight = 35; 
-  doc.addImage(CABECALHO_B64, 'JPEG', margin, y, pw - margin * 2, cabecalhoHeight);
-  y += cabecalhoHeight + 5;
+  // ===== NOVO LOGO: Escudo Risada Film centralizado =====
+  const logoHeight = 40;
+  const logoWidth = logoHeight * (725 / 1280); // Proporção original 725x1280
+  const logoX = (pw - logoWidth) / 2;
+  doc.addImage(LOGO_NOVO_RISADA_B64, 'JPEG', logoX, y, logoWidth, logoHeight);
+  y += logoHeight + 3;
+
+  // ===== Textos do cabeçalho =====
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text('RISADA FILM', pw / 2, y, { align: 'center' });
+  y += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.text('Comércio de Película e Serviços', pw / 2, y, { align: 'center' });
+  y += 3;
+  doc.text('CNPJ: 33.574.274/0001-43', pw / 2, y, { align: 'center' });
+  y += 5;
 
   // ===== IMAGEM: LOGO 3M =====
   const logo3mWidth = 45;
@@ -140,7 +156,7 @@ export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {
   
   // Dados de Pagamento
   doc.text('Data Prevista Para Pagamento', margin, y);
-  doc.text(os.data_prevista_pagamento || '', margin + 55, y);
+  doc.text(formatDatePDF(os.data_prevista_pagamento || ''), margin + 55, y);
 
   y += 6;
   doc.setFont('helvetica', 'bold');

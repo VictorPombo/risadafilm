@@ -218,7 +218,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-6">
           <div><label className={labelCls}>Início do Serviço</label><input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} className={inputCls} /></div>
           <div><label className={labelCls}>Término do Serviço</label><input type="date" value={dataTermino} onChange={e => setDataTermino(e.target.value)} className={inputCls} /></div>
-          <div><label className={labelCls}>Pagamento Previsto</label><input type="date" value={dataPrevistaPagamento} onChange={e => setDataPrevistaPagamento(e.target.value)} className={inputCls} /></div>
+          <div><label className={labelCls}>Pagamento Previsto</label><input type="text" placeholder="Ex: 15, 30 e 60 dias" value={dataPrevistaPagamento} onChange={e => setDataPrevistaPagamento(e.target.value)} className={inputCls} /></div>
         </div>
       </div>
 
