@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import { formatCurrency, formatDecimal, parseDecimal, todayISO } from '@/lib/utils';
+import { formatCurrency, formatDecimal, parseDecimal, formatDate, toDbDate, todayBR, todayISO } from '@/lib/utils';
 import StatusBadge from '@/components/StatusBadge';
+import DateInput from '@/components/DateInput';
 import type { Orcamento, OrcamentoStatus } from '@/types';
 
 interface Props { orcamento?: Orcamento; }
@@ -30,7 +31,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
 
   const [cliente, setCliente] = useState(orcamento?.cliente || '');
   const [atencao, setAtencao] = useState(orcamento?.atencao || '');
-  const [dataEmissao, setDataEmissao] = useState(orcamento?.data_emissao || todayISO());
+  const [dataEmissao, setDataEmissao] = useState(formatDate(orcamento?.data_emissao) || todayBR());
   const [observacoes, setObservacoes] = useState(orcamento?.observacoes || '');
   const [condicoesPagamento, setCondicoesPagamento] = useState(orcamento?.condicoes_pagamento || 'A COMBINAR');
   const [prazoInstalacao, setPrazoInstalacao] = useState(orcamento?.prazo_instalacao || '05 dias úteis após aprovação');
@@ -100,7 +101,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
       const valid = itens.filter(r => r.descricao.trim());
       if (isEditing) {
         await supabase.from('orcamentos').update({
-          cliente, atencao: atencao || null, data_emissao: dataEmissao,
+          cliente, atencao: atencao || null, data_emissao: toDbDate(dataEmissao) || todayISO(),
           observacoes: observacoes || null, condicoes_pagamento: condicoesPagamento,
           prazo_instalacao: prazoInstalacao, status, total_geral: totalGeral,
           updated_at: new Date().toISOString(),
@@ -114,7 +115,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
       } else {
         const { data: numData } = await supabase.rpc('gerar_proximo_numero', { p_tipo: 'orcamento' });
         const { data: orcData } = await supabase.from('orcamentos').insert({
-          numero: numData, cliente, atencao: atencao || null, data_emissao: dataEmissao,
+          numero: numData, cliente, atencao: atencao || null, data_emissao: toDbDate(dataEmissao) || todayISO(),
           observacoes: observacoes || null, condicoes_pagamento: condicoesPagamento,
           prazo_instalacao: prazoInstalacao, status, total_geral: totalGeral,
         }).select('id').single();
@@ -164,7 +165,7 @@ export default function OrcamentoForm({ orcamento }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
           <div><label className={labelCls}>Cliente *</label><input value={cliente} onChange={e => setCliente(e.target.value)} required className={inputCls} placeholder="Nome do cliente" /></div>
           <div><label className={labelCls}>A/C</label><input value={atencao} onChange={e => setAtencao(e.target.value)} className={inputCls} placeholder="Aos cuidados de (opcional)" /></div>
-          <div><label className={labelCls}>Data Emissão</label><input type="date" value={dataEmissao} onChange={e => setDataEmissao(e.target.value)} className={inputCls} /></div>
+          <div><label className={labelCls}>Data Emissão</label><DateInput value={dataEmissao} onChange={setDataEmissao} className={inputCls} placeholder="DD/MM/AAAA" /></div>
           <div><label className={labelCls}>Status</label><select value={status} onChange={e => setStatus(e.target.value as OrcamentoStatus)} className={inputCls}><option value="Pendente">Pendente</option><option value="Aprovado">Aprovado</option><option value="Recusado">Recusado</option></select></div>
           <div><label className={labelCls}>Cond. Pagamento</label><input value={condicoesPagamento} onChange={e => setCondicoesPagamento(e.target.value)} className={inputCls} placeholder="Ex: A combinar" /></div>
           <div><label className={labelCls}>Prazo Instalação</label><input value={prazoInstalacao} onChange={e => setPrazoInstalacao(e.target.value)} className={inputCls} placeholder="Ex: 05 dias úteis" /></div>

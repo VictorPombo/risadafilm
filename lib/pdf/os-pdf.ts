@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { OrdemServico, OSItem } from '@/types';
-import { formatDecimal } from '@/lib/utils';
+import { formatDecimal, formatDate } from '@/lib/utils';
 import { CABECALHO_B64, LOGO_3M_B64, ASSINATURAS_B64 } from './images';
 
 function formatCurrencyPDF(value: number): string {
@@ -9,9 +9,7 @@ function formatCurrencyPDF(value: number): string {
 }
 
 function formatDatePDF(dateStr: string): string {
-  if (!dateStr) return '';
-  const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return formatDate(dateStr);
 }
 
 export function generateOSPDF(os: OrdemServico & { itens: OSItem[] }) {

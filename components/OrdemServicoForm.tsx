@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import { formatCurrency, formatDecimal, parseDecimal, todayISO } from '@/lib/utils';
+import { formatCurrency, formatDecimal, parseDecimal, formatDate, toDbDate, todayBR, todayISO } from '@/lib/utils';
 import StatusBadge from '@/components/StatusBadge';
+import DateInput from '@/components/DateInput';
 import type { OrdemServico, OSStatus } from '@/types';
 
 interface Props { ordemServico?: OrdemServico; }
@@ -25,10 +26,10 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
 
   const [cliente, setCliente] = useState(ordemServico?.cliente || '');
   const [localServico, setLocalServico] = useState(ordemServico?.local_servico || '');
-  const [dataEmissao, setDataEmissao] = useState(ordemServico?.data_emissao || todayISO());
+  const [dataEmissao, setDataEmissao] = useState(formatDate(ordemServico?.data_emissao) || todayBR());
   const [orcamentoId, setOrcamentoId] = useState(ordemServico?.orcamento_id || '');
-  const [dataInicio, setDataInicio] = useState(ordemServico?.data_inicio || '');
-  const [dataTermino, setDataTermino] = useState(ordemServico?.data_termino || '');
+  const [dataInicio, setDataInicio] = useState(formatDate(ordemServico?.data_inicio) || '');
+  const [dataTermino, setDataTermino] = useState(formatDate(ordemServico?.data_termino) || '');
   const [materialAplicado, setMaterialAplicado] = useState(ordemServico?.material_aplicado || '');
   const [dataPrevistaPagamento, setDataPrevistaPagamento] = useState(ordemServico?.data_prevista_pagamento || '');
   const [status, setStatus] = useState<OSStatus>(ordemServico?.status || 'Aberta');
@@ -139,9 +140,12 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
       const valid = itens.filter(r => r.descricao.trim());
       if (isEditing) {
         await supabase.from('ordens_servico').update({
-          cliente, local_servico: localServico || null, data_emissao: dataEmissao,
-          orcamento_id: orcamentoId || null, data_inicio: dataInicio || null,
-          data_termino: dataTermino || null, material_aplicado: materialAplicado || null,
+          cliente, local_servico: localServico || null,
+          data_emissao: toDbDate(dataEmissao) || todayISO(),
+          orcamento_id: orcamentoId || null,
+          data_inicio: toDbDate(dataInicio) || null,
+          data_termino: toDbDate(dataTermino) || null,
+          material_aplicado: materialAplicado || null,
           data_prevista_pagamento: dataPrevistaPagamento || null,
           status, total_geral: totalGeral, updated_at: new Date().toISOString(),
         }).eq('id', ordemServico!.id);
@@ -154,9 +158,12 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
       } else {
         const { data: numData } = await supabase.rpc('gerar_proximo_numero', { p_tipo: 'os' });
         const { data: osData } = await supabase.from('ordens_servico').insert({
-          numero: numData, cliente, local_servico: localServico || null, data_emissao: dataEmissao,
-          orcamento_id: orcamentoId || null, data_inicio: dataInicio || null,
-          data_termino: dataTermino || null, material_aplicado: materialAplicado || null,
+          numero: numData, cliente, local_servico: localServico || null,
+          data_emissao: toDbDate(dataEmissao) || todayISO(),
+          orcamento_id: orcamentoId || null,
+          data_inicio: toDbDate(dataInicio) || null,
+          data_termino: toDbDate(dataTermino) || null,
+          material_aplicado: materialAplicado || null,
           data_prevista_pagamento: dataPrevistaPagamento || null, status, total_geral: totalGeral,
         }).select('id').single();
         if (osData) await supabase.from('os_itens').insert(valid.map((row, i) => ({
@@ -205,7 +212,7 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
           <div><label className={labelCls}>Cliente *</label><input value={cliente} onChange={e => setCliente(e.target.value)} required className={inputCls} placeholder="Nome do cliente" /></div>
           <div><label className={labelCls}>Local</label><input value={localServico} onChange={e => setLocalServico(e.target.value)} className={inputCls} placeholder="Endereço" /></div>
-          <div><label className={labelCls}>Data Emissão</label><input type="date" value={dataEmissao} onChange={e => setDataEmissao(e.target.value)} className={inputCls} /></div>
+          <div><label className={labelCls}>Data Emissão</label><DateInput value={dataEmissao} onChange={setDataEmissao} className={inputCls} placeholder="DD/MM/AAAA" /></div>
           <div><label className={labelCls}>Orçamento Origem</label><select value={orcamentoId} onChange={e => setOrcamentoId(e.target.value)} className={inputCls}><option value="">Nenhum</option>{orcamentos.map(o => <option key={o.id} value={o.id}>{o.numero} — {o.cliente}</option>)}</select></div>
           <div><label className={labelCls}>Status</label><select value={status} onChange={e => setStatus(e.target.value as OSStatus)} className={inputCls}><option value="Aberta">Aberta</option><option value="Em Andamento">Em Andamento</option><option value="Concluída">Concluída</option><option value="Cancelada">Cancelada</option></select></div>
           <div><label className={labelCls}>Material Aplicado</label><input value={materialAplicado} onChange={e => setMaterialAplicado(e.target.value)} className={inputCls} placeholder="Ex: Película Solar" /></div>
@@ -216,8 +223,8 @@ export default function OrdemServicoForm({ ordemServico }: Props) {
       <div className={containerCls}>
         <h2 className={sectionTitleCls}>Prazos e Execução</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-6">
-          <div><label className={labelCls}>Início do Serviço</label><input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} className={inputCls} /></div>
-          <div><label className={labelCls}>Término do Serviço</label><input type="date" value={dataTermino} onChange={e => setDataTermino(e.target.value)} className={inputCls} /></div>
+          <div><label className={labelCls}>Início do Serviço</label><DateInput value={dataInicio} onChange={setDataInicio} className={inputCls} placeholder="Ex: 30/09/2026 ou Imediato" /></div>
+          <div><label className={labelCls}>Término do Serviço</label><DateInput value={dataTermino} onChange={setDataTermino} className={inputCls} placeholder="Ex: 02/10/2026 ou A combinar" /></div>
           <div><label className={labelCls}>Pagamento Previsto</label><input type="text" placeholder="Ex: 15, 30 e 60 dias" value={dataPrevistaPagamento} onChange={e => setDataPrevistaPagamento(e.target.value)} className={inputCls} /></div>
         </div>
       </div>
