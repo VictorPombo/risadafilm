@@ -199,10 +199,10 @@ export default function FolhaOrcamento({
               />
             </div>
             <div>
-              <h1 className="font-cooper italic font-bold text-3xl sm:text-4xl print:text-2xl tracking-tight text-neutral-950 uppercase leading-none">
+              <h1 className="font-cooper italic font-bold text-4xl sm:text-5xl lg:text-6xl print:text-3xl tracking-tight text-neutral-950 uppercase leading-none">
                 Risada Film
               </h1>
-              <p className="text-[11px] sm:text-xs print:text-[10px] font-semibold text-neutral-700 mt-0.5">
+              <p className="text-[11px] sm:text-xs print:text-[10px] font-semibold text-neutral-700 mt-1">
                 {dadosLoja.razaoSocial}
               </p>
               <p className="text-[10px] print:text-[9px] text-neutral-500 font-mono">
@@ -211,8 +211,8 @@ export default function FolhaOrcamento({
             </div>
           </div>
 
-          {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Deslocado 25% para a direita na tela, centralizado no papel) */}
-          <div className="logo-3m-print flex flex-col items-center text-center justify-center py-1 sm:translate-x-[25%] print:!translate-x-0 transition-transform flex-shrink-0">
+          {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Centralizado perfeitamente) */}
+          <div className="logo-3m-print flex flex-col items-center text-center justify-center py-1 flex-shrink-0">
             <div className="relative flex items-center justify-center">
               <Image
                 src="/images/logo-3m-oficial.png"
@@ -231,8 +231,8 @@ export default function FolhaOrcamento({
             </span>
           </div>
 
-          {/* 3. Direita: Logo Tech-Cut Oficial (com 10% de espaço até a borda na tela, alinhado no papel) */}
-          <div className="logo-techcut-print flex flex-col items-center sm:items-end print:!items-end justify-center py-1 sm:pr-[10%] print:!pr-0 flex-shrink-0">
+          {/* 3. Direita: Logo Tech-Cut Oficial */}
+          <div className="logo-techcut-print flex flex-col items-center sm:items-end print:!items-end justify-center py-1 flex-shrink-0">
             <div className="relative flex items-center justify-center">
               <Image
                 src="/images/logo-tech-cut.png"
