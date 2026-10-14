@@ -546,43 +546,50 @@ export default function FolhaOrcamento({
           </button>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-6">
-          {(dadosLoja.opcoesGarantia && dadosLoja.opcoesGarantia.length > 0
-            ? dadosLoja.opcoesGarantia
-            : ['6 Meses', '1 Ano', '5 Anos', '10 Anos', '15 Anos']
-          ).map((opcao) => {
-            const selecionado = orcamento.garantia?.includes(opcao);
-            return (
-              <label
-                key={opcao}
-                onClick={() => {
-                  const atuais = orcamento.garantia ? orcamento.garantia.split(', ').filter(Boolean) : [];
-                  let novas: string[];
-                  if (atuais.includes(opcao)) {
-                    novas = atuais.filter((g) => g !== opcao);
-                  } else {
-                    novas = [...atuais, opcao];
-                  }
-                  handleCampoRaiz('garantia', novas.join(', '));
-                }}
-                className="flex items-center gap-2 cursor-pointer select-none font-bold text-xs text-neutral-900 hover:text-black py-0.5"
-              >
-                <div
-                  className={`w-4 h-4 border-2 border-neutral-900 rounded-[2px] flex items-center justify-center transition-all ${
-                    selecionado ? 'bg-neutral-950 border-neutral-950' : 'bg-white'
-                  }`}
+          {(() => {
+            const garantiasSelecionadas = (orcamento.garantia || '')
+              .split(',')
+              .map((g) => g.trim())
+              .filter(Boolean);
+
+            const opcoes = dadosLoja.opcoesGarantia && dadosLoja.opcoesGarantia.length > 0
+              ? dadosLoja.opcoesGarantia
+              : ['6 Meses', '1 Ano', '5 Anos', '10 Anos', '15 Anos'];
+
+            return opcoes.map((opcao) => {
+              const selecionado = garantiasSelecionadas.includes(opcao);
+              return (
+                <label
+                  key={opcao}
+                  onClick={() => {
+                    let novas: string[];
+                    if (garantiasSelecionadas.includes(opcao)) {
+                      novas = garantiasSelecionadas.filter((g) => g !== opcao);
+                    } else {
+                      novas = [...garantiasSelecionadas, opcao];
+                    }
+                    handleCampoRaiz('garantia', novas.join(', '));
+                  }}
+                  className="flex items-center gap-2 cursor-pointer select-none font-bold text-xs text-neutral-900 hover:text-black py-0.5"
                 >
-                  {selecionado && (
-                    <span className="text-white print:text-black text-[11px] font-black leading-none">
-                      ✓
-                    </span>
-                  )}
-                </div>
-                <span className={selecionado ? 'text-neutral-950 font-black' : 'text-neutral-700'}>
-                  {opcao}
-                </span>
-              </label>
-            );
-          })}
+                  <div
+                    className={`w-4 h-4 border-2 border-neutral-900 rounded-[2px] flex items-center justify-center transition-all ${
+                      selecionado ? 'bg-neutral-950 border-neutral-950' : 'bg-white'
+                    }`}
+                  >
+                    {selecionado && (
+                      <span className="text-white print:text-black text-[11px] font-black leading-none">
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                  <span className={selecionado ? 'text-neutral-950 font-black' : 'text-neutral-700'}>
+                    {opcao}
+                  </span>
+                </label>
+              );
+            });
+          })()}
         </div>
       </div>
     </div>
