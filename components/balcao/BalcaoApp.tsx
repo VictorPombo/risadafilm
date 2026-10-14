@@ -185,24 +185,11 @@ export default function BalcaoApp() {
       {/* ========================================================= */}
       <nav className="no-print sticky top-0 z-40 bg-[#161616] border-b border-[#282828] shadow-md px-4 py-2.5">
         <div className="max-w-[1200px] mx-auto flex flex-wrap items-center justify-between gap-3">
-          {/* Lado Esquerdo: Identificação rápida */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#f5c518] text-black font-black flex items-center justify-center text-sm shadow">
-              R
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-white tracking-wide">
-                  Risada Balcão
-                </span>
-                <span className="bg-[#f5c518]/20 text-[#f5c518] text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#f5c518]/30">
-                  EXPRESS
-                </span>
-              </div>
-              <p className="text-[10px] text-neutral-400">
-                Orçamento Nº <strong className="text-white font-mono">{orcamentoAtivo.numero}</strong>
-              </p>
-            </div>
+          {/* Lado Esquerdo: Apenas o número do orçamento */}
+          <div className="flex items-center">
+            <span className="text-xs sm:text-sm font-semibold text-neutral-300">
+              Orçamento Nº <strong className="text-[#f5c518] font-mono text-sm sm:text-base">{orcamentoAtivo.numero}</strong>
+            </span>
           </div>
 
           {/* Notificação no centro */}
