@@ -41,3 +41,5 @@ yarn-error.log*
 next-env.d.ts
 admin/.next/
 *.m4a
+test-*.mjs
+insert_*.mjs
