@@ -199,7 +199,7 @@ export default function FolhaOrcamento({
               />
             </div>
             <div>
-              <h1 className="font-display font-black text-lg sm:text-2xl tracking-tight text-neutral-950 uppercase leading-none">
+              <h1 className="font-cooper italic font-bold text-2xl sm:text-3xl tracking-tight text-neutral-950 uppercase leading-none">
                 Risada Film
               </h1>
               <p className="text-[11px] sm:text-xs font-semibold text-neutral-700 mt-0.5">
@@ -214,14 +214,14 @@ export default function FolhaOrcamento({
           {/* Logo 3M Aplicador Autorizado */}
           <div className="flex flex-col items-end text-right">
             <div className="flex items-center gap-1.5">
-              <span className="font-display font-black text-xl sm:text-2xl text-[#e53e3e] leading-none tracking-tighter">
+              <span className="font-display font-black text-3xl sm:text-4xl text-[#e53e3e] leading-none tracking-tighter drop-shadow-sm">
                 3M
               </span>
             </div>
-            <span className="text-[10px] sm:text-[11px] font-bold text-neutral-800 tracking-tight leading-tight">
+            <span className="text-[11px] sm:text-xs font-bold text-neutral-800 tracking-tight leading-tight mt-0.5">
               Aplicador Autorizado
             </span>
-            <span className="text-[9px] text-neutral-500">
+            <span className="text-[10px] text-neutral-500 font-medium">
               Películas para Vidros
             </span>
           </div>
