@@ -181,153 +181,245 @@ export default function FolhaOrcamento({
   }
 
   return (
-    <div className="folha-orcamento-container w-full max-w-full mx-auto bg-white text-neutral-900 p-2.5 sm:p-6 lg:p-8 print:p-0 print:m-0 print:shadow-none print:border-none print:max-w-full print:w-full overflow-hidden print:overflow-visible">
+    <div className="folha-orcamento-container w-full max-w-full print:max-w-none mx-auto bg-white text-neutral-900 p-2.5 sm:p-6 lg:p-8 print:p-0 print:m-0 print:shadow-none print:border-none print:w-full overflow-hidden print:overflow-visible">
       {/* ========================================================= */}
       {/* 1. CABEÇALHO OFICIAL (COM NOVA LOGO + 3M + ENDEREÇO EDITÁVEL) */}
       {/* ========================================================= */}
       <header className="border-b-2 border-neutral-800 pb-3 mb-4 w-full">
-        {/* Desktop e Print: 3 colunas perfeitas (Risada Film à esquerda | 3M centralizado | Tech-Cut à direita com pl-10) */}
-        <div className="cabecalho-logos-print hidden md:flex print:!flex flex-row items-center justify-between w-full">
-          {/* 1. Esquerda: Nova Logo Risada Film (Escudo) + Dados */}
-          <div className="flex items-center gap-3 justify-start flex-1 min-w-0">
-            <div className="relative w-16 h-16 lg:w-20 lg:h-20 print:w-14 print:h-14 flex-shrink-0">
-              <Image
-                src="/images/LogoNovoRisadaLimpo.png"
-                alt="Risada Film Logo Oficial"
-                fill
-                priority
-                className="object-contain"
-              />
-            </div>
-            <div className="min-w-0">
-              <h1 className="font-cooper italic font-bold text-3xl lg:text-5xl print:text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
-                Risada Film
-              </h1>
-              <p className="text-xs print:text-[10px] font-semibold text-neutral-700 mt-1 truncate">
-                {dadosLoja.razaoSocial}
-              </p>
-              <p className="text-[10px] print:text-[9px] text-neutral-500 font-mono truncate">
-                CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
-              </p>
-            </div>
-          </div>
+        {/* ========================================================= */}
+        {/* A) CABEÇALHO EXCLUSIVO PARA IMPRESSÃO / SALVAR PDF (PRINT) */}
+        {/* Tabela fixa 3 colunas: NUNCA sobrepõe e funciona 100% no celular e PC */}
+        {/* ========================================================= */}
+        <div className="hidden print:block w-full">
+          <table className="cabecalho-tabela-print w-full border-none border-collapse m-0 p-0 table-fixed">
+            <tbody>
+              <tr>
+                {/* 1. Esquerda: Logo Risada Film (Escudo) + Dados */}
+                <td className="w-[45%] text-left align-middle p-0">
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-14 h-14 flex-shrink-0">
+                      <Image
+                        src="/images/LogoNovoRisadaLimpo.png"
+                        alt="Risada Film Logo Oficial"
+                        width={56}
+                        height={56}
+                        priority
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-cooper italic font-bold text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
+                        Risada Film
+                      </div>
+                      <div className="text-[10px] font-semibold text-neutral-700 mt-1 truncate">
+                        {dadosLoja.razaoSocial}
+                      </div>
+                      <div className="text-[9px] text-neutral-500 font-mono truncate">
+                        CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
+                      </div>
+                    </div>
+                  </div>
+                </td>
 
-          {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Centralizado) */}
-          <div className="logo-3m-print flex flex-col items-center text-center justify-center py-0.5 print:!py-0 flex-shrink-0 mx-auto">
-            <div className="relative flex items-center justify-center">
-              <Image
-                src="/images/logo-3m-oficial.png"
-                alt="3M Oficial"
-                width={80}
-                height={42}
-                priority
-                className="w-16 md:w-20 print:w-16 h-auto object-contain"
-              />
-            </div>
-            <span className="text-[10px] print:text-[9px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5 whitespace-nowrap">
-              Aplicador Autorizado
-            </span>
-            <span className="text-[9px] print:text-[8px] text-neutral-600 font-medium leading-none whitespace-nowrap">
-              Películas para Vidros
-            </span>
-          </div>
+                {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (CENTRALIZADO) */}
+                <td className="w-[28%] text-center align-middle p-0">
+                  <div className="flex flex-col items-center justify-center text-center mx-auto">
+                    <Image
+                      src="/images/logo-3m-oficial.png"
+                      alt="3M Oficial"
+                      width={75}
+                      height={38}
+                      priority
+                      className="w-16 h-auto object-contain mx-auto"
+                    />
+                    <span className="text-[9px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5 whitespace-nowrap">
+                      Aplicador Autorizado
+                    </span>
+                    <span className="text-[8px] text-neutral-600 font-medium leading-none whitespace-nowrap">
+                      Películas para Vidros
+                    </span>
+                  </div>
+                </td>
 
-          {/* 3. Direita: Logo Tech-Cut Oficial com padding-left de 10 (pl-10) em relação ao 3M */}
-          <div className="logo-techcut-print flex flex-col items-end justify-center py-0.5 print:!py-0 flex-1 pl-10 text-right">
-            <div className="relative flex items-center justify-end">
-              <Image
-                src="/images/logo-tech-cut.png"
-                alt="Tech-Cut"
-                width={150}
-                height={26}
-                priority
-                className="w-28 md:w-34 print:w-28 h-auto object-contain"
-              />
+                {/* 3. Direita: Logo Tech-Cut Oficial com padding-left de 10 para o 3M */}
+                <td className="w-[27%] text-right align-middle p-0 pl-6">
+                  <div className="flex flex-col items-end justify-center text-right ml-auto">
+                    <Image
+                      src="/images/logo-tech-cut.png"
+                      alt="Tech-Cut"
+                      width={140}
+                      height={24}
+                      priority
+                      className="w-28 h-auto object-contain ml-auto"
+                    />
+                    <span className="text-[8px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5 whitespace-nowrap">
+                      Corte Computadorizado
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Linha de Endereço e Contatos na Impressão */}
+          <div className="mt-2 pt-1.5 border-t border-neutral-300 flex items-center justify-between text-[11px] text-neutral-800">
+            <div>
+              <strong className="text-neutral-950">Endereço:</strong> {dadosLoja.endereco}
             </div>
-            <span className="text-[9px] print:text-[8px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5 whitespace-nowrap">
-              Corte Computadorizado
-            </span>
+            <div className="flex items-center gap-3">
+              <span>WhatsApp: <strong className="text-neutral-950 font-mono">{dadosLoja.telefone}</strong></span>
+              <span>E-mail: {dadosLoja.email}</span>
+            </div>
           </div>
         </div>
 
-        {/* Versão Mobile (apenas na tela do celular - escondida no print e desktop) */}
-        <div className="md:hidden print:hidden flex flex-col gap-2.5 w-full">
-          {/* Risada Film no topo */}
-          <div className="flex items-center gap-2.5 justify-start w-full min-w-0">
-            <div className="relative w-12 h-12 flex-shrink-0">
-              <Image
-                src="/images/LogoNovoRisadaLimpo.png"
-                alt="Risada Film Logo Oficial"
-                fill
-                priority
-                className="object-contain"
-              />
+        {/* ========================================================= */}
+        {/* B) CABEÇALHO PARA TELA (DESKTOP E CELULAR - NO-PRINT) */}
+        {/* ========================================================= */}
+        <div className="no-print w-full">
+          {/* Desktop md+: 3 colunas flexíveis */}
+          <div className="hidden md:flex flex-row items-center justify-between w-full">
+            {/* 1. Esquerda: Logo + Dados */}
+            <div className="flex items-center gap-3 justify-start flex-1 min-w-0">
+              <div className="relative w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0">
+                <Image
+                  src="/images/LogoNovoRisadaLimpo.png"
+                  alt="Risada Film Logo Oficial"
+                  fill
+                  priority
+                  className="object-contain"
+                />
+              </div>
+              <div className="min-w-0">
+                <h1 className="font-cooper italic font-bold text-3xl lg:text-5xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
+                  Risada Film
+                </h1>
+                <p className="text-xs font-semibold text-neutral-700 mt-1 truncate">
+                  {dadosLoja.razaoSocial}
+                </p>
+                <p className="text-[10px] text-neutral-500 font-mono truncate">
+                  CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="font-cooper italic font-bold text-2xl xs:text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
-                Risada Film
-              </h1>
-              <p className="text-[10px] font-semibold text-neutral-700 mt-1 truncate">
-                {dadosLoja.razaoSocial}
-              </p>
-              <p className="text-[9px] text-neutral-500 font-mono truncate">
-                CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
-              </p>
-            </div>
-          </div>
 
-          {/* Parceiros lado a lado: 3M centralizado e Tech-Cut com padding-left de 10 (pl-10) */}
-          <div className="flex flex-row items-center justify-center py-1 border-y border-neutral-100 w-full">
-            <div className="flex flex-col items-center text-center justify-center">
-              <Image
-                src="/images/logo-3m-oficial.png"
-                alt="3M Oficial"
-                width={70}
-                height={38}
-                priority
-                className="w-12 h-auto object-contain"
-              />
-              <span className="text-[8px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5">
+            {/* 2. Centro: Logo 3M Oficial */}
+            <div className="flex flex-col items-center text-center justify-center py-0.5 flex-shrink-0 mx-auto">
+              <div className="relative flex items-center justify-center">
+                <Image
+                  src="/images/logo-3m-oficial.png"
+                  alt="3M Oficial"
+                  width={80}
+                  height={42}
+                  priority
+                  className="w-16 md:w-20 h-auto object-contain"
+                />
+              </div>
+              <span className="text-[10px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5 whitespace-nowrap">
                 Aplicador Autorizado
               </span>
-              <span className="text-[7px] text-neutral-600 font-medium leading-none">
+              <span className="text-[9px] text-neutral-600 font-medium leading-none whitespace-nowrap">
                 Películas para Vidros
               </span>
             </div>
 
-            <div className="flex flex-col items-end justify-center pl-10 text-right">
-              <Image
-                src="/images/logo-tech-cut.png"
-                alt="Tech-Cut"
-                width={130}
-                height={24}
-                priority
-                className="w-22 h-auto object-contain"
-              />
-              <span className="text-[7px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5">
+            {/* 3. Direita: Logo Tech-Cut Oficial */}
+            <div className="flex flex-col items-end justify-center py-0.5 flex-1 pl-10 text-right">
+              <div className="relative flex items-center justify-end">
+                <Image
+                  src="/images/logo-tech-cut.png"
+                  alt="Tech-Cut"
+                  width={150}
+                  height={26}
+                  priority
+                  className="w-28 md:w-34 h-auto object-contain"
+                />
+              </div>
+              <span className="text-[9px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5 whitespace-nowrap">
                 Corte Computadorizado
               </span>
             </div>
           </div>
-        </div>
 
-        {/* Linha de Endereço e Contatos (Editável) */}
-        <div className="mt-2.5 pt-2 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-[13px] print:text-[11px] text-neutral-700 gap-1.5">
-          <div className="flex flex-wrap items-center gap-1 group">
-            <span className="font-bold text-neutral-900">Endereço:</span>
-            <span className="break-words">{dadosLoja.endereco}</span>
-            <button
-              type="button"
-              onClick={onAbrirConfigLoja}
-              className="no-print text-amber-600 hover:text-amber-800 underline text-xs ml-1 font-semibold"
-              title="Clique para editar o endereço da loja"
-            >
-              (Editar Endereço)
-            </button>
+          {/* Celular: Empilhado compacto */}
+          <div className="md:hidden flex flex-col gap-2.5 w-full">
+            {/* Risada Film no topo */}
+            <div className="flex items-center gap-2.5 justify-start w-full min-w-0">
+              <div className="relative w-12 h-12 flex-shrink-0">
+                <Image
+                  src="/images/LogoNovoRisadaLimpo.png"
+                  alt="Risada Film Logo Oficial"
+                  fill
+                  priority
+                  className="object-contain"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="font-cooper italic font-bold text-2xl xs:text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
+                  Risada Film
+                </h1>
+                <p className="text-[10px] font-semibold text-neutral-700 mt-1 truncate">
+                  {dadosLoja.razaoSocial}
+                </p>
+                <p className="text-[9px] text-neutral-500 font-mono truncate">
+                  CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
+                </p>
+              </div>
+            </div>
+
+            {/* Parceiros lado a lado: 3M centralizado e Tech-Cut com padding-left de 10 */}
+            <div className="flex flex-row items-center justify-center py-1 border-y border-neutral-100 w-full">
+              <div className="flex flex-col items-center text-center justify-center">
+                <Image
+                  src="/images/logo-3m-oficial.png"
+                  alt="3M Oficial"
+                  width={70}
+                  height={38}
+                  priority
+                  className="w-12 h-auto object-contain"
+                />
+                <span className="text-[8px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5">
+                  Aplicador Autorizado
+                </span>
+                <span className="text-[7px] text-neutral-600 font-medium leading-none">
+                  Películas para Vidros
+                </span>
+              </div>
+
+              <div className="flex flex-col items-end justify-center pl-10 text-right">
+                <Image
+                  src="/images/logo-tech-cut.png"
+                  alt="Tech-Cut"
+                  width={130}
+                  height={24}
+                  priority
+                  className="w-22 h-auto object-contain"
+                />
+                <span className="text-[7px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5">
+                  Corte Computadorizado
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <span>WhatsApp: <strong className="text-neutral-900 font-mono">{dadosLoja.telefone}</strong></span>
-            <span>E-mail: {dadosLoja.email}</span>
+
+          {/* Linha de Endereço e Contatos na Tela (Editável) */}
+          <div className="mt-2.5 pt-2 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-[13px] text-neutral-700 gap-1.5">
+            <div className="flex flex-wrap items-center gap-1 group">
+              <span className="font-bold text-neutral-900">Endereço:</span>
+              <span className="break-words">{dadosLoja.endereco}</span>
+              <button
+                type="button"
+                onClick={onAbrirConfigLoja}
+                className="text-amber-600 hover:text-amber-800 underline text-xs ml-1 font-semibold"
+                title="Clique para editar o endereço da loja"
+              >
+                (Editar Endereço)
+              </button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <span>WhatsApp: <strong className="text-neutral-900 font-mono">{dadosLoja.telefone}</strong></span>
+              <span>E-mail: {dadosLoja.email}</span>
+            </div>
           </div>
         </div>
       </header>
@@ -436,20 +528,20 @@ export default function FolhaOrcamento({
       {/* 4. TABELA DE ITENS (PRODUTO | TONALIDADE | DESCRIÇÃO | VALOR) */}
       {/* ========================================================= */}
       <div className="mb-4">
-        <div className="w-full max-w-full overflow-x-auto border border-neutral-400 rounded-sm scrollbar-thin">
-          <table className="w-full min-w-[420px] sm:min-w-full border-collapse text-xs sm:text-sm">
+        <div className="w-full max-w-full print:max-w-none overflow-x-auto print:overflow-visible border border-neutral-400 rounded-sm scrollbar-thin">
+          <table className="tabela-itens-print w-full min-w-[420px] print:min-w-0 sm:min-w-full border-collapse text-xs sm:text-sm">
             <thead>
               <tr className="bg-neutral-100 border-b border-neutral-400 text-neutral-950">
-                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-left font-extrabold w-[28%] text-xs sm:text-sm">
+                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-left font-extrabold w-[32%] text-xs sm:text-sm">
                   PRODUTO
                 </th>
-                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-center font-extrabold w-[18%] text-xs sm:text-sm">
+                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-center font-extrabold w-[16%] text-xs sm:text-sm">
                   TONALIDADE
                 </th>
                 <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-left font-extrabold w-[36%] text-xs sm:text-sm">
                   DESCRIÇÃO / LOCAL
                 </th>
-                <th className="p-1.5 sm:p-2.5 text-right font-extrabold w-[18%] text-xs sm:text-sm">
+                <th className="p-1.5 sm:p-2.5 text-right font-extrabold w-[16%] text-xs sm:text-sm">
                   VALOR (R$)
                 </th>
                 <th className="w-7 no-print p-0 border-l border-neutral-400"></th>

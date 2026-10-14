@@ -33,7 +33,7 @@ export default function BalcaoLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-neutral-100 text-neutral-900 flex flex-col">
+    <div className="min-h-screen w-full max-w-[100vw] print:max-w-none overflow-x-hidden print:overflow-visible bg-neutral-100 text-neutral-900 flex flex-col">
       {children}
     </div>
   );

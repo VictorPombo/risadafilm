@@ -118,57 +118,75 @@ table { border-collapse: collapse; width: 100%; }
   .folha-orcamento-container {
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 auto !important;
+    min-width: 100% !important;
+    margin: 0 !important;
     padding: 0 !important;
     box-sizing: border-box !important;
     overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  /* Cabeçalho na impressão: 3 colunas (Risada Film esquerda | 3M centro | Tech-Cut direita com pl-10) */
-  .cabecalho-logos-print {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
+  /* Remove limitações de largura móvel na impressão */
+  body, #__next, main, .min-h-screen, [class*="max-w-"], [class*="overflow-"] {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: none !important;
+    overflow: visible !important;
   }
 
-  .logo-3m-print {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    margin: 0 auto !important;
-    transform: none !important;
-    visibility: visible !important;
-  }
-
-  .logo-techcut-print {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-end !important;
-    justify-content: center !important;
-    padding-left: 2.5rem !important; /* pl-10 (40px) */
-    padding-right: 0 !important;
-    visibility: visible !important;
-  }
-
-  table {
+  /* Tabela de Cabeçalho na Impressão */
+  .cabecalho-tabela-print {
     width: 100% !important;
+    border-collapse: collapse !important;
+    border: none !important;
+    margin: 0 0 10px 0 !important;
+    padding: 0 !important;
     table-layout: fixed !important;
   }
 
-  table th {
-    font-size: 11pt !important;
-    font-weight: 800 !important;
-    padding: 6px 4px !important;
+  .cabecalho-tabela-print td {
+    border: none !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
   }
 
-  table td input {
-    font-size: 11pt !important;
+  /* Tabela de Itens na Impressão */
+  .tabela-itens-print {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border: 1px solid #000000 !important;
+  }
+
+  .tabela-itens-print th {
+    font-size: 9.5pt !important;
+    font-weight: 800 !important;
+    padding: 4px 6px !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    background-color: #f3f4f6 !important;
+    border: 1px solid #4b5563 !important;
+  }
+
+  .tabela-itens-print td {
+    padding: 2px 4px !important;
+    border: 1px solid #d1d5db !important;
+    overflow: hidden !important;
+  }
+
+  .tabela-itens-print td input {
+    font-size: 9.5pt !important;
     font-weight: 600 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   input, textarea, select {
@@ -176,17 +194,17 @@ table { border-collapse: collapse; width: 100%; }
     background: transparent !important;
     box-shadow: none !important;
     color: #000000 !important;
-    font-size: 11pt !important;
+    font-size: 10pt !important;
     padding: 0 !important;
   }
 
   .total-geral-print {
-    font-size: 13pt !important;
+    font-size: 12pt !important;
     font-weight: 900 !important;
   }
 
   .garantia-item-print {
-    font-size: 11pt !important;
+    font-size: 10pt !important;
     font-weight: 700 !important;
   }
 }
