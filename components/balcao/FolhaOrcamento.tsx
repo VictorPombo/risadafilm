@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import type { OrcamentoBalcao, DadosLojaConfig, ItemBalcao, AvariaItem } from '@/types/balcao';
 import DiagramaCarro from './DiagramaCarro';
@@ -18,8 +18,6 @@ export default function FolhaOrcamento({
   onChange,
   onAbrirConfigLoja,
 }: FolhaOrcamentoProps) {
-  const inputsRef = useRef<(HTMLInputElement | null)[][]>([]);
-
   // Atualiza um campo de texto de nível raiz
   function handleCampoRaiz(campo: keyof OrcamentoBalcao, valor: string) {
     onChange({
@@ -47,7 +45,7 @@ export default function FolhaOrcamento({
   }
 
   // Adiciona nova linha na tabela
-  function handleAdicionarLinha() {
+  function handleAdicionarLinha(): number {
     const novaLinha: ItemBalcao = {
       id: `item_${Date.now()}_${Math.random()}`,
       produto: '',
@@ -55,10 +53,12 @@ export default function FolhaOrcamento({
       descricao: '',
       valor: 0,
     };
+    const novoIndex = orcamento.itens.length;
     onChange({
       ...orcamento,
       itens: [...orcamento.itens, novaLinha],
     });
+    return novoIndex;
   }
 
   // Remove uma linha específica
@@ -73,50 +73,112 @@ export default function FolhaOrcamento({
     });
   }
 
-  // Navegação por teclado fluida (Setinhas e Enter)
-  function handleKeyDown(
+  // Navegação ultra-robusta por ID para a tabela de itens
+  function handleTableKeyDown(
     e: React.KeyboardEvent<HTMLInputElement>,
     rowIndex: number,
     colIndex: number
   ) {
     const totalRows = orcamento.itens.length;
-    const totalCols = 4; // produto (0), tonalidade (1), descricao (2), valor (3)
 
-    if (e.key === 'ArrowDown') {
+    if (e.key === 'ArrowDown' || e.key === 'Enter') {
       e.preventDefault();
       if (rowIndex + 1 < totalRows) {
-        inputsRef.current[rowIndex + 1]?.[colIndex]?.focus();
+        const proximo = document.getElementById(`nav-item-${rowIndex + 1}-${colIndex}`) as HTMLInputElement;
+        proximo?.focus();
+        proximo?.select();
+      } else {
+        // Última linha: adiciona uma nova e move o foco
+        handleAdicionarLinha();
+        setTimeout(() => {
+          const proximo = document.getElementById(`nav-item-${rowIndex + 1}-${colIndex}`) as HTMLInputElement;
+          proximo?.focus();
+          proximo?.select();
+        }, 50);
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      if (rowIndex - 1 >= 0) {
-        inputsRef.current[rowIndex - 1]?.[colIndex]?.focus();
-      }
-    } else if (e.key === 'ArrowRight' && (e.currentTarget.selectionStart === e.currentTarget.value.length || e.currentTarget.type === 'number')) {
-      if (colIndex + 1 < totalCols) {
-        inputsRef.current[rowIndex]?.[colIndex + 1]?.focus();
-      }
-    } else if (e.key === 'ArrowLeft' && e.currentTarget.selectionStart === 0) {
-      if (colIndex - 1 >= 0) {
-        inputsRef.current[rowIndex]?.[colIndex - 1]?.focus();
-      }
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      // Se for a última coluna ou estiver descendo
-      if (rowIndex + 1 === totalRows) {
-        // Na última linha, cria uma nova linha automaticamente e foca nela!
-        handleAdicionarLinha();
-        setTimeout(() => {
-          inputsRef.current[rowIndex + 1]?.[colIndex]?.focus();
-        }, 50);
+      if (rowIndex > 0) {
+        const anterior = document.getElementById(`nav-item-${rowIndex - 1}-${colIndex}`) as HTMLInputElement;
+        anterior?.focus();
+        anterior?.select();
       } else {
-        inputsRef.current[rowIndex + 1]?.[colIndex]?.focus();
+        // Subir da linha 0 para os campos do veículo
+        if (colIndex <= 1) {
+          document.getElementById('nav-carro')?.focus();
+        } else {
+          document.getElementById('nav-placa')?.focus();
+        }
+      }
+    } else if (e.key === 'ArrowRight') {
+      const el = e.currentTarget;
+      // Se cursor no fim ou campo vazio, avança para a próxima coluna
+      if (el.selectionStart === el.value.length || e.ctrlKey || e.metaKey) {
+        if (colIndex < 3) {
+          e.preventDefault();
+          const proxCol = document.getElementById(`nav-item-${rowIndex}-${colIndex + 1}`) as HTMLInputElement;
+          proxCol?.focus();
+          proxCol?.select();
+        }
+      }
+    } else if (e.key === 'ArrowLeft') {
+      const el = e.currentTarget;
+      // Se cursor no início, recua para a coluna anterior
+      if (el.selectionStart === 0 || e.ctrlKey || e.metaKey) {
+        if (colIndex > 0) {
+          e.preventDefault();
+          const antCol = document.getElementById(`nav-item-${rowIndex}-${colIndex - 1}`) as HTMLInputElement;
+          antCol?.focus();
+          antCol?.select();
+        }
       }
     }
   }
 
-  // Divide data em dia/mês/ano para cabeçalho
-  const [ano, mes, dia] = (orcamento.data_emissao || '').split('-');
+  // Navegação por teclado nos campos do cliente e veículo
+  function handleHeaderKeyDown(e: React.KeyboardEvent<HTMLInputElement>, campo: 'cliente' | 'telefone' | 'carro' | 'placa') {
+    if (e.key === 'ArrowDown' || e.key === 'Enter') {
+      e.preventDefault();
+      if (campo === 'cliente') {
+        document.getElementById('nav-carro')?.focus();
+      } else if (campo === 'telefone') {
+        document.getElementById('nav-placa')?.focus();
+      } else if (campo === 'carro') {
+        const item0 = document.getElementById('nav-item-0-0') as HTMLInputElement;
+        item0?.focus();
+        item0?.select();
+      } else if (campo === 'placa') {
+        const item0 = document.getElementById('nav-item-0-1') as HTMLInputElement;
+        item0?.focus();
+        item0?.select();
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (campo === 'carro') {
+        document.getElementById('nav-cliente')?.focus();
+      } else if (campo === 'placa') {
+        document.getElementById('nav-telefone')?.focus();
+      } else if (campo === 'cliente' || campo === 'telefone') {
+        document.getElementById('nav-numero')?.focus();
+      }
+    } else if (e.key === 'ArrowRight') {
+      if (campo === 'cliente') {
+        e.preventDefault();
+        document.getElementById('nav-telefone')?.focus();
+      } else if (campo === 'carro') {
+        e.preventDefault();
+        document.getElementById('nav-placa')?.focus();
+      }
+    } else if (e.key === 'ArrowLeft') {
+      if (campo === 'telefone') {
+        e.preventDefault();
+        document.getElementById('nav-cliente')?.focus();
+      } else if (campo === 'placa') {
+        e.preventDefault();
+        document.getElementById('nav-carro')?.focus();
+      }
+    }
+  }
 
   return (
     <div className="w-full max-w-[850px] mx-auto bg-white text-neutral-900 shadow-2xl rounded-sm p-6 sm:p-10 border border-neutral-300 print:border-none print:shadow-none print:p-0 print:max-w-none print:w-full">
@@ -201,9 +263,16 @@ export default function FolhaOrcamento({
           <div className="flex items-center gap-1">
             <span className="text-neutral-600">Nº</span>
             <input
+              id="nav-numero"
               type="text"
               value={orcamento.numero}
               onChange={(e) => handleCampoRaiz('numero', e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  document.getElementById('nav-cliente')?.focus();
+                }
+              }}
               className="w-24 px-1.5 py-0.5 border-b border-neutral-400 font-mono font-bold text-neutral-900 bg-transparent text-right focus:border-amber-500"
               placeholder="001/2026"
             />
@@ -223,50 +292,58 @@ export default function FolhaOrcamento({
       </div>
 
       {/* ========================================================= */}
-      {/* 3. DADOS DO CLIENTE E VEÍCULO (COM PLACA E TELEFONE) */}
+      {/* 3. DADOS DO CLIENTE E VEÍCULO (COM NAVEGAÇÃO POR SETAS/ENTER) */}
       {/* ========================================================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-4 text-xs">
         <div className="flex items-center border-b border-neutral-300 py-1">
           <span className="font-bold text-neutral-700 w-20 flex-shrink-0">CLIENTE:</span>
           <input
+            id="nav-cliente"
             type="text"
             value={orcamento.cliente}
             onChange={(e) => handleCampoRaiz('cliente', e.target.value)}
+            onKeyDown={(e) => handleHeaderKeyDown(e, 'cliente')}
             placeholder="Nome do cliente"
-            className="w-full bg-transparent font-medium text-neutral-900 focus:outline-none"
+            className="w-full bg-transparent font-medium text-neutral-900 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm"
           />
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
           <span className="font-bold text-neutral-700 w-20 flex-shrink-0">TELEFONE:</span>
           <input
+            id="nav-telefone"
             type="text"
             value={orcamento.telefone}
             onChange={(e) => handleCampoRaiz('telefone', e.target.value)}
+            onKeyDown={(e) => handleHeaderKeyDown(e, 'telefone')}
             placeholder="(11) 90000-0000"
-            className="w-full bg-transparent font-mono text-neutral-900 focus:outline-none"
+            className="w-full bg-transparent font-mono text-neutral-900 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm"
           />
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
           <span className="font-bold text-neutral-700 w-20 flex-shrink-0">CARRO:</span>
           <input
+            id="nav-carro"
             type="text"
             value={orcamento.carro}
             onChange={(e) => handleCampoRaiz('carro', e.target.value)}
+            onKeyDown={(e) => handleHeaderKeyDown(e, 'carro')}
             placeholder="Ex: Honda Civic, Palio, Tracker"
-            className="w-full bg-transparent font-medium text-neutral-900 focus:outline-none"
+            className="w-full bg-transparent font-medium text-neutral-900 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm"
           />
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
           <span className="font-bold text-neutral-700 w-20 flex-shrink-0">PLACA:</span>
           <input
+            id="nav-placa"
             type="text"
             value={orcamento.placa}
             onChange={(e) => handleCampoRaiz('placa', e.target.value.toUpperCase())}
+            onKeyDown={(e) => handleHeaderKeyDown(e, 'placa')}
             placeholder="ABC1D23"
-            className="w-full bg-transparent font-mono font-bold uppercase text-neutral-900 focus:outline-none"
+            className="w-full bg-transparent font-mono font-bold uppercase text-neutral-900 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm"
           />
         </div>
       </div>
@@ -294,79 +371,77 @@ export default function FolhaOrcamento({
             </tr>
           </thead>
           <tbody>
-            {orcamento.itens.map((item, rowIndex) => {
-              if (!inputsRef.current[rowIndex]) {
-                inputsRef.current[rowIndex] = [];
-              }
-              return (
-                <tr key={item.id} className="border-b border-neutral-300 hover:bg-neutral-50/50">
-                  {/* Coluna 0: Produto */}
-                  <td className="border-r border-neutral-300 p-1">
-                    <input
-                      ref={(el) => { inputsRef.current[rowIndex][0] = el; }}
-                      type="text"
-                      value={item.produto}
-                      onChange={(e) => handleItemChange(rowIndex, 'produto', e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, 0)}
-                      placeholder="Ex: Cerâmica, Alarme"
-                      className="w-full px-1.5 py-1 bg-transparent font-medium text-neutral-900 focus:bg-amber-50/60 focus:outline-none rounded-sm"
-                    />
-                  </td>
+            {orcamento.itens.map((item, rowIndex) => (
+              <tr key={item.id} className="border-b border-neutral-300 hover:bg-neutral-50/50">
+                {/* Coluna 0: Produto */}
+                <td className="border-r border-neutral-300 p-1">
+                  <input
+                    id={`nav-item-${rowIndex}-0`}
+                    type="text"
+                    value={item.produto}
+                    onChange={(e) => handleItemChange(rowIndex, 'produto', e.target.value)}
+                    onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 0)}
+                    placeholder="Ex: Cerâmica, Alarme"
+                    className="w-full px-1.5 py-1 bg-transparent font-medium text-neutral-900 focus:bg-amber-100/70 focus:outline-none rounded-sm"
+                  />
+                </td>
 
-                  {/* Coluna 1: Tonalidade */}
-                  <td className="border-r border-neutral-300 p-1">
-                    <input
-                      ref={(el) => { inputsRef.current[rowIndex][1] = el; }}
-                      type="text"
-                      value={item.tonalidade}
-                      onChange={(e) => handleItemChange(rowIndex, 'tonalidade', e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, 1)}
-                      placeholder="G5, G20..."
-                      className="w-full px-1.5 py-1 bg-transparent text-center font-mono font-semibold text-neutral-900 focus:bg-amber-50/60 focus:outline-none rounded-sm"
-                    />
-                  </td>
+                {/* Coluna 1: Tonalidade */}
+                <td className="border-r border-neutral-300 p-1">
+                  <input
+                    id={`nav-item-${rowIndex}-1`}
+                    type="text"
+                    value={item.tonalidade}
+                    onChange={(e) => handleItemChange(rowIndex, 'tonalidade', e.target.value)}
+                    onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 1)}
+                    placeholder="G5, G20..."
+                    className="w-full px-1.5 py-1 bg-transparent text-center font-mono font-semibold text-neutral-900 focus:bg-amber-100/70 focus:outline-none rounded-sm"
+                  />
+                </td>
 
-                  {/* Coluna 2: Descrição / Peça */}
-                  <td className="border-r border-neutral-300 p-1">
-                    <input
-                      ref={(el) => { inputsRef.current[rowIndex][2] = el; }}
-                      type="text"
-                      value={item.descricao}
-                      onChange={(e) => handleItemChange(rowIndex, 'descricao', e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, 2)}
-                      placeholder="Ex: Parabrisa, Portas dianteiras"
-                      className="w-full px-1.5 py-1 bg-transparent text-neutral-900 focus:bg-amber-50/60 focus:outline-none rounded-sm"
-                    />
-                  </td>
+                {/* Coluna 2: Descrição / Peça */}
+                <td className="border-r border-neutral-300 p-1">
+                  <input
+                    id={`nav-item-${rowIndex}-2`}
+                    type="text"
+                    value={item.descricao}
+                    onChange={(e) => handleItemChange(rowIndex, 'descricao', e.target.value)}
+                    onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 2)}
+                    placeholder="Ex: Parabrisa, Portas"
+                    className="w-full px-1.5 py-1 bg-transparent text-neutral-900 focus:bg-amber-100/70 focus:outline-none rounded-sm"
+                  />
+                </td>
 
-                  {/* Coluna 3: Valor (R$) */}
-                  <td className="p-1">
-                    <input
-                      ref={(el) => { inputsRef.current[rowIndex][3] = el; }}
-                      type="number"
-                      step="0.01"
-                      value={item.valor === 0 ? '' : item.valor}
-                      onChange={(e) => handleItemChange(rowIndex, 'valor', parseFloat(e.target.value) || 0)}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, 3)}
-                      placeholder="0,00"
-                      className="w-full px-1.5 py-1 bg-transparent text-right font-mono font-bold text-neutral-900 focus:bg-amber-50/60 focus:outline-none rounded-sm"
-                    />
-                  </td>
+                {/* Coluna 3: Valor (R$) */}
+                <td className="p-1">
+                  <input
+                    id={`nav-item-${rowIndex}-3`}
+                    type="text"
+                    inputMode="decimal"
+                    value={item.valor === 0 ? '' : item.valor}
+                    onChange={(e) => {
+                      const num = parseFloat(e.target.value.replace(',', '.'));
+                      handleItemChange(rowIndex, 'valor', isNaN(num) ? 0 : num);
+                    }}
+                    onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 3)}
+                    placeholder="0,00"
+                    className="w-full px-1.5 py-1 bg-transparent text-right font-mono font-bold text-neutral-900 focus:bg-amber-100/70 focus:outline-none rounded-sm"
+                  />
+                </td>
 
-                  {/* Botão de remoção (apenas tela) */}
-                  <td className="no-print p-0 text-center border-l border-neutral-300">
-                    <button
-                      type="button"
-                      onClick={() => handleRemoverLinha(rowIndex)}
-                      className="text-neutral-300 hover:text-red-500 font-bold p-1 leading-none text-xs"
-                      title="Excluir linha"
-                    >
-                      ✕
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+                {/* Botão de remoção (apenas tela) */}
+                <td className="no-print p-0 text-center border-l border-neutral-300">
+                  <button
+                    type="button"
+                    onClick={() => handleRemoverLinha(rowIndex)}
+                    className="text-neutral-300 hover:text-red-500 font-bold p-1 leading-none text-xs"
+                    title="Excluir linha"
+                  >
+                    ✕
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
           <tfoot>
             <tr className="bg-neutral-100 font-bold border-t-2 border-neutral-400">
@@ -387,11 +462,11 @@ export default function FolhaOrcamento({
         {/* Botão para adicionar linha na tela */}
         <div className="flex justify-between items-center mt-1.5 no-print">
           <span className="text-[10px] text-neutral-500">
-            Dica: use as <strong>setas do teclado</strong> para se mover ou <strong>Enter</strong> na última linha para criar outra.
+            Dica: use as <strong>setas do teclado</strong> para se mover entre os campos ou <strong>Enter</strong> para pular e criar linhas.
           </span>
           <button
             type="button"
-            onClick={handleAdicionarLinha}
+            onClick={() => handleAdicionarLinha()}
             className="text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-semibold px-2.5 py-1 rounded border border-neutral-300 transition-colors"
           >
             + Adicionar Linha
