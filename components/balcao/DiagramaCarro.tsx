@@ -22,9 +22,46 @@ const ZONAS_CONFIG: { id: ZonaAvaria; nome: string; sigla: string; x: number; y:
   { id: 'porta_tras_dir', nome: 'Porta Tras. Direita', sigla: 'P.T.D', x: 225, y: 156 },
 ];
 
+// Função utilitária para comprimir fotos tiradas no celular ou anexadas
+function comprimirImagem(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        const maxDim = 800;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(e.target?.result as string);
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao = false }: DiagramaCarroProps) {
   const [zonaSelecionada, setZonaSelecionada] = useState<ZonaAvaria | null>(null);
   const [textoAvaria, setTextoAvaria] = useState('');
+  const [fotosAvaria, setFotosAvaria] = useState<string[]>([]);
+  const [carregandoFoto, setCarregandoFoto] = useState(false);
+  const [fotoAmpliadaModal, setFotoAmpliadaModal] = useState<string | null>(null);
 
   const mapaAvarias = new Map<ZonaAvaria, string>();
   for (const a of avarias) {
@@ -33,28 +70,62 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
 
   function handleCliqueZona(zona: ZonaAvaria) {
     if (somenteVisualizacao) return;
-    const atual = mapaAvarias.get(zona);
+    const atual = avarias.find((a) => a.zona === zona);
     setZonaSelecionada(zona);
-    setTextoAvaria(atual || 'Risco / avaria prévia');
+    setTextoAvaria(atual?.detalhe || 'Risco / avaria prévia');
+    setFotosAvaria(atual?.fotos || []);
+  }
+
+  async function handleUploadFotos(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setCarregandoFoto(true);
+    try {
+      const novas: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const comp = await comprimirImagem(files[i]);
+        novas.push(comp);
+      }
+      setFotosAvaria((prev) => [...prev, ...novas]);
+    } catch (err) {
+      console.error('Erro ao comprimir fotos:', err);
+    } finally {
+      setCarregandoFoto(false);
+      e.target.value = '';
+    }
+  }
+
+  function handleRemoverFoto(index: number) {
+    setFotosAvaria((prev) => prev.filter((_, i) => i !== index));
   }
 
   function handleSalvarAvaria() {
     if (!zonaSelecionada) return;
     const detalheLimpo = textoAvaria.trim();
-    if (detalheLimpo) {
+    if (detalheLimpo || fotosAvaria.length > 0) {
       const filtradas = avarias.filter((a) => a.zona !== zonaSelecionada);
-      onChange([...filtradas, { zona: zonaSelecionada, detalhe: detalheLimpo }]);
+      onChange([
+        ...filtradas,
+        {
+          zona: zonaSelecionada,
+          detalhe: detalheLimpo || 'Avaria com fotos registradas',
+          fotos: fotosAvaria,
+        },
+      ]);
     } else {
       onChange(avarias.filter((a) => a.zona !== zonaSelecionada));
     }
     setZonaSelecionada(null);
     setTextoAvaria('');
+    setFotosAvaria([]);
   }
 
   function handleRemoverAvaria(zona: ZonaAvaria) {
     onChange(avarias.filter((a) => a.zona !== zona));
     if (zonaSelecionada === zona) {
       setZonaSelecionada(null);
+      setTextoAvaria('');
+      setFotosAvaria([]);
     }
   }
 
@@ -246,20 +317,25 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
       <div className="flex-1 w-full text-xs">
         {/* Editor de Avaria Aberto */}
         {zonaSelecionada && !somenteVisualizacao && (
-          <div className="bg-amber-50 border border-amber-300 rounded p-2.5 mb-2.5 no-print animate-fade-in">
-            <div className="flex justify-between items-center mb-1">
-              <span className="font-bold text-amber-900 text-xs">
-                Avaria: {zonaAtivaConfig?.nome}
+          <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 mb-2.5 no-print animate-fade-in shadow-xs">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="font-bold text-amber-950 text-xs flex items-center gap-1.5">
+                <span>📍</span> Avaria: <strong className="text-amber-800 underline">{zonaAtivaConfig?.nome}</strong>
               </span>
               <button
                 type="button"
-                onClick={() => setZonaSelecionada(null)}
-                className="text-neutral-400 hover:text-neutral-700 text-sm leading-none"
+                onClick={() => {
+                  setZonaSelecionada(null);
+                  setTextoAvaria('');
+                  setFotosAvaria([]);
+                }}
+                className="text-neutral-400 hover:text-neutral-800 text-sm leading-none p-1 rounded"
               >
                 ✕
               </button>
             </div>
-            <div className="flex gap-2">
+
+            <div className="space-y-2">
               <input
                 type="text"
                 autoFocus
@@ -271,58 +347,145 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
                     handleSalvarAvaria();
                   }
                 }}
-                placeholder="Ex: Risco profundo no vidro, picado de pedra, lataria com arranhão"
-                className="flex-1 px-2 py-1 bg-white border border-neutral-300 rounded text-neutral-900 text-xs focus:ring-1 focus:ring-amber-500"
+                placeholder="Ex: Risco profundo no vidro, picado de pedra, arranhão na lataria..."
+                className="w-full px-2.5 py-1.5 bg-white border border-neutral-300 rounded text-neutral-900 text-xs focus:ring-1 focus:ring-amber-500 shadow-inner"
               />
-              <button
-                type="button"
-                onClick={handleSalvarAvaria}
-                className="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-3 py-1 rounded text-xs"
-              >
-                Salvar
-              </button>
+
+              {/* Botões de Ação: Upload de Fotos e Salvar */}
+              <div className="flex items-center justify-between gap-2 flex-wrap pt-1">
+                <label className="cursor-pointer bg-white hover:bg-neutral-100 text-neutral-800 border border-neutral-300 font-semibold px-2.5 py-1 rounded text-xs flex items-center gap-1.5 shadow-xs transition-colors">
+                  <span>📸</span>
+                  <span>{carregandoFoto ? 'Comprimindo...' : 'Tirar / Anexar Fotos'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    capture="environment"
+                    onChange={handleUploadFotos}
+                    disabled={carregandoFoto}
+                    className="hidden"
+                  />
+                </label>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setZonaSelecionada(null);
+                      setTextoAvaria('');
+                      setFotosAvaria([]);
+                    }}
+                    className="px-2.5 py-1 text-neutral-600 hover:text-neutral-900 text-xs font-medium"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSalvarAvaria}
+                    className="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold px-3 py-1 rounded text-xs shadow-xs"
+                  >
+                    Salvar Avaria
+                  </button>
+                </div>
+              </div>
+
+              {/* Miniaturas de fotos anexadas nesta edição */}
+              {fotosAvaria.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-amber-200/70">
+                  {fotosAvaria.map((foto, idx) => (
+                    <div
+                      key={idx}
+                      className="relative group w-14 h-14 rounded-md border border-neutral-300 overflow-hidden bg-white shadow-xs flex-shrink-0"
+                    >
+                      <img
+                        src={foto}
+                        alt={`Foto ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoverFoto(idx)}
+                        className="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white text-[10px] w-4 h-4 flex items-center justify-center font-bold rounded-bl"
+                        title="Remover foto"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  <span className="text-[10px] text-amber-800 self-center font-medium">
+                    {fotosAvaria.length} foto(s) anexada(s)
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Lista de Avarias Registradas */}
-        <div className="border border-neutral-200 rounded bg-white p-2 min-h-[105px]">
-          <div className="flex items-center justify-between pb-1 border-b border-neutral-200 mb-1">
-            <span className="font-bold text-neutral-800 tracking-wide uppercase text-[11px]">
-              Vistoria de Entrada / Avarias Pré-Existentes
+        <div className="border border-neutral-200 rounded-lg bg-white p-2.5 min-h-[105px]">
+          <div className="flex items-center justify-between pb-1.5 border-b border-neutral-200 mb-1.5">
+            <span className="font-bold text-neutral-900 tracking-wide uppercase text-[11px] flex items-center gap-1.5">
+              <span>📋</span> Vistoria de Entrada / Avarias Pré-Existentes
             </span>
-            <span className="text-[10px] text-neutral-500 font-mono">
+            <span className="text-[11px] text-neutral-500 font-mono font-bold">
               {avarias.length} registrada(s)
             </span>
           </div>
 
           {avarias.length === 0 ? (
-            <p className="text-neutral-400 italic text-[11px] py-2 text-center">
+            <p className="text-neutral-400 italic text-[11px] py-3 text-center">
               Nenhuma avaria ou risco registrado no veículo (veículo íntegro na entrada).
             </p>
           ) : (
-            <ul className="space-y-1">
+            <ul className="space-y-1.5">
               {avarias.map((a) => {
                 const conf = ZONAS_CONFIG.find((z) => z.id === a.zona);
                 return (
                   <li
                     key={a.zona}
-                    className="flex items-center justify-between bg-red-50/80 border border-red-200 rounded px-2 py-1 text-neutral-900"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between bg-red-50/70 border border-red-200/80 rounded-md p-2 text-neutral-900 gap-2"
                   >
-                    <div className="flex items-center gap-1.5 overflow-hidden">
-                      <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-                      <span className="font-bold text-red-950 text-[11px] whitespace-nowrap">
-                        {conf?.nome}:
-                      </span>
-                      <span className="text-neutral-700 truncate text-[11px]">
-                        {a.detalhe}
-                      </span>
+                    <div className="flex flex-col gap-1 overflow-hidden flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+                        <span className="font-bold text-red-950 text-[11px] whitespace-nowrap">
+                          {conf?.nome}:
+                        </span>
+                        <span className="text-neutral-800 text-[11px]">
+                          {a.detalhe}
+                        </span>
+                      </div>
+
+                      {/* Fotos registradas para esta avaria */}
+                      {a.fotos && a.fotos.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5 pl-3.5 mt-0.5">
+                          {a.fotos.map((foto, fIdx) => (
+                            <button
+                              type="button"
+                              key={fIdx}
+                              onClick={() => setFotoAmpliadaModal(foto)}
+                              className="w-10 h-10 print:w-12 print:h-12 rounded border border-neutral-300 overflow-hidden bg-white shadow-xs hover:ring-2 hover:ring-amber-500 transition-all flex-shrink-0 cursor-pointer"
+                              title="Clique para ampliar a foto da avaria"
+                            >
+                              <img
+                                src={foto}
+                                alt={`Avaria ${conf?.nome} ${fIdx + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </button>
+                          ))}
+                          <span className="text-[10px] text-neutral-500 font-medium no-print">
+                            ({a.fotos.length} foto{a.fotos.length > 1 ? 's' : ''})
+                          </span>
+                        </div>
+                      )}
                     </div>
+
                     {!somenteVisualizacao && (
                       <button
                         type="button"
                         onClick={() => handleRemoverAvaria(a.zona)}
-                        className="text-red-400 hover:text-red-700 ml-2 no-print font-bold text-xs"
+                        className="text-red-400 hover:text-red-700 no-print font-bold text-xs self-end sm:self-center px-1.5 py-0.5 rounded hover:bg-red-100/50 transition-colors"
                         title="Remover avaria"
                       >
                         ✕
@@ -335,6 +498,41 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
           )}
         </div>
       </div>
+
+      {/* ========================================================= */}
+      {/* MODAL LIGHTBOX PARA VISUALIZAR FOTO AMPLIADA DA AVARIA */}
+      {/* ========================================================= */}
+      {fotoAmpliadaModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 no-print animate-fade-in"
+          onClick={() => setFotoAmpliadaModal(null)}
+        >
+          <div
+            className="relative max-w-2xl w-full bg-white rounded-lg p-3 shadow-2xl flex flex-col items-center border border-neutral-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-full flex justify-between items-center pb-2 border-b border-neutral-200 mb-2">
+              <span className="font-bold text-xs text-neutral-800 flex items-center gap-1.5">
+                <span>📸</span> Registro Fotográfico de Avaria
+              </span>
+              <button
+                type="button"
+                onClick={() => setFotoAmpliadaModal(null)}
+                className="text-neutral-500 hover:text-neutral-900 font-bold text-xs px-2 py-1 rounded hover:bg-neutral-100 transition-colors"
+              >
+                ✕ Fechar
+              </button>
+            </div>
+            <div className="overflow-hidden rounded max-h-[72vh] flex items-center justify-center bg-neutral-900 w-full">
+              <img
+                src={fotoAmpliadaModal}
+                alt="Foto ampliada da avaria"
+                className="max-w-full max-h-[72vh] object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

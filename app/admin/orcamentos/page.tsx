@@ -19,7 +19,10 @@ export default function OrcamentosPage() {
 
   async function loadOrcamentos() {
     const { data } = await supabase.from('orcamentos').select('*').order('created_at', { ascending: false });
-    setOrcamentos(data || []);
+    const adminApenas = (data || []).filter(
+      (o) => o.condicoes_pagamento !== 'Balcão' && !o.observacoes?.includes('balcao_express')
+    );
+    setOrcamentos(adminApenas);
     setLoading(false);
   }
 

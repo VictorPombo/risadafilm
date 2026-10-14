@@ -24,6 +24,7 @@ export type ZonaAvaria =
 export interface AvariaItem {
   zona: ZonaAvaria;
   detalhe: string;      // ex: "Risco no vidro", "Trinca", "Arranhão lataria"
+  fotos?: string[];     // Array de URLs ou imagens comprimidas em base64
 }
 
 export interface OrcamentoBalcao {

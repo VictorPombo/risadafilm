@@ -25,12 +25,14 @@ export default function DashboardPage() {
 
   async function loadDashboard() {
     const [orcRes, osRes, recentOrcRes, recentOSRes] = await Promise.all([
-      supabase.from('orcamentos').select('status'),
+      supabase.from('orcamentos').select('status, condicoes_pagamento, observacoes'),
       supabase.from('ordens_servico').select('status'),
-      supabase.from('orcamentos').select('*').order('created_at', { ascending: false }).limit(5),
+      supabase.from('orcamentos').select('*').order('created_at', { ascending: false }).limit(20),
       supabase.from('ordens_servico').select('*').order('created_at', { ascending: false }).limit(5),
     ]);
-    const orcs = orcRes.data || [];
+    const orcs = (orcRes.data || []).filter(
+      (o) => o.condicoes_pagamento !== 'Balcão' && !o.observacoes?.includes('balcao_express')
+    );
     const oss = osRes.data || [];
     setStats({
       pendentes: orcs.filter(o => o.status === 'Pendente').length,
@@ -38,7 +40,10 @@ export default function DashboardPage() {
       osAbertas: oss.filter(o => o.status === 'Aberta' || o.status === 'Em Andamento').length,
       osConcluidas: oss.filter(o => o.status === 'Concluída').length,
     });
-    setRecentOrc(recentOrcRes.data || []);
+    const recentFiltrados = (recentOrcRes.data || [])
+      .filter((o) => o.condicoes_pagamento !== 'Balcão' && !o.observacoes?.includes('balcao_express'))
+      .slice(0, 5);
+    setRecentOrc(recentFiltrados);
     setRecentOS(recentOSRes.data || []);
     setLoading(false);
   }
