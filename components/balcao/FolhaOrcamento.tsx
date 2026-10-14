@@ -186,10 +186,10 @@ export default function FolhaOrcamento({
       {/* 1. CABEÇALHO OFICIAL (COM NOVA LOGO + 3M + ENDEREÇO EDITÁVEL) */}
       {/* ========================================================= */}
       <header className="border-b-2 border-neutral-800 pb-3 mb-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Nova Logo Risada Film (Escudo) */}
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0">
+        <div className="grid grid-cols-1 sm:grid-cols-3 items-center justify-between gap-4">
+          {/* 1. Esquerda: Nova Logo Risada Film (Escudo) + Dados */}
+          <div className="flex items-center gap-3 justify-center sm:justify-start">
+            <div className="relative w-16 h-16 sm:w-18 sm:h-18 flex-shrink-0">
               <Image
                 src="/images/LogoNovoRisadaLimpo.png"
                 alt="Risada Film Logo Oficial"
@@ -211,8 +211,8 @@ export default function FolhaOrcamento({
             </div>
           </div>
 
-          {/* Logo 3M Aplicador Autorizado Oficial (3 grudado no M padrão da marca) */}
-          <div className="flex flex-col items-center text-center self-center sm:self-auto sm:px-2 py-1">
+          {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Deslocado 25% para a direita) */}
+          <div className="flex flex-col items-center text-center justify-center py-1 sm:translate-x-[25%] transition-transform">
             <div className="relative flex items-center justify-center">
               <Image
                 src="/images/logo-3m-oficial.png"
@@ -220,14 +220,31 @@ export default function FolhaOrcamento({
                 width={102}
                 height={54}
                 priority
-                className="w-20 sm:w-24 h-auto object-contain"
+                className="w-16 sm:w-20 h-auto object-contain"
               />
             </div>
-            <span className="text-[11px] sm:text-xs font-bold text-neutral-900 tracking-tight leading-tight mt-1">
+            <span className="text-[10px] sm:text-[11px] font-bold text-neutral-900 tracking-tight leading-tight mt-1">
               Aplicador Autorizado
             </span>
-            <span className="text-[10px] text-neutral-600 font-medium leading-none mt-0.5">
+            <span className="text-[9px] sm:text-[10px] text-neutral-600 font-medium leading-none mt-0.5">
               Películas para Vidros
+            </span>
+          </div>
+
+          {/* 3. Direita: Logo Tech-Cut Oficial (com 10% de espaço até a borda da tela) */}
+          <div className="flex flex-col items-center sm:items-end justify-center py-1 sm:pr-[10%]">
+            <div className="relative flex items-center justify-center">
+              <Image
+                src="/images/logo-tech-cut.png"
+                alt="Tech-Cut"
+                width={200}
+                height={35}
+                priority
+                className="w-28 sm:w-36 h-auto object-contain"
+              />
+            </div>
+            <span className="text-[9px] sm:text-[10px] font-semibold text-neutral-600 uppercase tracking-wider mt-1">
+              Corte Computadorizado
             </span>
           </div>
         </div>
