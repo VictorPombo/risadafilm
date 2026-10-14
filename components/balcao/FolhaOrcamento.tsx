@@ -186,10 +186,75 @@ export default function FolhaOrcamento({
       {/* 1. CABEÇALHO OFICIAL (COM NOVA LOGO + 3M + ENDEREÇO EDITÁVEL) */}
       {/* ========================================================= */}
       <header className="border-b-2 border-neutral-800 pb-3 mb-4 w-full">
-        <div className="cabecalho-logos-print flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 w-full">
+        {/* Desktop e Print: 3 colunas perfeitas (Risada Film à esquerda | 3M centralizado | Tech-Cut à direita com pl-10) */}
+        <div className="cabecalho-logos-print hidden md:flex print:!flex flex-row items-center justify-between w-full">
           {/* 1. Esquerda: Nova Logo Risada Film (Escudo) + Dados */}
-          <div className="flex items-center gap-2.5 sm:gap-4 justify-start w-full md:w-auto print:!w-auto flex-shrink-0 min-w-0">
-            <div className="relative w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 print:w-14 print:h-14 flex-shrink-0">
+          <div className="flex items-center gap-3 justify-start flex-1 min-w-0">
+            <div className="relative w-16 h-16 lg:w-20 lg:h-20 print:w-14 print:h-14 flex-shrink-0">
+              <Image
+                src="/images/LogoNovoRisadaLimpo.png"
+                alt="Risada Film Logo Oficial"
+                fill
+                priority
+                className="object-contain"
+              />
+            </div>
+            <div className="min-w-0">
+              <h1 className="font-cooper italic font-bold text-3xl lg:text-5xl print:text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
+                Risada Film
+              </h1>
+              <p className="text-xs print:text-[10px] font-semibold text-neutral-700 mt-1 truncate">
+                {dadosLoja.razaoSocial}
+              </p>
+              <p className="text-[10px] print:text-[9px] text-neutral-500 font-mono truncate">
+                CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
+              </p>
+            </div>
+          </div>
+
+          {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Centralizado) */}
+          <div className="logo-3m-print flex flex-col items-center text-center justify-center py-0.5 print:!py-0 flex-shrink-0 mx-auto">
+            <div className="relative flex items-center justify-center">
+              <Image
+                src="/images/logo-3m-oficial.png"
+                alt="3M Oficial"
+                width={80}
+                height={42}
+                priority
+                className="w-16 md:w-20 print:w-16 h-auto object-contain"
+              />
+            </div>
+            <span className="text-[10px] print:text-[9px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5 whitespace-nowrap">
+              Aplicador Autorizado
+            </span>
+            <span className="text-[9px] print:text-[8px] text-neutral-600 font-medium leading-none whitespace-nowrap">
+              Películas para Vidros
+            </span>
+          </div>
+
+          {/* 3. Direita: Logo Tech-Cut Oficial com padding-left de 10 (pl-10) em relação ao 3M */}
+          <div className="logo-techcut-print flex flex-col items-end justify-center py-0.5 print:!py-0 flex-1 pl-10 text-right">
+            <div className="relative flex items-center justify-end">
+              <Image
+                src="/images/logo-tech-cut.png"
+                alt="Tech-Cut"
+                width={150}
+                height={26}
+                priority
+                className="w-28 md:w-34 print:w-28 h-auto object-contain"
+              />
+            </div>
+            <span className="text-[9px] print:text-[8px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5 whitespace-nowrap">
+              Corte Computadorizado
+            </span>
+          </div>
+        </div>
+
+        {/* Versão Mobile (apenas na tela do celular - escondida no print e desktop) */}
+        <div className="md:hidden print:hidden flex flex-col gap-2.5 w-full">
+          {/* Risada Film no topo */}
+          <div className="flex items-center gap-2.5 justify-start w-full min-w-0">
+            <div className="relative w-12 h-12 flex-shrink-0">
               <Image
                 src="/images/LogoNovoRisadaLimpo.png"
                 alt="Risada Film Logo Oficial"
@@ -199,53 +264,47 @@ export default function FolhaOrcamento({
               />
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="font-cooper italic font-bold text-2xl xs:text-3xl sm:text-4xl lg:text-5xl print:text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
+              <h1 className="font-cooper italic font-bold text-2xl xs:text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
                 Risada Film
               </h1>
-              <p className="text-[10px] sm:text-xs print:text-[10px] font-semibold text-neutral-700 mt-1 truncate">
+              <p className="text-[10px] font-semibold text-neutral-700 mt-1 truncate">
                 {dadosLoja.razaoSocial}
               </p>
-              <p className="text-[9px] sm:text-[10px] print:text-[9px] text-neutral-500 font-mono truncate">
+              <p className="text-[9px] text-neutral-500 font-mono truncate">
                 CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
               </p>
             </div>
           </div>
 
-          {/* Logos Parceiros: em celular ficam lado a lado num strip compacto; em desktop md+ e print ficam alinhados à direita */}
-          <div className="flex flex-row items-center justify-center md:justify-end print:!justify-end gap-6 sm:gap-8 lg:gap-10 w-full md:w-auto print:!w-auto py-1 md:py-0 print:!py-0 border-y md:border-none print:!border-none border-neutral-100 flex-shrink-0">
-            {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Centralizado) */}
-            <div className="logo-3m-print flex flex-col items-center text-center justify-center py-0.5 print:!py-0 flex-shrink-0">
-              <div className="relative flex items-center justify-center">
-                <Image
-                  src="/images/logo-3m-oficial.png"
-                  alt="3M Oficial"
-                  width={80}
-                  height={42}
-                  priority
-                  className="w-12 sm:w-16 md:w-20 print:w-16 h-auto object-contain"
-                />
-              </div>
-              <span className="text-[8px] sm:text-[10px] print:text-[9px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5">
+          {/* Parceiros lado a lado: 3M centralizado e Tech-Cut com padding-left de 10 (pl-10) */}
+          <div className="flex flex-row items-center justify-center py-1 border-y border-neutral-100 w-full">
+            <div className="flex flex-col items-center text-center justify-center">
+              <Image
+                src="/images/logo-3m-oficial.png"
+                alt="3M Oficial"
+                width={70}
+                height={38}
+                priority
+                className="w-12 h-auto object-contain"
+              />
+              <span className="text-[8px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5">
                 Aplicador Autorizado
               </span>
-              <span className="text-[7px] sm:text-[9px] print:text-[8px] text-neutral-600 font-medium leading-none">
+              <span className="text-[7px] text-neutral-600 font-medium leading-none">
                 Películas para Vidros
               </span>
             </div>
 
-            {/* 3. Direita: Logo Tech-Cut Oficial */}
-            <div className="logo-techcut-print flex flex-col items-center md:items-end print:!items-end justify-center py-0.5 print:!py-0 flex-shrink-0">
-              <div className="relative flex items-center justify-center">
-                <Image
-                  src="/images/logo-tech-cut.png"
-                  alt="Tech-Cut"
-                  width={150}
-                  height={26}
-                  priority
-                  className="w-22 sm:w-28 md:w-34 print:w-28 h-auto object-contain"
-                />
-              </div>
-              <span className="text-[7px] sm:text-[9px] print:text-[8px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5">
+            <div className="flex flex-col items-end justify-center pl-10 text-right">
+              <Image
+                src="/images/logo-tech-cut.png"
+                alt="Tech-Cut"
+                width={130}
+                height={24}
+                priority
+                className="w-22 h-auto object-contain"
+              />
+              <span className="text-[7px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5">
                 Corte Computadorizado
               </span>
             </div>
