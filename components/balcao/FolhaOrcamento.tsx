@@ -250,21 +250,21 @@ export default function FolhaOrcamento({
         </div>
 
         {/* Linha de Endereço e Contatos (Editável) */}
-        <div className="mt-2.5 pt-2 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-neutral-600 gap-1">
+        <div className="mt-2.5 pt-2 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-[13px] print:text-[11px] text-neutral-700 gap-1.5">
           <div className="flex items-center gap-1.5 group">
-            <span className="font-semibold text-neutral-800">Endereço:</span>
+            <span className="font-bold text-neutral-900">Endereço:</span>
             <span>{dadosLoja.endereco}</span>
             <button
               type="button"
               onClick={onAbrirConfigLoja}
-              className="no-print text-amber-600 hover:text-amber-800 underline text-[10px] ml-1 font-semibold"
+              className="no-print text-amber-600 hover:text-amber-800 underline text-xs ml-1 font-semibold"
               title="Clique para editar o endereço da loja"
             >
               (Editar Endereço)
             </button>
           </div>
           <div className="flex items-center gap-3">
-            <span>WhatsApp: <strong className="text-neutral-800">{dadosLoja.telefone}</strong></span>
+            <span>WhatsApp: <strong className="text-neutral-900">{dadosLoja.telefone}</strong></span>
             <span>E-mail: {dadosLoja.email}</span>
           </div>
         </div>
@@ -273,17 +273,17 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 2. BARRA DE TÍTULO, NÚMERO E DATA */}
       {/* ========================================================= */}
-      <div className="flex items-center justify-between border-b border-neutral-300 pb-2 mb-4">
+      <div className="flex items-center justify-between border-b border-neutral-400 pb-2 mb-4">
         <div>
-          <h2 className="font-display font-black text-xl sm:text-2xl tracking-wider text-neutral-900">
+          <h2 className="font-display font-black text-2xl sm:text-3xl tracking-wider text-neutral-950">
             ORÇAMENTO
           </h2>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-semibold">
+        <div className="flex items-center gap-4 text-xs sm:text-sm font-bold">
           {/* Número Sequencial Automático / Editável */}
           <div className="flex items-center gap-1">
-            <span className="text-neutral-600">Nº</span>
+            <span className="text-neutral-700">Nº</span>
             <input
               id="nav-numero"
               type="text"
@@ -295,19 +295,19 @@ export default function FolhaOrcamento({
                   document.getElementById('nav-cliente')?.focus();
                 }
               }}
-              className="w-24 px-1.5 py-0.5 border-b border-neutral-400 font-mono font-bold text-neutral-900 bg-transparent text-right focus:border-amber-500"
+              className="w-24 px-1.5 py-0.5 border-b border-neutral-500 font-mono font-black text-neutral-950 bg-transparent text-right focus:border-amber-500"
               placeholder="001/2026"
             />
           </div>
 
           {/* Data de Emissão */}
           <div className="flex items-center gap-1">
-            <span className="text-neutral-600">SÃO PAULO,</span>
+            <span className="text-neutral-700">SÃO PAULO,</span>
             <input
               type="date"
               value={orcamento.data_emissao}
               onChange={(e) => handleCampoRaiz('data_emissao', e.target.value)}
-              className="px-1 py-0.5 border-b border-neutral-400 font-mono text-xs bg-transparent text-neutral-900 focus:border-amber-500"
+              className="px-1 py-0.5 border-b border-neutral-500 font-mono text-xs sm:text-sm font-semibold bg-transparent text-neutral-950 focus:border-amber-500"
             />
           </div>
         </div>
@@ -316,9 +316,9 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 3. DADOS DO CLIENTE E VEÍCULO (COM NAVEGAÇÃO POR SETAS/ENTER) */}
       {/* ========================================================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-4 text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-4 text-xs sm:text-sm">
         <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-bold text-neutral-700 w-20 flex-shrink-0">CLIENTE:</span>
+          <span className="font-black text-neutral-800 w-24 flex-shrink-0">CLIENTE:</span>
           <input
             id="nav-cliente"
             type="text"
@@ -326,12 +326,12 @@ export default function FolhaOrcamento({
             onChange={(e) => handleCampoRaiz('cliente', e.target.value)}
             onKeyDown={(e) => handleHeaderKeyDown(e, 'cliente')}
             placeholder="Nome do cliente"
-            className="w-full bg-transparent font-medium text-neutral-900 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm"
+            className="w-full bg-transparent font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm"
           />
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-bold text-neutral-700 w-20 flex-shrink-0">TELEFONE:</span>
+          <span className="font-black text-neutral-800 w-24 flex-shrink-0">TELEFONE:</span>
           <input
             id="nav-telefone"
             type="text"
@@ -339,12 +339,12 @@ export default function FolhaOrcamento({
             onChange={(e) => handleCampoRaiz('telefone', e.target.value)}
             onKeyDown={(e) => handleHeaderKeyDown(e, 'telefone')}
             placeholder="(11) 90000-0000"
-            className="w-full bg-transparent font-mono text-neutral-900 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm"
+            className="w-full bg-transparent font-mono font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm"
           />
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-bold text-neutral-700 w-20 flex-shrink-0">CARRO:</span>
+          <span className="font-black text-neutral-800 w-24 flex-shrink-0">CARRO:</span>
           <input
             id="nav-carro"
             type="text"
@@ -352,12 +352,12 @@ export default function FolhaOrcamento({
             onChange={(e) => handleCampoRaiz('carro', e.target.value)}
             onKeyDown={(e) => handleHeaderKeyDown(e, 'carro')}
             placeholder="Ex: Honda Civic, Palio, Tracker"
-            className="w-full bg-transparent font-medium text-neutral-900 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm"
+            className="w-full bg-transparent font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm"
           />
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-bold text-neutral-700 w-20 flex-shrink-0">PLACA:</span>
+          <span className="font-black text-neutral-800 w-24 flex-shrink-0">PLACA:</span>
           <input
             id="nav-placa"
             type="text"
@@ -365,7 +365,7 @@ export default function FolhaOrcamento({
             onChange={(e) => handleCampoRaiz('placa', e.target.value.toUpperCase())}
             onKeyDown={(e) => handleHeaderKeyDown(e, 'placa')}
             placeholder="ABC1D23"
-            className="w-full bg-transparent font-mono font-bold uppercase text-neutral-900 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm"
+            className="w-full bg-transparent font-mono font-black uppercase text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm"
           />
         </div>
       </div>
@@ -374,19 +374,19 @@ export default function FolhaOrcamento({
       {/* 4. TABELA DE ITENS (PRODUTO | TONALIDADE | DESCRIÇÃO | VALOR) */}
       {/* ========================================================= */}
       <div className="mb-4">
-        <table className="w-full border-collapse border border-neutral-400 text-xs">
+        <table className="w-full border-collapse border border-neutral-400 text-xs sm:text-sm">
           <thead>
-            <tr className="bg-neutral-100 border-b border-neutral-400 text-neutral-900">
-              <th className="border-r border-neutral-400 p-2 text-left font-bold w-[28%]">
+            <tr className="bg-neutral-100 border-b border-neutral-400 text-neutral-950">
+              <th className="border-r border-neutral-400 p-2 sm:p-2.5 text-left font-extrabold w-[28%] text-xs sm:text-sm">
                 PRODUTO
               </th>
-              <th className="border-r border-neutral-400 p-2 text-center font-bold w-[18%]">
+              <th className="border-r border-neutral-400 p-2 sm:p-2.5 text-center font-extrabold w-[18%] text-xs sm:text-sm">
                 TONALIDADE
               </th>
-              <th className="border-r border-neutral-400 p-2 text-left font-bold w-[38%]">
+              <th className="border-r border-neutral-400 p-2 sm:p-2.5 text-left font-extrabold w-[38%] text-xs sm:text-sm">
                 DESCRIÇÃO / LOCAL
               </th>
-              <th className="p-2 text-right font-bold w-[16%]">
+              <th className="p-2 sm:p-2.5 text-right font-extrabold w-[16%] text-xs sm:text-sm">
                 VALOR (R$)
               </th>
               <th className="w-8 no-print p-0 border-l border-neutral-400"></th>
@@ -404,7 +404,7 @@ export default function FolhaOrcamento({
                     onChange={(e) => handleItemChange(rowIndex, 'produto', e.target.value)}
                     onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 0)}
                     placeholder="Ex: Cerâmica, Alarme"
-                    className="w-full px-1.5 py-1 bg-transparent font-medium text-neutral-900 focus:bg-amber-100/70 focus:outline-none rounded-sm"
+                    className="w-full px-2 py-1.5 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
                   />
                 </td>
 
@@ -417,7 +417,7 @@ export default function FolhaOrcamento({
                     onChange={(e) => handleItemChange(rowIndex, 'tonalidade', e.target.value)}
                     onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 1)}
                     placeholder="G5, G20..."
-                    className="w-full px-1.5 py-1 bg-transparent text-center font-mono font-semibold text-neutral-900 focus:bg-amber-100/70 focus:outline-none rounded-sm"
+                    className="w-full px-2 py-1.5 bg-transparent text-center font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
                   />
                 </td>
 
@@ -430,7 +430,7 @@ export default function FolhaOrcamento({
                     onChange={(e) => handleItemChange(rowIndex, 'descricao', e.target.value)}
                     onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 2)}
                     placeholder="Ex: Parabrisa, Portas"
-                    className="w-full px-1.5 py-1 bg-transparent text-neutral-900 focus:bg-amber-100/70 focus:outline-none rounded-sm"
+                    className="w-full px-2 py-1.5 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
                   />
                 </td>
 
@@ -447,7 +447,7 @@ export default function FolhaOrcamento({
                     }}
                     onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 3)}
                     placeholder="0,00"
-                    className="w-full px-1.5 py-1 bg-transparent text-right font-mono font-bold text-neutral-900 focus:bg-amber-100/70 focus:outline-none rounded-sm"
+                    className="w-full px-2 py-1.5 bg-transparent text-right font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
                   />
                 </td>
 
@@ -467,10 +467,10 @@ export default function FolhaOrcamento({
           </tbody>
           <tfoot>
             <tr className="bg-neutral-100 font-bold border-t-2 border-neutral-400">
-              <td colSpan={3} className="p-2 text-right border-r border-neutral-400 uppercase tracking-wider text-xs">
+              <td colSpan={3} className="p-2 sm:p-2.5 text-right border-r border-neutral-400 uppercase tracking-wider text-xs sm:text-sm font-black total-geral-print text-neutral-900">
                 TOTAL GERAL:
               </td>
-              <td className="p-2 text-right font-mono text-sm text-neutral-950 font-black">
+              <td className="p-2 sm:p-2.5 text-right font-mono text-base sm:text-lg text-neutral-950 font-black total-geral-print">
                 {Number(orcamento.total_geral || 0).toLocaleString('pt-BR', {
                   style: 'currency',
                   currency: 'BRL',
@@ -483,13 +483,13 @@ export default function FolhaOrcamento({
 
         {/* Botão para adicionar linha na tela */}
         <div className="flex justify-between items-center mt-1.5 no-print">
-          <span className="text-[10px] text-neutral-500">
+          <span className="text-[11px] text-neutral-500">
             Dica: use as <strong>setas do teclado</strong> para se mover entre os campos ou <strong>Enter</strong> para pular e criar linhas.
           </span>
           <button
             type="button"
             onClick={() => handleAdicionarLinha()}
-            className="text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-semibold px-2.5 py-1 rounded border border-neutral-300 transition-colors"
+            className="text-xs sm:text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-bold px-3 py-1 rounded border border-neutral-300 transition-colors"
           >
             + Adicionar Linha
           </button>
@@ -509,8 +509,8 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 6. OBSERVAÇÕES E CONDIÇÕES */}
       {/* ========================================================= */}
-      <div className="border border-neutral-300 rounded p-2.5 mb-4 text-xs">
-        <label className="block font-bold text-neutral-700 text-[11px] mb-1 uppercase">
+      <div className="border border-neutral-300 rounded p-2.5 mb-4 text-xs sm:text-sm">
+        <label className="block font-black text-neutral-800 text-xs sm:text-[13px] mb-1 uppercase tracking-wide">
           Observações / Condições Gerais:
         </label>
         <textarea
@@ -518,22 +518,22 @@ export default function FolhaOrcamento({
           value={orcamento.observacoes}
           onChange={(e) => handleCampoRaiz('observacoes', e.target.value)}
           placeholder="Forma de pagamento, prazo de cura do insulfilm (não abrir vidros por 3 dias), etc."
-          className="w-full bg-transparent text-neutral-900 border-none p-0 focus:outline-none resize-none text-xs leading-relaxed"
+          className="w-full bg-transparent text-neutral-950 font-medium border-none p-0 focus:outline-none resize-none text-xs sm:text-sm leading-relaxed"
         />
       </div>
 
       {/* ========================================================= */}
       {/* 7. CAIXAS DE SELEÇÃO DE GARANTIA (Personalizáveis na Configuração) */}
       {/* ========================================================= */}
-      <div className="border-2 border-neutral-800 rounded-sm p-3 bg-neutral-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+      <div className="border-2 border-neutral-800 rounded-sm p-3 bg-neutral-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm">
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="font-display font-black text-sm text-neutral-950 uppercase tracking-wider">
+          <span className="font-display font-black text-sm sm:text-base text-neutral-950 uppercase tracking-wider">
             Garantia:
           </span>
           <button
             type="button"
             onClick={onAbrirConfigLoja}
-            className="no-print text-[10px] text-amber-700 hover:text-amber-900 underline font-semibold"
+            className="no-print text-xs text-amber-700 hover:text-amber-900 underline font-bold"
             title="Personalizar caixas e prazos de garantia"
           >
             (Configurar)
