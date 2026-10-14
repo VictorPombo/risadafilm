@@ -132,12 +132,12 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
   const zonaAtivaConfig = ZONAS_CONFIG.find((z) => z.id === zonaSelecionada);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 items-center lg:items-start w-full">
+    <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-center lg:items-start w-full min-w-0">
       {/* Blueprint SVG do Veículo (HORIZONTAL / VIRADO DE LADO) */}
-      <div className="relative flex-shrink-0 select-none">
+      <div className="relative w-full max-w-[340px] sm:max-w-[360px] mx-auto flex-shrink-0 select-none flex flex-col items-center">
         <svg
           viewBox="0 0 390 200"
-          className="w-[290px] h-[155px] sm:w-[350px] sm:h-[185px] border border-neutral-300 rounded-lg bg-neutral-50 shadow-inner"
+          className="w-full h-auto aspect-[390/200] border border-neutral-300 rounded-lg bg-neutral-50 shadow-inner"
         >
           {/* Rodas do Carro (Pneus visíveis na lateral) */}
           <rect x="52" y="14" width="36" height="12" rx="3" fill="#222" stroke="#111" strokeWidth="1" />
@@ -314,13 +314,13 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
       </div>
 
       {/* Painel lateral: Edição e Lista de Avarias */}
-      <div className="flex-1 w-full text-xs">
+      <div className="flex-1 w-full min-w-0 text-xs">
         {/* Editor de Avaria Aberto */}
         {zonaSelecionada && !somenteVisualizacao && (
-          <div className="bg-amber-50 border border-amber-300 rounded-lg p-3 mb-2.5 no-print animate-fade-in shadow-xs">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="font-bold text-amber-950 text-xs flex items-center gap-1.5">
-                <span>📍</span> Avaria: <strong className="text-amber-800 underline">{zonaAtivaConfig?.nome}</strong>
+          <div className="bg-amber-50 border border-amber-300 rounded-lg p-2.5 sm:p-3 mb-2.5 no-print animate-fade-in shadow-xs w-full min-w-0">
+            <div className="flex justify-between items-center gap-1.5 mb-1.5 min-w-0">
+              <span className="font-bold text-amber-950 text-xs flex items-center gap-1 min-w-0 truncate">
+                <span>📍</span> Avaria: <strong className="text-amber-800 underline truncate">{zonaAtivaConfig?.nome}</strong>
               </span>
               <button
                 type="button"
@@ -329,7 +329,7 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
                   setTextoAvaria('');
                   setFotosAvaria([]);
                 }}
-                className="text-neutral-400 hover:text-neutral-800 text-sm leading-none p-1 rounded"
+                className="text-neutral-500 hover:text-neutral-900 text-sm leading-none p-1 rounded flex-shrink-0"
               >
                 ✕
               </button>

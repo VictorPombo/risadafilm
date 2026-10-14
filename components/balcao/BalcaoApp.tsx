@@ -186,43 +186,43 @@ export default function BalcaoApp() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 flex flex-col">
+    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-neutral-100 text-neutral-900 flex flex-col">
       {/* ========================================================= */}
       {/* BARRA DE FERRAMENTAS SUPERIOR (APENAS NA TELA - NO PRINT) */}
       {/* ========================================================= */}
-      <nav className="no-print sticky top-0 z-40 bg-[#161616] border-b border-[#282828] shadow-md px-4 sm:px-8 py-2">
-        <div className="w-full flex flex-wrap items-center justify-between gap-3">
-          {/* Lado Esquerdo: Apenas o número do orçamento */}
-          <div className="flex items-center">
-            <span className="text-xs sm:text-sm font-semibold text-neutral-300">
-              Orçamento Nº <strong className="text-[#f5c518] font-mono text-sm sm:text-base">{orcamentoAtivo.numero}</strong>
+      <nav className="no-print sticky top-0 z-40 bg-[#161616] border-b border-[#282828] shadow-md px-2.5 sm:px-6 py-2 w-full">
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2">
+          {/* Lado Esquerdo: Número do orçamento */}
+          <div className="flex items-center min-w-0">
+            <span className="text-xs sm:text-sm font-semibold text-neutral-300 truncate">
+              Orç. <strong className="text-[#f5c518] font-mono text-sm sm:text-base">#{orcamentoAtivo.numero}</strong>
             </span>
           </div>
 
-          {/* Notificação no centro */}
+          {/* Notificação central */}
           {mensagemStatus && (
-            <div className="animate-fade-in bg-amber-400/20 text-[#f5c518] border border-amber-400/40 px-3 py-1 rounded text-xs font-semibold">
+            <div className="animate-fade-in bg-amber-400/20 text-[#f5c518] border border-amber-400/40 px-2 py-0.5 rounded text-[11px] font-semibold truncate max-w-[130px] sm:max-w-none">
               {mensagemStatus}
             </div>
           )}
 
           {/* Lado Direito: Ações rápidas */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {podeInstalar && (
               <button
                 type="button"
                 onClick={handleInstalarPWA}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded flex items-center gap-1.5 transition-colors shadow"
-                title="Instalar ícone direto na Área de Trabalho do Windows/Mac"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-2.5 py-1.5 rounded flex items-center gap-1 transition-colors shadow"
+                title="Instalar Aplicativo"
               >
-                <span>💻</span> Instalar Aplicativo
+                <span>💻</span> <span className="hidden sm:inline">Instalar</span>
               </button>
             )}
 
             <button
               type="button"
               onClick={handleNovo}
-              className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold px-3 py-1.5 rounded border border-[#333] transition-colors"
+              className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded border border-[#333] transition-colors"
               title="Atalho: Ctrl + N"
             >
               + Novo
@@ -232,28 +232,29 @@ export default function BalcaoApp() {
               type="button"
               onClick={handleSalvar}
               disabled={salvando}
-              className="bg-[#f5c518] hover:bg-[#e6b800] text-black text-xs font-bold px-4 py-1.5 rounded shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
+              className="bg-[#f5c518] hover:bg-[#e6b800] text-black text-xs font-bold px-2.5 sm:px-4 py-1.5 rounded shadow transition-all flex items-center gap-1 disabled:opacity-50"
               title="Atalho: Ctrl + S"
             >
-              <span>💾</span> {salvando ? 'Salvando...' : 'Salvar'}
+              <span>💾</span> <span className="hidden xs:inline">{salvando ? 'Salvando...' : 'Salvar'}</span>
             </button>
 
             <button
               type="button"
               onClick={handleImprimir}
-              className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+              className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded transition-colors flex items-center gap-1"
               title="Atalho: Ctrl + P"
             >
-              <span>🖨️</span> Imprimir
+              <span>🖨️</span> <span className="hidden xs:inline">Imprimir</span>
             </button>
 
             <button
               type="button"
               onClick={() => setDrawerHistoricoAberto(true)}
-              className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-medium px-3 py-1.5 rounded border border-[#333] flex items-center gap-1.5 transition-colors"
+              className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-medium px-2 sm:px-3 py-1.5 rounded border border-[#333] flex items-center gap-1 transition-colors"
               title="Atalho: Ctrl + H"
             >
-              <span>📁</span> Histórico
+              <span>📁</span>
+              <span className="hidden sm:inline">Histórico</span>
               <span className="bg-[#333] text-neutral-300 text-[10px] px-1.5 py-0.2 rounded-full font-mono">
                 {listaOrcamentos.length}
               </span>
@@ -274,7 +275,7 @@ export default function BalcaoApp() {
       {/* ========================================================= */}
       {/* ÁREA DE TRABALHO DA FOLHA (DOCUMENTO TELA INTEIRA / RESPONSIVO) */}
       {/* ========================================================= */}
-      <main className="flex-1 w-full bg-white px-2 sm:px-6 lg:px-10 py-3 print:p-0 flex flex-col items-center">
+      <main className="flex-1 w-full max-w-[100vw] overflow-x-hidden bg-neutral-100 sm:bg-neutral-200 py-1 sm:py-4 px-1 sm:px-4 lg:px-8 print:p-0 print:bg-white flex flex-col items-center">
         <FolhaOrcamento
           orcamento={orcamentoAtivo}
           dadosLoja={dadosLoja}

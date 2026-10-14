@@ -181,15 +181,15 @@ export default function FolhaOrcamento({
   }
 
   return (
-    <div className="folha-orcamento-container w-full max-w-5xl mx-auto bg-white text-neutral-900 p-3 sm:p-6 lg:p-8 print:p-0 print:m-0 print:shadow-none print:border-none print:max-w-full print:w-full">
+    <div className="folha-orcamento-container w-full max-w-full mx-auto bg-white text-neutral-900 p-2.5 sm:p-6 lg:p-8 print:p-0 print:m-0 print:shadow-none print:border-none print:max-w-full print:w-full overflow-hidden print:overflow-visible">
       {/* ========================================================= */}
       {/* 1. CABEÇALHO OFICIAL (COM NOVA LOGO + 3M + ENDEREÇO EDITÁVEL) */}
       {/* ========================================================= */}
-      <header className="border-b-2 border-neutral-800 pb-3 mb-4">
-        <div className="cabecalho-logos-print grid grid-cols-1 sm:grid-cols-3 print:!flex print:!flex-row items-center justify-between gap-4 print:!gap-2 w-full">
+      <header className="border-b-2 border-neutral-800 pb-3 mb-4 w-full">
+        <div className="cabecalho-logos-print flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 w-full">
           {/* 1. Esquerda: Nova Logo Risada Film (Escudo) + Dados */}
-          <div className="flex items-center gap-3 justify-center sm:justify-start print:!justify-start flex-shrink-0">
-            <div className="relative w-16 h-16 sm:w-18 sm:h-18 print:w-14 print:h-14 flex-shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-4 justify-start w-full md:w-auto flex-shrink-0 min-w-0">
+            <div className="relative w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 print:w-14 print:h-14 flex-shrink-0">
               <Image
                 src="/images/LogoNovoRisadaLimpo.png"
                 alt="Risada Film Logo Oficial"
@@ -198,62 +198,65 @@ export default function FolhaOrcamento({
                 className="object-contain"
               />
             </div>
-            <div>
-              <h1 className="font-cooper italic font-bold text-3xl sm:text-[32px] lg:text-[36px] print:text-[26px] tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
+            <div className="min-w-0 flex-1">
+              <h1 className="font-cooper italic font-bold text-2xl xs:text-3xl sm:text-4xl lg:text-5xl print:text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
                 Risada Film
               </h1>
-              <p className="text-[11px] sm:text-xs print:text-[10px] font-semibold text-neutral-700 mt-1">
+              <p className="text-[10px] sm:text-xs print:text-[10px] font-semibold text-neutral-700 mt-1 truncate">
                 {dadosLoja.razaoSocial}
               </p>
-              <p className="text-[10px] print:text-[9px] text-neutral-500 font-mono">
+              <p className="text-[9px] sm:text-[10px] print:text-[9px] text-neutral-500 font-mono truncate">
                 CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
               </p>
             </div>
           </div>
 
-          {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Centralizado perfeitamente) */}
-          <div className="logo-3m-print flex flex-col items-center text-center justify-center py-1 flex-shrink-0">
-            <div className="relative flex items-center justify-center">
-              <Image
-                src="/images/logo-3m-oficial.png"
-                alt="3M Oficial"
-                width={102}
-                height={54}
-                priority
-                className="w-16 sm:w-20 print:w-16 h-auto object-contain"
-              />
+          {/* Logos Parceiros: em celular ficam lado a lado num strip compacto; em desktop md+ ficam distribuídos no centro e direita */}
+          <div className="flex flex-row items-center justify-center md:justify-end gap-6 sm:gap-8 lg:gap-10 w-full md:w-auto py-1 md:py-0 border-y md:border-none border-neutral-100 flex-shrink-0">
+            {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Centralizado) */}
+            <div className="logo-3m-print flex flex-col items-center text-center justify-center py-0.5 flex-shrink-0">
+              <div className="relative flex items-center justify-center">
+                <Image
+                  src="/images/logo-3m-oficial.png"
+                  alt="3M Oficial"
+                  width={80}
+                  height={42}
+                  priority
+                  className="w-12 sm:w-16 md:w-20 print:w-16 h-auto object-contain"
+                />
+              </div>
+              <span className="text-[8px] sm:text-[10px] print:text-[9px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5">
+                Aplicador Autorizado
+              </span>
+              <span className="text-[7px] sm:text-[9px] print:text-[8px] text-neutral-600 font-medium leading-none">
+                Películas para Vidros
+              </span>
             </div>
-            <span className="text-[10px] sm:text-[11px] print:text-[9px] font-bold text-neutral-900 tracking-tight leading-tight mt-1">
-              Aplicador Autorizado
-            </span>
-            <span className="text-[9px] sm:text-[10px] print:text-[8px] text-neutral-600 font-medium leading-none mt-0.5">
-              Películas para Vidros
-            </span>
-          </div>
 
-          {/* 3. Direita: Logo Tech-Cut Oficial */}
-          <div className="logo-techcut-print flex flex-col items-center sm:items-end print:!items-end justify-center py-1 flex-shrink-0">
-            <div className="relative flex items-center justify-center">
-              <Image
-                src="/images/logo-tech-cut.png"
-                alt="Tech-Cut"
-                width={200}
-                height={35}
-                priority
-                className="w-28 sm:w-36 print:w-28 h-auto object-contain"
-              />
+            {/* 3. Direita: Logo Tech-Cut Oficial */}
+            <div className="logo-techcut-print flex flex-col items-center md:items-end print:!items-end justify-center py-0.5 flex-shrink-0">
+              <div className="relative flex items-center justify-center">
+                <Image
+                  src="/images/logo-tech-cut.png"
+                  alt="Tech-Cut"
+                  width={150}
+                  height={26}
+                  priority
+                  className="w-22 sm:w-28 md:w-34 print:w-28 h-auto object-contain"
+                />
+              </div>
+              <span className="text-[7px] sm:text-[9px] print:text-[8px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5">
+                Corte Computadorizado
+              </span>
             </div>
-            <span className="text-[9px] sm:text-[10px] print:text-[8px] font-semibold text-neutral-600 uppercase tracking-wider mt-1">
-              Corte Computadorizado
-            </span>
           </div>
         </div>
 
         {/* Linha de Endereço e Contatos (Editável) */}
         <div className="mt-2.5 pt-2 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-[13px] print:text-[11px] text-neutral-700 gap-1.5">
-          <div className="flex items-center gap-1.5 group">
+          <div className="flex flex-wrap items-center gap-1 group">
             <span className="font-bold text-neutral-900">Endereço:</span>
-            <span>{dadosLoja.endereco}</span>
+            <span className="break-words">{dadosLoja.endereco}</span>
             <button
               type="button"
               onClick={onAbrirConfigLoja}
@@ -263,8 +266,8 @@ export default function FolhaOrcamento({
               (Editar Endereço)
             </button>
           </div>
-          <div className="flex items-center gap-3">
-            <span>WhatsApp: <strong className="text-neutral-900">{dadosLoja.telefone}</strong></span>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <span>WhatsApp: <strong className="text-neutral-900 font-mono">{dadosLoja.telefone}</strong></span>
             <span>E-mail: {dadosLoja.email}</span>
           </div>
         </div>
@@ -273,14 +276,14 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 2. BARRA DE TÍTULO, NÚMERO E DATA */}
       {/* ========================================================= */}
-      <div className="flex items-center justify-between border-b border-neutral-400 pb-2 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-neutral-400 pb-2 mb-4 gap-2">
         <div>
-          <h2 className="font-display font-black text-2xl sm:text-3xl tracking-wider text-neutral-950">
+          <h2 className="font-display font-black text-xl sm:text-2xl md:text-3xl tracking-wider text-neutral-950">
             ORÇAMENTO
           </h2>
         </div>
 
-        <div className="flex items-center gap-4 text-xs sm:text-sm font-bold">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-4 text-xs sm:text-sm font-bold">
           {/* Número Sequencial Automático / Editável */}
           <div className="flex items-center gap-1">
             <span className="text-neutral-700">Nº</span>
@@ -295,14 +298,14 @@ export default function FolhaOrcamento({
                   document.getElementById('nav-cliente')?.focus();
                 }
               }}
-              className="w-24 px-1.5 py-0.5 border-b border-neutral-500 font-mono font-black text-neutral-950 bg-transparent text-right focus:border-amber-500"
+              className="w-20 sm:w-24 px-1.5 py-0.5 border-b border-neutral-500 font-mono font-black text-neutral-950 bg-transparent text-right focus:border-amber-500"
               placeholder="001/2026"
             />
           </div>
 
           {/* Data de Emissão */}
           <div className="flex items-center gap-1">
-            <span className="text-neutral-700">SÃO PAULO,</span>
+            <span className="text-neutral-700 text-xs sm:text-sm">SÃO PAULO,</span>
             <input
               type="date"
               value={orcamento.data_emissao}
@@ -318,7 +321,7 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-4 text-xs sm:text-sm">
         <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-black text-neutral-800 w-24 flex-shrink-0">CLIENTE:</span>
+          <span className="font-black text-neutral-800 w-20 sm:w-24 flex-shrink-0">CLIENTE:</span>
           <input
             id="nav-cliente"
             type="text"
@@ -331,7 +334,7 @@ export default function FolhaOrcamento({
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-black text-neutral-800 w-24 flex-shrink-0">TELEFONE:</span>
+          <span className="font-black text-neutral-800 w-20 sm:w-24 flex-shrink-0">TELEFONE:</span>
           <input
             id="nav-telefone"
             type="text"
@@ -344,7 +347,7 @@ export default function FolhaOrcamento({
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-black text-neutral-800 w-24 flex-shrink-0">CARRO:</span>
+          <span className="font-black text-neutral-800 w-20 sm:w-24 flex-shrink-0">CARRO:</span>
           <input
             id="nav-carro"
             type="text"
@@ -357,7 +360,7 @@ export default function FolhaOrcamento({
         </div>
 
         <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-black text-neutral-800 w-24 flex-shrink-0">PLACA:</span>
+          <span className="font-black text-neutral-800 w-20 sm:w-24 flex-shrink-0">PLACA:</span>
           <input
             id="nav-placa"
             type="text"
@@ -374,122 +377,125 @@ export default function FolhaOrcamento({
       {/* 4. TABELA DE ITENS (PRODUTO | TONALIDADE | DESCRIÇÃO | VALOR) */}
       {/* ========================================================= */}
       <div className="mb-4">
-        <table className="w-full border-collapse border border-neutral-400 text-xs sm:text-sm">
-          <thead>
-            <tr className="bg-neutral-100 border-b border-neutral-400 text-neutral-950">
-              <th className="border-r border-neutral-400 p-2 sm:p-2.5 text-left font-extrabold w-[28%] text-xs sm:text-sm">
-                PRODUTO
-              </th>
-              <th className="border-r border-neutral-400 p-2 sm:p-2.5 text-center font-extrabold w-[18%] text-xs sm:text-sm">
-                TONALIDADE
-              </th>
-              <th className="border-r border-neutral-400 p-2 sm:p-2.5 text-left font-extrabold w-[38%] text-xs sm:text-sm">
-                DESCRIÇÃO / LOCAL
-              </th>
-              <th className="p-2 sm:p-2.5 text-right font-extrabold w-[16%] text-xs sm:text-sm">
-                VALOR (R$)
-              </th>
-              <th className="w-8 no-print p-0 border-l border-neutral-400"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {orcamento.itens.map((item, rowIndex) => (
-              <tr key={item.id} className="border-b border-neutral-300 hover:bg-neutral-50/50">
-                {/* Coluna 0: Produto */}
-                <td className="border-r border-neutral-300 p-1">
-                  <input
-                    id={`nav-item-${rowIndex}-0`}
-                    type="text"
-                    value={item.produto}
-                    onChange={(e) => handleItemChange(rowIndex, 'produto', e.target.value)}
-                    onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 0)}
-                    placeholder="Ex: Cerâmica, Alarme"
-                    className="w-full px-2 py-1.5 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
-                  />
-                </td>
-
-                {/* Coluna 1: Tonalidade */}
-                <td className="border-r border-neutral-300 p-1">
-                  <input
-                    id={`nav-item-${rowIndex}-1`}
-                    type="text"
-                    value={item.tonalidade}
-                    onChange={(e) => handleItemChange(rowIndex, 'tonalidade', e.target.value)}
-                    onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 1)}
-                    placeholder="G5, G20..."
-                    className="w-full px-2 py-1.5 bg-transparent text-center font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
-                  />
-                </td>
-
-                {/* Coluna 2: Descrição / Peça */}
-                <td className="border-r border-neutral-300 p-1">
-                  <input
-                    id={`nav-item-${rowIndex}-2`}
-                    type="text"
-                    value={item.descricao}
-                    onChange={(e) => handleItemChange(rowIndex, 'descricao', e.target.value)}
-                    onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 2)}
-                    placeholder="Ex: Parabrisa, Portas"
-                    className="w-full px-2 py-1.5 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
-                  />
-                </td>
-
-                {/* Coluna 3: Valor (R$) */}
-                <td className="p-1">
-                  <input
-                    id={`nav-item-${rowIndex}-3`}
-                    type="text"
-                    inputMode="decimal"
-                    value={item.valor === 0 ? '' : item.valor}
-                    onChange={(e) => {
-                      const num = parseFloat(e.target.value.replace(',', '.'));
-                      handleItemChange(rowIndex, 'valor', isNaN(num) ? 0 : num);
-                    }}
-                    onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 3)}
-                    placeholder="0,00"
-                    className="w-full px-2 py-1.5 bg-transparent text-right font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
-                  />
-                </td>
-
-                {/* Botão de remoção (apenas tela) */}
-                <td className="no-print p-0 text-center border-l border-neutral-300">
-                  <button
-                    type="button"
-                    onClick={() => handleRemoverLinha(rowIndex)}
-                    className="text-neutral-300 hover:text-red-500 font-bold p-1 leading-none text-xs"
-                    title="Excluir linha"
-                  >
-                    ✕
-                  </button>
-                </td>
+        <div className="w-full max-w-full overflow-x-auto border border-neutral-400 rounded-sm scrollbar-thin">
+          <table className="w-full min-w-[420px] sm:min-w-full border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr className="bg-neutral-100 border-b border-neutral-400 text-neutral-950">
+                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-left font-extrabold w-[28%] text-xs sm:text-sm">
+                  PRODUTO
+                </th>
+                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-center font-extrabold w-[18%] text-xs sm:text-sm">
+                  TONALIDADE
+                </th>
+                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-left font-extrabold w-[36%] text-xs sm:text-sm">
+                  DESCRIÇÃO / LOCAL
+                </th>
+                <th className="p-1.5 sm:p-2.5 text-right font-extrabold w-[18%] text-xs sm:text-sm">
+                  VALOR (R$)
+                </th>
+                <th className="w-7 no-print p-0 border-l border-neutral-400"></th>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="bg-neutral-100 font-bold border-t-2 border-neutral-400">
-              <td colSpan={3} className="p-2 sm:p-2.5 text-right border-r border-neutral-400 uppercase tracking-wider text-xs sm:text-sm font-black total-geral-print text-neutral-900">
-                TOTAL GERAL:
-              </td>
-              <td className="p-2 sm:p-2.5 text-right font-mono text-base sm:text-lg text-neutral-950 font-black total-geral-print">
-                {Number(orcamento.total_geral || 0).toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                })}
-              </td>
-              <td className="no-print border-l border-neutral-400"></td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody>
+              {orcamento.itens.map((item, rowIndex) => (
+                <tr key={item.id} className="border-b border-neutral-300 hover:bg-neutral-50/50">
+                  {/* Coluna 0: Produto */}
+                  <td className="border-r border-neutral-300 p-0.5 sm:p-1">
+                    <input
+                      id={`nav-item-${rowIndex}-0`}
+                      type="text"
+                      value={item.produto}
+                      onChange={(e) => handleItemChange(rowIndex, 'produto', e.target.value)}
+                      onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 0)}
+                      placeholder="Ex: Cerâmica, Alarme"
+                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
+                    />
+                  </td>
+
+                  {/* Coluna 1: Tonalidade */}
+                  <td className="border-r border-neutral-300 p-0.5 sm:p-1">
+                    <input
+                      id={`nav-item-${rowIndex}-1`}
+                      type="text"
+                      value={item.tonalidade}
+                      onChange={(e) => handleItemChange(rowIndex, 'tonalidade', e.target.value)}
+                      onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 1)}
+                      placeholder="G5, G20..."
+                      className="w-full px-1 sm:px-2 py-1 sm:py-1.5 bg-transparent text-center font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
+                    />
+                  </td>
+
+                  {/* Coluna 2: Descrição / Peça */}
+                  <td className="border-r border-neutral-300 p-0.5 sm:p-1">
+                    <input
+                      id={`nav-item-${rowIndex}-2`}
+                      type="text"
+                      value={item.descricao}
+                      onChange={(e) => handleItemChange(rowIndex, 'descricao', e.target.value)}
+                      onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 2)}
+                      placeholder="Ex: Parabrisa, Portas"
+                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
+                    />
+                  </td>
+
+                  {/* Coluna 3: Valor (R$) */}
+                  <td className="p-0.5 sm:p-1">
+                    <input
+                      id={`nav-item-${rowIndex}-3`}
+                      type="text"
+                      inputMode="decimal"
+                      value={item.valor === 0 ? '' : item.valor}
+                      onChange={(e) => {
+                        const num = parseFloat(e.target.value.replace(',', '.'));
+                        handleItemChange(rowIndex, 'valor', isNaN(num) ? 0 : num);
+                      }}
+                      onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 3)}
+                      placeholder="0,00"
+                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 bg-transparent text-right font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
+                    />
+                  </td>
+
+                  {/* Botão de remoção (apenas tela) */}
+                  <td className="no-print p-0 text-center border-l border-neutral-300">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoverLinha(rowIndex)}
+                      className="text-neutral-300 hover:text-red-500 font-bold p-1 leading-none text-xs"
+                      title="Excluir linha"
+                    >
+                      ✕
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-neutral-100 font-bold border-t-2 border-neutral-400">
+                <td colSpan={3} className="p-1.5 sm:p-2.5 text-right border-r border-neutral-400 uppercase tracking-wider text-xs sm:text-sm font-black total-geral-print text-neutral-900">
+                  TOTAL GERAL:
+                </td>
+                <td className="p-1.5 sm:p-2.5 text-right font-mono text-sm sm:text-lg text-neutral-950 font-black total-geral-print whitespace-nowrap">
+                  {Number(orcamento.total_geral || 0).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </td>
+                <td className="no-print border-l border-neutral-400"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
 
         {/* Botão para adicionar linha na tela */}
-        <div className="flex justify-between items-center mt-1.5 no-print">
+        {/* Botão para adicionar linha na tela */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2 no-print">
           <span className="text-[11px] text-neutral-500">
-            Dica: use as <strong>setas do teclado</strong> para se mover entre os campos ou <strong>Enter</strong> para pular e criar linhas.
+            Dica: use as <strong>setas do teclado</strong> para navegar ou <strong>Enter</strong> para criar linhas.
           </span>
           <button
             type="button"
             onClick={() => handleAdicionarLinha()}
-            className="text-xs sm:text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-bold px-3 py-1 rounded border border-neutral-300 transition-colors"
+            className="text-xs sm:text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-bold px-3 py-1.5 rounded border border-neutral-300 transition-colors w-full sm:w-auto text-center"
           >
             + Adicionar Linha
           </button>
@@ -499,7 +505,7 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 5. DIAGRAMA DO CARRO (VISTORIA DE RISCOS / AVARIAS) */}
       {/* ========================================================= */}
-      <div className="border border-neutral-300 rounded p-3 mb-4 bg-neutral-50/60">
+      <div className="border border-neutral-300 rounded p-2.5 sm:p-3 mb-4 bg-neutral-50/60 w-full min-w-0 overflow-hidden">
         <DiagramaCarro
           avarias={orcamento.avarias}
           onChange={(novasAvarias: AvariaItem[]) => onChange({ ...orcamento, avarias: novasAvarias })}
@@ -509,7 +515,7 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 6. OBSERVAÇÕES E CONDIÇÕES */}
       {/* ========================================================= */}
-      <div className="border border-neutral-300 rounded p-2.5 mb-4 text-xs sm:text-sm">
+      <div className="border border-neutral-300 rounded p-2.5 mb-4 text-xs sm:text-sm w-full min-w-0">
         <label className="block font-black text-neutral-800 text-xs sm:text-[13px] mb-1 uppercase tracking-wide">
           Observações / Condições Gerais:
         </label>
@@ -525,7 +531,7 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 7. CAIXAS DE SELEÇÃO DE GARANTIA (Personalizáveis na Configuração) */}
       {/* ========================================================= */}
-      <div className="border-2 border-neutral-800 rounded-sm p-3 bg-neutral-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm">
+      <div className="border-2 border-neutral-800 rounded-sm p-2.5 sm:p-3 bg-neutral-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm w-full min-w-0">
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="font-display font-black text-sm sm:text-base text-neutral-950 uppercase tracking-wider">
             Garantia:
