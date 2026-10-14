@@ -106,6 +106,14 @@ table { border-collapse: collapse; width: 100%; }
     display: none !important;
   }
 
+  /* Desativa flexbox e overflow nos containers pais para envio limpo ao spooler */
+  body, #__next, main, .min-h-screen {
+    min-height: auto !important;
+    height: auto !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
   /* Container da folha de orçamento: cabe 100% na largura do A4 sem cortar nada */
   .folha-orcamento-container {
     width: 100% !important;

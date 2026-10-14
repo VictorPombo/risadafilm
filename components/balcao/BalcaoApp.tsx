@@ -116,7 +116,14 @@ export default function BalcaoApp() {
 
   // Imprimir
   const handleImprimir = useCallback(() => {
-    window.print();
+    if (typeof window === 'undefined') return;
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    window.focus();
+    setTimeout(() => {
+      window.print();
+    }, 80);
   }, []);
 
   // Atalhos globais de teclado (Ctrl+S, Ctrl+P, Ctrl+N, Ctrl+H)
