@@ -501,41 +501,49 @@ export default function FolhaOrcamento({
       </div>
 
       {/* ========================================================= */}
-      {/* 7. TERMO DE GARANTIA E ASSINATURAS */}
+      {/* 7. CAIXAS DE SELEÇÃO DE GARANTIA (6 Meses, 1 Ano, 5 Anos, 10 Anos, 15 Anos) */}
       {/* ========================================================= */}
-      <footer className="pt-2 border-t border-neutral-300 text-xs">
-        {/* Termo de Garantia */}
-        <div className="mb-6 text-[10px] text-neutral-600 bg-neutral-50 p-2 rounded border border-neutral-200">
-          <p className="font-semibold text-neutral-800 mb-0.5">TERMO DE GARANTIA E RESPONSABILIDADE:</p>
-          <p>{dadosLoja.termoGarantiaPadrao}</p>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="font-bold text-neutral-700">Prazo de Garantia:</span>
-            <input
-              type="text"
-              value={orcamento.garantia}
-              onChange={(e) => handleCampoRaiz('garantia', e.target.value)}
-              placeholder="Ex: 3 anos / 5 anos"
-              className="border-b border-neutral-400 bg-transparent px-1 font-semibold text-neutral-900 focus:outline-none"
-            />
-          </div>
+      <div className="border-2 border-neutral-800 rounded-sm p-3 bg-neutral-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <span className="font-display font-black text-sm text-neutral-950 uppercase tracking-wider flex-shrink-0">
+          Garantia:
+        </span>
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6">
+          {['6 Meses', '1 Ano', '5 Anos', '10 Anos', '15 Anos'].map((opcao) => {
+            const selecionado = orcamento.garantia?.includes(opcao);
+            return (
+              <label
+                key={opcao}
+                onClick={() => {
+                  const atuais = orcamento.garantia ? orcamento.garantia.split(', ').filter(Boolean) : [];
+                  let novas: string[];
+                  if (atuais.includes(opcao)) {
+                    novas = atuais.filter((g) => g !== opcao);
+                  } else {
+                    novas = [...atuais, opcao];
+                  }
+                  handleCampoRaiz('garantia', novas.join(', '));
+                }}
+                className="flex items-center gap-2 cursor-pointer select-none font-bold text-xs text-neutral-900 hover:text-black py-0.5"
+              >
+                <div
+                  className={`w-4 h-4 border-2 border-neutral-900 rounded-[2px] flex items-center justify-center transition-all ${
+                    selecionado ? 'bg-neutral-950 border-neutral-950' : 'bg-white'
+                  }`}
+                >
+                  {selecionado && (
+                    <span className="text-white print:text-black text-[11px] font-black leading-none">
+                      ✓
+                    </span>
+                  )}
+                </div>
+                <span className={selecionado ? 'text-neutral-950 font-black' : 'text-neutral-700'}>
+                  {opcao}
+                </span>
+              </label>
+            );
+          })}
         </div>
-
-        {/* Linhas de Assinatura */}
-        <div className="grid grid-cols-2 gap-12 pt-6 text-center text-xs">
-          <div>
-            <div className="border-t border-neutral-800 pt-1 font-semibold text-neutral-900">
-              {orcamento.cliente || 'Assinatura do Cliente'}
-            </div>
-            <p className="text-[10px] text-neutral-500">De acordo com o orçamento e vistoria de entrada</p>
-          </div>
-          <div>
-            <div className="border-t border-neutral-800 pt-1 font-semibold text-neutral-900">
-              RISADA FILM
-            </div>
-            <p className="text-[10px] text-neutral-500">Aplicador Autorizado</p>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }

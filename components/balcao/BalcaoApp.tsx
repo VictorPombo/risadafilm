@@ -34,7 +34,7 @@ function criarOrcamentoVazio(proximoNumero: string, garantiaPadrao: string): Orc
     itens: itensIniciais,
     avarias: [],
     observacoes: '',
-    garantia: '3 anos',
+    garantia: '',
     total_geral: 0,
   };
 }
