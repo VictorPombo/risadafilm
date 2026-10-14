@@ -12,8 +12,23 @@ interface ConfigLojaModalProps {
 
 export default function ConfigLojaModal({ aberto, dadosAtuais, onSalvar, onFechar }: ConfigLojaModalProps) {
   const [form, setForm] = useState<DadosLojaConfig>(dadosAtuais);
+  const [novaOpcao, setNovaOpcao] = useState('');
+
+  React.useEffect(() => {
+    setForm(dadosAtuais);
+  }, [dadosAtuais, aberto]);
 
   if (!aberto) return null;
+
+  function adicionarOpcao() {
+    const limpo = novaOpcao.trim();
+    if (!limpo) return;
+    const listaAtual = form.opcoesGarantia || [];
+    if (!listaAtual.includes(limpo)) {
+      setForm({ ...form, opcoesGarantia: [...listaAtual, limpo] });
+    }
+    setNovaOpcao('');
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -103,30 +118,96 @@ export default function ConfigLojaModal({ aberto, dadosAtuais, onSalvar, onFecha
             </div>
           </div>
 
-          <div>
-            <label className="block text-neutral-300 font-semibold mb-1">Termo de Garantia Padrão</label>
-            <input
-              type="text"
-              value={form.termoGarantiaPadrao}
-              onChange={(e) => setForm({ ...form, termoGarantiaPadrao: e.target.value })}
-              className="w-full px-3 py-1.5 bg-[#101010] border border-[#333] rounded text-white focus:border-[#f5c518]"
-            />
+          {/* Personalização das Caixas de Garantia */}
+          <div className="pt-2 border-t border-[#2e2e2e]">
+            <label className="block text-[#f5c518] font-bold mb-1">
+              Caixas de Garantia (Personalizar tempos e quantidade):
+            </label>
+            <p className="text-[11px] text-neutral-400 mb-2">
+              Defina as caixas de seleção que aparecem no rodapé do orçamento (adicione, remova ou edite).
+            </p>
+
+            {/* Lista de tags/opções existentes */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              {(form.opcoesGarantia || []).map((opcao, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#252525] border border-[#444] text-white font-medium text-xs shadow-sm"
+                >
+                  <span>{opcao}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const novas = form.opcoesGarantia.filter((_, i) => i !== idx);
+                      setForm({ ...form, opcoesGarantia: novas });
+                    }}
+                    className="text-neutral-400 hover:text-red-400 font-bold ml-0.5 text-xs transition-colors"
+                    title="Remover esta caixa"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+              {(form.opcoesGarantia || []).length === 0 && (
+                <span className="text-xs text-neutral-500 italic">
+                  Nenhuma caixa cadastrada. Adicione uma opção abaixo.
+                </span>
+              )}
+            </div>
+
+            {/* Input para adicionar nova opção */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Ex: 3 Anos, 24 Meses, Vitalícia..."
+                value={novaOpcao}
+                onChange={(e) => setNovaOpcao(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    adicionarOpcao();
+                  }
+                }}
+                className="flex-1 px-3 py-1.5 bg-[#101010] border border-[#333] rounded text-white focus:border-[#f5c518]"
+              />
+              <button
+                type="button"
+                onClick={adicionarOpcao}
+                className="px-3 py-1.5 rounded bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs border border-neutral-700"
+              >
+                + Adicionar Caixa
+              </button>
+            </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-[#2e2e2e]">
+          <div className="flex items-center justify-between pt-3 border-t border-[#2e2e2e]">
             <button
               type="button"
-              onClick={onFechar}
-              className="px-4 py-1.5 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
+              onClick={() => {
+                setForm({
+                  ...form,
+                  opcoesGarantia: ['6 Meses', '1 Ano', '5 Anos', '10 Anos', '15 Anos'],
+                });
+              }}
+              className="text-[11px] text-neutral-400 hover:text-[#f5c518] underline"
             >
-              Cancelar
+              Restaurar garantias padrão
             </button>
-            <button
-              type="submit"
-              className="px-4 py-1.5 rounded bg-[#f5c518] hover:bg-[#e6b800] text-black font-bold"
-            >
-              Salvar Alterações
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={onFechar}
+                className="px-4 py-1.5 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-1.5 rounded bg-[#f5c518] hover:bg-[#e6b800] text-black font-bold"
+              >
+                Salvar Alterações
+              </button>
+            </div>
           </div>
         </form>
       </div>

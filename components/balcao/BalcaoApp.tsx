@@ -14,7 +14,7 @@ import FolhaOrcamento from './FolhaOrcamento';
 import HistoricoDrawer from './HistoricoDrawer';
 import ConfigLojaModal from './ConfigLojaModal';
 
-function criarOrcamentoVazio(proximoNumero: string, garantiaPadrao: string): OrcamentoBalcao {
+function criarOrcamentoVazio(proximoNumero: string): OrcamentoBalcao {
   const hoje = new Date().toISOString().split('T')[0];
   const itensIniciais: ItemBalcao[] = Array.from({ length: 6 }).map((_, i) => ({
     id: `item_init_${i}_${Date.now()}`,
@@ -60,7 +60,7 @@ export default function BalcaoApp() {
     listarTodosOrcamentos().then((lista) => {
       setListaOrcamentos(lista);
       const proximo = obterProximoNumero(lista);
-      setOrcamentoAtivo(criarOrcamentoVazio(proximo, config.termoGarantiaPadrao));
+      setOrcamentoAtivo(criarOrcamentoVazio(proximo));
     });
 
     // PWA listen
@@ -109,7 +109,7 @@ export default function BalcaoApp() {
   const handleNovo = useCallback(() => {
     if (!dadosLoja) return;
     const proximo = obterProximoNumero(listaOrcamentos);
-    const novo = criarOrcamentoVazio(proximo, dadosLoja.termoGarantiaPadrao);
+    const novo = criarOrcamentoVazio(proximo);
     setOrcamentoAtivo(novo);
     exibirNotificacao(`Novo orçamento iniciado (Nº ${proximo})`);
   }, [dadosLoja, listaOrcamentos, exibirNotificacao]);
@@ -179,12 +179,12 @@ export default function BalcaoApp() {
   }
 
   return (
-    <div className="min-h-screen bg-[#111111] print:bg-white text-neutral-100 flex flex-col">
+    <div className="min-h-screen bg-white text-neutral-900 flex flex-col">
       {/* ========================================================= */}
       {/* BARRA DE FERRAMENTAS SUPERIOR (APENAS NA TELA - NO PRINT) */}
       {/* ========================================================= */}
-      <nav className="no-print sticky top-0 z-40 bg-[#161616] border-b border-[#282828] shadow-md px-4 py-2.5">
-        <div className="max-w-[1200px] mx-auto flex flex-wrap items-center justify-between gap-3">
+      <nav className="no-print sticky top-0 z-40 bg-[#161616] border-b border-[#282828] shadow-md px-4 sm:px-8 py-2">
+        <div className="w-full flex flex-wrap items-center justify-between gap-3">
           {/* Lado Esquerdo: Apenas o número do orçamento */}
           <div className="flex items-center">
             <span className="text-xs sm:text-sm font-semibold text-neutral-300">
@@ -265,9 +265,9 @@ export default function BalcaoApp() {
       </nav>
 
       {/* ========================================================= */}
-      {/* ÁREA DE TRABALHO DA FOLHA (DOCUMENTO TIPO WORD) */}
+      {/* ÁREA DE TRABALHO DA FOLHA (DOCUMENTO TELA INTEIRA / RESPONSIVO) */}
       {/* ========================================================= */}
-      <main className="flex-1 py-6 px-2 sm:px-4 flex justify-center items-start print:p-0">
+      <main className="flex-1 w-full bg-white px-2 sm:px-6 lg:px-10 py-3 print:p-0 flex flex-col items-center">
         <FolhaOrcamento
           orcamento={orcamentoAtivo}
           dadosLoja={dadosLoja}

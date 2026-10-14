@@ -16,8 +16,11 @@ export function carregarConfigLoja(): DadosLojaConfig {
       // Se ainda estiver com o endereço antigo, atualiza automaticamente para o novo
       if (parsed.endereco && (parsed.endereco.includes('Panamirim') || parsed.endereco.includes('Paramu'))) {
         parsed.endereco = DADOS_LOJA_PADRAO.endereco;
-        localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(parsed));
       }
+      if (!parsed.opcoesGarantia || !Array.isArray(parsed.opcoesGarantia) || parsed.opcoesGarantia.length === 0) {
+        parsed.opcoesGarantia = [...DADOS_LOJA_PADRAO.opcoesGarantia];
+      }
+      localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(parsed));
       return { ...DADOS_LOJA_PADRAO, ...parsed };
     }
   } catch (err) {

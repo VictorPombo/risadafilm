@@ -181,14 +181,14 @@ export default function FolhaOrcamento({
   }
 
   return (
-    <div className="w-full max-w-[850px] mx-auto bg-white text-neutral-900 shadow-2xl rounded-sm p-6 sm:p-10 border border-neutral-300 print:border-none print:shadow-none print:p-0 print:max-w-none print:w-full">
+    <div className="w-full bg-white text-neutral-900 p-2 sm:p-6 lg:p-8 print:p-0 print:shadow-none print:border-none print:max-w-none print:w-full">
       {/* ========================================================= */}
       {/* 1. CABEÇALHO OFICIAL (COM NOVA LOGO + 3M + ENDEREÇO EDITÁVEL) */}
       {/* ========================================================= */}
       <header className="border-b-2 border-neutral-800 pb-3 mb-4">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Nova Logo Risada Film (Escudo) */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0">
               <Image
                 src="/images/LogoNovoRisadaLimpo.png"
@@ -211,17 +211,22 @@ export default function FolhaOrcamento({
             </div>
           </div>
 
-          {/* Logo 3M Aplicador Autorizado */}
-          <div className="flex flex-col items-end text-right">
-            <div className="flex items-center gap-1.5">
-              <span className="font-display font-black text-3xl sm:text-4xl text-[#e53e3e] leading-none tracking-tighter drop-shadow-sm">
-                3M
-              </span>
+          {/* Logo 3M Aplicador Autorizado Oficial (3 grudado no M padrão da marca) */}
+          <div className="flex flex-col items-center text-center self-center sm:self-auto sm:px-2 py-1">
+            <div className="relative flex items-center justify-center">
+              <Image
+                src="/images/logo-3m-oficial.png"
+                alt="3M Oficial"
+                width={102}
+                height={54}
+                priority
+                className="w-20 sm:w-24 h-auto object-contain"
+              />
             </div>
-            <span className="text-[11px] sm:text-xs font-bold text-neutral-800 tracking-tight leading-tight mt-0.5">
+            <span className="text-[11px] sm:text-xs font-bold text-neutral-900 tracking-tight leading-tight mt-1">
               Aplicador Autorizado
             </span>
-            <span className="text-[10px] text-neutral-500 font-medium">
+            <span className="text-[10px] text-neutral-600 font-medium leading-none mt-0.5">
               Películas para Vidros
             </span>
           </div>
@@ -501,14 +506,27 @@ export default function FolhaOrcamento({
       </div>
 
       {/* ========================================================= */}
-      {/* 7. CAIXAS DE SELEÇÃO DE GARANTIA (6 Meses, 1 Ano, 5 Anos, 10 Anos, 15 Anos) */}
+      {/* 7. CAIXAS DE SELEÇÃO DE GARANTIA (Personalizáveis na Configuração) */}
       {/* ========================================================= */}
       <div className="border-2 border-neutral-800 rounded-sm p-3 bg-neutral-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <span className="font-display font-black text-sm text-neutral-950 uppercase tracking-wider flex-shrink-0">
-          Garantia:
-        </span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="font-display font-black text-sm text-neutral-950 uppercase tracking-wider">
+            Garantia:
+          </span>
+          <button
+            type="button"
+            onClick={onAbrirConfigLoja}
+            className="no-print text-[10px] text-amber-700 hover:text-amber-900 underline font-semibold"
+            title="Personalizar caixas e prazos de garantia"
+          >
+            (Configurar)
+          </button>
+        </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-6">
-          {['6 Meses', '1 Ano', '5 Anos', '10 Anos', '15 Anos'].map((opcao) => {
+          {(dadosLoja.opcoesGarantia && dadosLoja.opcoesGarantia.length > 0
+            ? dadosLoja.opcoesGarantia
+            : ['6 Meses', '1 Ano', '5 Anos', '10 Anos', '15 Anos']
+          ).map((opcao) => {
             const selecionado = orcamento.garantia?.includes(opcao);
             return (
               <label

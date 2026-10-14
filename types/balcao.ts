@@ -51,7 +51,7 @@ export interface DadosLojaConfig {
   telefone: string;
   email: string;
   instagram: string;
-  termoGarantiaPadrao: string;
+  opcoesGarantia: string[];
 }
 
 export const DADOS_LOJA_PADRAO: DadosLojaConfig = {
@@ -62,5 +62,5 @@ export const DADOS_LOJA_PADRAO: DadosLojaConfig = {
   telefone: '(11) 98278-7205',
   email: 'biroquejunior@hotmail.com',
   instagram: '@risadafilm',
-  termoGarantiaPadrao: 'Garantia contra desbotamento, descolamento e bolhas de acordo com o padrão 3M / Risada Film.',
+  opcoesGarantia: ['6 Meses', '1 Ano', '5 Anos', '10 Anos', '15 Anos'],
 };

@@ -5,8 +5,14 @@ export const metadata: Metadata = {
   description: 'Sistema Express de Balcão e Vistorias - Risada Film',
   manifest: '/manifest-balcao.json',
   icons: {
-    icon: '/images/LogoNovoRisadaLimpo.png',
-    apple: '/images/LogoNovoRisadaLimpo.png',
+    icon: [
+      { url: '/images/logo-balcao-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/images/LogoNovoRisadaLimpo.png' },
+    ],
+    apple: [
+      { url: '/images/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/images/LogoNovoRisadaLimpo.png' },
+    ],
   },
   appleWebApp: {
     capable: true,
@@ -27,7 +33,7 @@ export default function BalcaoLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#111111] print:bg-white text-neutral-100">
+    <div className="min-h-screen bg-white text-neutral-900">
       {children}
     </div>
   );
