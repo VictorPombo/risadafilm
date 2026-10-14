@@ -12,7 +12,13 @@ export function carregarConfigLoja(): DadosLojaConfig {
   try {
     const salvo = localStorage.getItem(STORAGE_KEY_CONFIG);
     if (salvo) {
-      return { ...DADOS_LOJA_PADRAO, ...JSON.parse(salvo) };
+      const parsed = JSON.parse(salvo);
+      // Se ainda estiver com o endereço antigo, atualiza automaticamente para o novo
+      if (parsed.endereco && (parsed.endereco.includes('Panamirim') || parsed.endereco.includes('Paramu'))) {
+        parsed.endereco = DADOS_LOJA_PADRAO.endereco;
+        localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(parsed));
+      }
+      return { ...DADOS_LOJA_PADRAO, ...parsed };
     }
   } catch (err) {
     console.error('Erro ao ler config da loja:', err);

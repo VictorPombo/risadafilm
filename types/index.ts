@@ -87,7 +87,7 @@ export const EMPRESA = {
   razaoSocial: 'Risada Comércio de Película Solar LTDA',
   cnpj: '33.574.274/0001-43',
   inscEstadual: '120.057.631.117',
-  endereco: 'R. Paramu, 594 - Vila Bela - SP - CEP: 03147-100',
+  endereco: 'Rua Costa Barros, 66 - São Paulo - SP',
   telefone: '(11) 98278-7205',
   site: 'www.risadafilm.com.br',
   instagram: 'risadafilm',

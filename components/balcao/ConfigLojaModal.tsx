@@ -77,7 +77,7 @@ export default function ConfigLojaModal({ aberto, dadosAtuais, onSalvar, onFecha
               rows={2}
               value={form.endereco}
               onChange={(e) => setForm({ ...form, endereco: e.target.value })}
-              placeholder="Ex: R. Panamirim, 594 - Vila Bela - SP - CEP: 03147-100"
+              placeholder="Ex: Rua Costa Barros, 66 - São Paulo - SP"
               className="w-full px-3 py-1.5 bg-[#101010] border border-[#444] rounded text-white focus:border-[#f5c518]"
             />
           </div>

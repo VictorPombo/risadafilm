@@ -58,7 +58,7 @@ export const DADOS_LOJA_PADRAO: DadosLojaConfig = {
   razaoSocial: 'Risada Comércio de Película Solar LTDA',
   cnpj: '33.574.274/0001-43',
   inscEstadual: '120.057.831.117',
-  endereco: 'R. Panamirim, 594 - Vila Bela - SP - CEP: 03147-100',
+  endereco: 'Rua Costa Barros, 66 - São Paulo - SP',
   telefone: '(11) 98278-7205',
   email: 'biroquejunior@hotmail.com',
   instagram: '@risadafilm',
