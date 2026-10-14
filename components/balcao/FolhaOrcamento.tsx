@@ -181,11 +181,11 @@ export default function FolhaOrcamento({
   }
 
   return (
-    <div className="folha-orcamento-container w-full max-w-full print:max-w-none mx-auto bg-white text-neutral-900 p-2.5 sm:p-6 lg:p-8 print:p-0 print:m-0 print:shadow-none print:border-none print:w-full overflow-hidden print:overflow-visible">
+    <div className="folha-orcamento-container w-full max-w-full print:max-w-none mx-auto bg-white text-neutral-900 p-2.5 sm:p-6 lg:p-8 print:p-0 print:m-0 print:shadow-none print:border-none print:w-full overflow-hidden print:overflow-hidden">
       {/* ========================================================= */}
       {/* 1. CABEÇALHO OFICIAL (COM NOVA LOGO + 3M + ENDEREÇO EDITÁVEL) */}
       {/* ========================================================= */}
-      <header className="border-b-2 border-neutral-800 pb-3 mb-4 w-full">
+      <header className="border-b-2 border-neutral-800 pb-3 mb-4 print:pb-1.5 print:mb-1.5 w-full">
         {/* ========================================================= */}
         {/* A) CABEÇALHO EXCLUSIVO PARA IMPRESSÃO / SALVAR PDF (PRINT) */}
         {/* Tabela fixa 3 colunas: NUNCA sobrepõe e funciona 100% no celular e PC */}
@@ -262,7 +262,7 @@ export default function FolhaOrcamento({
           </table>
 
           {/* Linha de Endereço e Contatos na Impressão */}
-          <div className="mt-2 pt-1.5 border-t border-neutral-300 flex items-center justify-between text-[11px] text-neutral-800">
+          <div className="mt-1.5 pt-1 border-t border-neutral-300 flex items-center justify-between text-[11px] print:text-[9.5px] text-neutral-800">
             <div>
               <strong className="text-neutral-950">Endereço:</strong> {dadosLoja.endereco}
             </div>
@@ -427,14 +427,14 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 2. BARRA DE TÍTULO, NÚMERO E DATA */}
       {/* ========================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-neutral-400 pb-2 mb-4 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-neutral-400 pb-2 mb-4 print:pb-1 print:mb-1.5 gap-2 print:gap-1">
         <div>
-          <h2 className="font-display font-black text-xl sm:text-2xl md:text-3xl tracking-wider text-neutral-950">
+          <h2 className="font-display font-black text-xl sm:text-2xl md:text-3xl print:text-xl tracking-wider text-neutral-950">
             ORÇAMENTO
           </h2>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-4 text-xs sm:text-sm font-bold">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-4 print:gap-3 text-xs sm:text-sm font-bold print:text-xs">
           {/* Número Sequencial Automático / Editável */}
           <div className="flex items-center gap-1">
             <span className="text-neutral-700">Nº</span>
@@ -449,19 +449,19 @@ export default function FolhaOrcamento({
                   document.getElementById('nav-cliente')?.focus();
                 }
               }}
-              className="w-20 sm:w-24 px-1.5 py-0.5 border-b border-neutral-500 font-mono font-black text-neutral-950 bg-transparent text-right focus:border-amber-500"
+              className="w-20 sm:w-24 print:w-20 px-1.5 py-0.5 border-b border-neutral-500 font-mono font-black text-neutral-950 bg-transparent text-right focus:border-amber-500"
               placeholder="001/2026"
             />
           </div>
 
           {/* Data de Emissão */}
           <div className="flex items-center gap-1">
-            <span className="text-neutral-700 text-xs sm:text-sm">SÃO PAULO,</span>
+            <span className="text-neutral-700 text-xs sm:text-sm print:text-xs">SÃO PAULO,</span>
             <input
               type="date"
               value={orcamento.data_emissao}
               onChange={(e) => handleCampoRaiz('data_emissao', e.target.value)}
-              className="px-1 py-0.5 border-b border-neutral-500 font-mono text-xs sm:text-sm font-semibold bg-transparent text-neutral-950 focus:border-amber-500"
+              className="px-1 py-0.5 border-b border-neutral-500 font-mono text-xs sm:text-sm print:text-xs font-semibold bg-transparent text-neutral-950 focus:border-amber-500"
             />
           </div>
         </div>
@@ -470,9 +470,9 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 3. DADOS DO CLIENTE E VEÍCULO (COM NAVEGAÇÃO POR SETAS/ENTER) */}
       {/* ========================================================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-4 text-xs sm:text-sm">
-        <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-black text-neutral-800 w-20 sm:w-24 flex-shrink-0">CLIENTE:</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 print:grid-cols-2 gap-x-6 print:gap-x-4 gap-y-2 print:gap-y-0.5 mb-4 print:mb-1.5 text-xs sm:text-sm print:text-xs">
+        <div className="flex items-center border-b border-neutral-300 py-1 print:py-0.5">
+          <span className="font-black text-neutral-800 w-20 sm:w-24 print:w-18 flex-shrink-0">CLIENTE:</span>
           <input
             id="nav-cliente"
             type="text"
@@ -480,12 +480,12 @@ export default function FolhaOrcamento({
             onChange={(e) => handleCampoRaiz('cliente', e.target.value)}
             onKeyDown={(e) => handleHeaderKeyDown(e, 'cliente')}
             placeholder="Nome do cliente"
-            className="w-full bg-transparent font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm"
+            className="w-full bg-transparent font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm print:text-xs"
           />
         </div>
 
-        <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-black text-neutral-800 w-20 sm:w-24 flex-shrink-0">TELEFONE:</span>
+        <div className="flex items-center border-b border-neutral-300 py-1 print:py-0.5">
+          <span className="font-black text-neutral-800 w-20 sm:w-24 print:w-20 flex-shrink-0">TELEFONE:</span>
           <input
             id="nav-telefone"
             type="text"
@@ -493,12 +493,12 @@ export default function FolhaOrcamento({
             onChange={(e) => handleCampoRaiz('telefone', e.target.value)}
             onKeyDown={(e) => handleHeaderKeyDown(e, 'telefone')}
             placeholder="(11) 90000-0000"
-            className="w-full bg-transparent font-mono font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm"
+            className="w-full bg-transparent font-mono font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm print:text-xs"
           />
         </div>
 
-        <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-black text-neutral-800 w-20 sm:w-24 flex-shrink-0">CARRO:</span>
+        <div className="flex items-center border-b border-neutral-300 py-1 print:py-0.5">
+          <span className="font-black text-neutral-800 w-20 sm:w-24 print:w-18 flex-shrink-0">CARRO:</span>
           <input
             id="nav-carro"
             type="text"
@@ -506,12 +506,12 @@ export default function FolhaOrcamento({
             onChange={(e) => handleCampoRaiz('carro', e.target.value)}
             onKeyDown={(e) => handleHeaderKeyDown(e, 'carro')}
             placeholder="Ex: Honda Civic, Palio, Tracker"
-            className="w-full bg-transparent font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm"
+            className="w-full bg-transparent font-semibold text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm print:text-xs"
           />
         </div>
 
-        <div className="flex items-center border-b border-neutral-300 py-1">
-          <span className="font-black text-neutral-800 w-20 sm:w-24 flex-shrink-0">PLACA:</span>
+        <div className="flex items-center border-b border-neutral-300 py-1 print:py-0.5">
+          <span className="font-black text-neutral-800 w-20 sm:w-24 print:w-20 flex-shrink-0">PLACA:</span>
           <input
             id="nav-placa"
             type="text"
@@ -519,7 +519,7 @@ export default function FolhaOrcamento({
             onChange={(e) => handleCampoRaiz('placa', e.target.value.toUpperCase())}
             onKeyDown={(e) => handleHeaderKeyDown(e, 'placa')}
             placeholder="ABC1D23"
-            className="w-full bg-transparent font-mono font-black uppercase text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm"
+            className="w-full bg-transparent font-mono font-black uppercase text-neutral-950 focus:outline-none focus:bg-amber-50/50 px-1 rounded-sm text-xs sm:text-sm print:text-xs"
           />
         </div>
       </div>
@@ -527,21 +527,21 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 4. TABELA DE ITENS (PRODUTO | TONALIDADE | DESCRIÇÃO | VALOR) */}
       {/* ========================================================= */}
-      <div className="mb-4">
+      <div className="mb-4 print:mb-1.5">
         <div className="w-full max-w-full print:max-w-none overflow-x-auto print:overflow-visible border border-neutral-400 rounded-sm scrollbar-thin">
           <table className="tabela-itens-print w-full min-w-[420px] print:min-w-0 sm:min-w-full border-collapse text-xs sm:text-sm">
             <thead>
               <tr className="bg-neutral-100 border-b border-neutral-400 text-neutral-950">
-                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-left font-extrabold w-[32%] text-xs sm:text-sm">
+                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 print:p-1 text-left font-extrabold w-[32%] text-xs sm:text-sm print:text-[10px]">
                   PRODUTO
                 </th>
-                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-center font-extrabold w-[16%] text-xs sm:text-sm">
+                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 print:p-1 text-center font-extrabold w-[16%] text-xs sm:text-sm print:text-[10px]">
                   TONALIDADE
                 </th>
-                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 text-left font-extrabold w-[36%] text-xs sm:text-sm">
+                <th className="border-r border-neutral-400 p-1.5 sm:p-2.5 print:p-1 text-left font-extrabold w-[36%] text-xs sm:text-sm print:text-[10px]">
                   DESCRIÇÃO / LOCAL
                 </th>
-                <th className="p-1.5 sm:p-2.5 text-right font-extrabold w-[16%] text-xs sm:text-sm">
+                <th className="p-1.5 sm:p-2.5 print:p-1 text-right font-extrabold w-[16%] text-xs sm:text-sm print:text-[10px]">
                   VALOR (R$)
                 </th>
                 <th className="w-7 no-print p-0 border-l border-neutral-400"></th>
@@ -551,7 +551,7 @@ export default function FolhaOrcamento({
               {orcamento.itens.map((item, rowIndex) => (
                 <tr key={item.id} className="border-b border-neutral-300 hover:bg-neutral-50/50">
                   {/* Coluna 0: Produto */}
-                  <td className="border-r border-neutral-300 p-0.5 sm:p-1">
+                  <td className="border-r border-neutral-300 p-0.5 sm:p-1 print:p-0">
                     <input
                       id={`nav-item-${rowIndex}-0`}
                       type="text"
@@ -559,12 +559,12 @@ export default function FolhaOrcamento({
                       onChange={(e) => handleItemChange(rowIndex, 'produto', e.target.value)}
                       onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 0)}
                       placeholder="Ex: Cerâmica, Alarme"
-                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
+                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 print:py-0.5 print:px-1 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm print:text-[10px]"
                     />
                   </td>
 
                   {/* Coluna 1: Tonalidade */}
-                  <td className="border-r border-neutral-300 p-0.5 sm:p-1">
+                  <td className="border-r border-neutral-300 p-0.5 sm:p-1 print:p-0">
                     <input
                       id={`nav-item-${rowIndex}-1`}
                       type="text"
@@ -572,12 +572,12 @@ export default function FolhaOrcamento({
                       onChange={(e) => handleItemChange(rowIndex, 'tonalidade', e.target.value)}
                       onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 1)}
                       placeholder="G5, G20..."
-                      className="w-full px-1 sm:px-2 py-1 sm:py-1.5 bg-transparent text-center font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
+                      className="w-full px-1 sm:px-2 py-1 sm:py-1.5 print:py-0.5 print:px-1 bg-transparent text-center font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm print:text-[10px]"
                     />
                   </td>
 
                   {/* Coluna 2: Descrição / Peça */}
-                  <td className="border-r border-neutral-300 p-0.5 sm:p-1">
+                  <td className="border-r border-neutral-300 p-0.5 sm:p-1 print:p-0">
                     <input
                       id={`nav-item-${rowIndex}-2`}
                       type="text"
@@ -585,12 +585,12 @@ export default function FolhaOrcamento({
                       onChange={(e) => handleItemChange(rowIndex, 'descricao', e.target.value)}
                       onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 2)}
                       placeholder="Ex: Parabrisa, Portas"
-                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
+                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 print:py-0.5 print:px-1 bg-transparent font-semibold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm print:text-[10px]"
                     />
                   </td>
 
                   {/* Coluna 3: Valor (R$) */}
-                  <td className="p-0.5 sm:p-1">
+                  <td className="p-0.5 sm:p-1 print:p-0">
                     <input
                       id={`nav-item-${rowIndex}-3`}
                       type="text"
@@ -602,7 +602,7 @@ export default function FolhaOrcamento({
                       }}
                       onKeyDown={(e) => handleTableKeyDown(e, rowIndex, 3)}
                       placeholder="0,00"
-                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 bg-transparent text-right font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm"
+                      className="w-full px-1.5 sm:px-2 py-1 sm:py-1.5 print:py-0.5 print:px-1 bg-transparent text-right font-mono font-bold text-neutral-950 focus:bg-amber-100/70 focus:outline-none rounded-sm text-xs sm:text-sm print:text-[10px]"
                     />
                   </td>
 
@@ -622,10 +622,10 @@ export default function FolhaOrcamento({
             </tbody>
             <tfoot>
               <tr className="bg-neutral-100 font-bold border-t-2 border-neutral-400">
-                <td colSpan={3} className="p-1.5 sm:p-2.5 text-right border-r border-neutral-400 uppercase tracking-wider text-xs sm:text-sm font-black total-geral-print text-neutral-900">
+                <td colSpan={3} className="p-1.5 sm:p-2.5 print:p-1 text-right border-r border-neutral-400 uppercase tracking-wider text-xs sm:text-sm font-black total-geral-print text-neutral-900">
                   TOTAL GERAL:
                 </td>
-                <td className="p-1.5 sm:p-2.5 text-right font-mono text-sm sm:text-lg text-neutral-950 font-black total-geral-print whitespace-nowrap">
+                <td className="p-1.5 sm:p-2.5 print:p-1 text-right font-mono text-sm sm:text-lg text-neutral-950 font-black total-geral-print whitespace-nowrap">
                   {Number(orcamento.total_geral || 0).toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
@@ -637,7 +637,6 @@ export default function FolhaOrcamento({
           </table>
         </div>
 
-        {/* Botão para adicionar linha na tela */}
         {/* Botão para adicionar linha na tela */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2 no-print">
           <span className="text-[11px] text-neutral-500">
@@ -656,7 +655,7 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 5. DIAGRAMA DO CARRO (VISTORIA DE RISCOS / AVARIAS) */}
       {/* ========================================================= */}
-      <div className="border border-neutral-300 rounded p-2.5 sm:p-3 mb-4 bg-neutral-50/60 w-full min-w-0 overflow-hidden">
+      <div className="border border-neutral-300 rounded p-2.5 sm:p-3 mb-4 print:p-1 print:mb-1 bg-neutral-50/60 w-full min-w-0 overflow-hidden">
         <DiagramaCarro
           avarias={orcamento.avarias}
           onChange={(novasAvarias: AvariaItem[]) => onChange({ ...orcamento, avarias: novasAvarias })}
@@ -666,8 +665,8 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 6. OBSERVAÇÕES E CONDIÇÕES */}
       {/* ========================================================= */}
-      <div className="border border-neutral-300 rounded p-2.5 mb-4 text-xs sm:text-sm w-full min-w-0">
-        <label className="block font-black text-neutral-800 text-xs sm:text-[13px] mb-1 uppercase tracking-wide">
+      <div className="border border-neutral-300 rounded p-2.5 mb-4 print:p-1 print:mb-1 text-xs sm:text-sm print:text-[10px] w-full min-w-0">
+        <label className="block font-black text-neutral-800 text-xs sm:text-[13px] print:text-[9.5px] mb-1 print:mb-0.5 uppercase tracking-wide">
           Observações / Condições Gerais:
         </label>
         <textarea
@@ -675,16 +674,16 @@ export default function FolhaOrcamento({
           value={orcamento.observacoes}
           onChange={(e) => handleCampoRaiz('observacoes', e.target.value)}
           placeholder="Forma de pagamento, prazo de cura do insulfilm (não abrir vidros por 3 dias), etc."
-          className="w-full bg-transparent text-neutral-950 font-medium border-none p-0 focus:outline-none resize-none text-xs sm:text-sm leading-relaxed"
+          className="w-full bg-transparent text-neutral-950 font-medium border-none p-0 focus:outline-none resize-none text-xs sm:text-sm print:text-[9.5px] print:leading-tight leading-relaxed"
         />
       </div>
 
       {/* ========================================================= */}
       {/* 7. CAIXAS DE SELEÇÃO DE GARANTIA (Personalizáveis na Configuração) */}
       {/* ========================================================= */}
-      <div className="border-2 border-neutral-800 rounded-sm p-2.5 sm:p-3 bg-neutral-50/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm w-full min-w-0">
+      <div className="border-2 border-neutral-800 rounded-sm p-2.5 sm:p-3 print:p-1.5 print:mb-0 bg-neutral-50/60 flex flex-col sm:flex-row print:flex-row items-start sm:items-center print:items-center justify-between gap-3 print:gap-1.5 text-xs sm:text-sm w-full min-w-0">
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="font-display font-black text-sm sm:text-base text-neutral-950 uppercase tracking-wider">
+          <span className="font-display font-black text-sm sm:text-base print:text-xs text-neutral-950 uppercase tracking-wider">
             Garantia:
           </span>
           <button
@@ -696,7 +695,7 @@ export default function FolhaOrcamento({
             (Configurar)
           </button>
         </div>
-        <div className="flex flex-wrap items-center gap-3 sm:gap-6">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6 print:gap-2">
           {(() => {
             const garantiasSelecionadas = (orcamento.garantia || '')
               .split(',')
@@ -721,15 +720,15 @@ export default function FolhaOrcamento({
                     }
                     handleCampoRaiz('garantia', novas.join(', '));
                   }}
-                  className="flex items-center gap-2 cursor-pointer select-none font-bold text-xs text-neutral-900 hover:text-black py-0.5"
+                  className="flex items-center gap-2 print:gap-1 cursor-pointer select-none font-bold text-xs print:text-[9.5px] text-neutral-900 hover:text-black py-0.5 print:py-0"
                 >
                   <div
-                    className={`w-4 h-4 border-2 border-neutral-900 rounded-[2px] flex items-center justify-center transition-all ${
+                    className={`w-4 h-4 print:w-3.5 print:h-3.5 border-2 border-neutral-900 rounded-[2px] flex items-center justify-center transition-all ${
                       selecionado ? 'bg-neutral-950 border-neutral-950' : 'bg-white'
                     }`}
                   >
                     {selecionado && (
-                      <span className="text-white print:text-black text-[11px] font-black leading-none">
+                      <span className="text-white print:text-black text-[11px] print:text-[9px] font-black leading-none">
                         ✓
                       </span>
                     )}

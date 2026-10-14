@@ -275,7 +275,7 @@ export default function BalcaoApp() {
       {/* ========================================================= */}
       {/* ÁREA DE TRABALHO DA FOLHA (DOCUMENTO TELA INTEIRA / RESPONSIVO) */}
       {/* ========================================================= */}
-      <main className="flex-1 w-full max-w-[100vw] print:max-w-none overflow-x-hidden print:overflow-visible bg-neutral-100 sm:bg-neutral-200 py-1 sm:py-4 px-1 sm:px-4 lg:px-8 print:p-0 print:m-0 print:bg-white flex flex-col items-center">
+      <main className="flex-1 w-full max-w-[100vw] print:max-w-none overflow-x-hidden print:overflow-hidden bg-neutral-100 sm:bg-neutral-200 py-1 sm:py-4 px-1 sm:px-4 lg:px-8 print:p-0 print:m-0 print:bg-white flex flex-col items-center">
         <FolhaOrcamento
           orcamento={orcamentoAtivo}
           dadosLoja={dadosLoja}

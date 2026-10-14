@@ -132,12 +132,12 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
   const zonaAtivaConfig = ZONAS_CONFIG.find((z) => z.id === zonaSelecionada);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-center lg:items-start w-full min-w-0">
+    <div className="flex flex-col lg:flex-row print:flex-row gap-3 sm:gap-4 print:gap-2.5 items-center lg:items-start print:items-center w-full min-w-0">
       {/* Blueprint SVG do Veículo (HORIZONTAL / VIRADO DE LADO) */}
-      <div className="relative w-full max-w-[340px] sm:max-w-[360px] mx-auto flex-shrink-0 select-none flex flex-col items-center">
+      <div className="relative w-full max-w-[340px] sm:max-w-[360px] print:w-[220px] print:max-w-[220px] mx-auto print:mx-0 flex-shrink-0 select-none flex flex-col items-center">
         <svg
           viewBox="0 0 390 200"
-          className="w-full h-auto aspect-[390/200] border border-neutral-300 rounded-lg bg-neutral-50 shadow-inner"
+          className="w-full h-auto aspect-[390/200] border border-neutral-300 rounded-lg bg-neutral-50 shadow-inner print:max-h-[115px]"
         >
           {/* Rodas do Carro (Pneus visíveis na lateral) */}
           <rect x="52" y="14" width="36" height="12" rx="3" fill="#222" stroke="#111" strokeWidth="1" />
@@ -422,36 +422,36 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
         )}
 
         {/* Lista de Avarias Registradas */}
-        <div className="border border-neutral-200 rounded-lg bg-white p-2.5 min-h-[105px]">
-          <div className="flex items-center justify-between pb-1.5 border-b border-neutral-200 mb-1.5">
-            <span className="font-bold text-neutral-900 tracking-wide uppercase text-[11px] flex items-center gap-1.5">
+        <div className="border border-neutral-200 rounded-lg bg-white p-2.5 print:p-1.5 min-h-[105px] print:min-h-0 print:max-h-[115px] print:overflow-hidden flex-1 w-full">
+          <div className="flex items-center justify-between pb-1.5 print:pb-1 border-b border-neutral-200 mb-1.5 print:mb-1">
+            <span className="font-bold text-neutral-900 tracking-wide uppercase text-[11px] print:text-[9.5px] flex items-center gap-1.5">
               <span>📋</span> Vistoria de Entrada / Avarias Pré-Existentes
             </span>
-            <span className="text-[11px] text-neutral-500 font-mono font-bold">
+            <span className="text-[11px] print:text-[9.5px] text-neutral-500 font-mono font-bold">
               {avarias.length} registrada(s)
             </span>
           </div>
 
           {avarias.length === 0 ? (
-            <p className="text-neutral-400 italic text-[11px] py-3 text-center">
+            <p className="text-neutral-400 italic text-[11px] print:text-[9.5px] py-3 print:py-1.5 text-center">
               Nenhuma avaria ou risco registrado no veículo (veículo íntegro na entrada).
             </p>
           ) : (
-            <ul className="space-y-1.5">
+            <ul className="space-y-1.5 print:space-y-1">
               {avarias.map((a) => {
                 const conf = ZONAS_CONFIG.find((z) => z.id === a.zona);
                 return (
                   <li
                     key={a.zona}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between bg-red-50/70 border border-red-200/80 rounded-md p-2 text-neutral-900 gap-2"
+                    className="flex flex-col sm:flex-row print:flex-row sm:items-center print:items-center justify-between bg-red-50/70 border border-red-200/80 rounded-md p-2 print:p-1 text-neutral-900 gap-2 print:gap-1 text-xs print:text-[9.5px]"
                   >
                     <div className="flex flex-col gap-1 overflow-hidden flex-1">
                       <div className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-                        <span className="font-bold text-red-950 text-[11px] whitespace-nowrap">
+                        <span className="font-bold text-red-950 text-[11px] print:text-[9.5px] whitespace-nowrap">
                           {conf?.nome}:
                         </span>
-                        <span className="text-neutral-800 text-[11px]">
+                        <span className="text-neutral-800 text-[11px] print:text-[9.5px]">
                           {a.detalhe}
                         </span>
                       </div>

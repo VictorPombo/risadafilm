@@ -73,11 +73,11 @@ table { border-collapse: collapse; width: 100%; }
 }
 .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 
-/* Print Styles para o Balcão */
+/* Print Styles para o Balcão - ESTRITAMENTE 1 ÚNICA PÁGINA A4 */
 @media print {
   @page {
-    size: auto;
-    margin: 6mm 8mm;
+    size: A4 portrait;
+    margin: 4mm 6mm !important;
   }
   
   *, *::before, *::after {
@@ -88,50 +88,67 @@ table { border-collapse: collapse; width: 100%; }
     -webkit-filter: none !important;
     transition: none !important;
     animation: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   html, body {
     background: #ffffff !important;
     color: #000000 !important;
-    font-size: 11.5pt;
-    line-height: 1.35;
+    font-size: 8.5pt !important;
+    line-height: 1.2 !important;
     width: 100% !important;
+    height: 100% !important;
+    max-height: 289mm !important;
     margin: 0 !important;
     padding: 0 !important;
+    overflow: hidden !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    break-after: avoid !important;
+    break-before: avoid !important;
   }
 
   .no-print {
     display: none !important;
   }
 
-  /* Desativa flexbox e overflow nos containers pais para envio limpo ao spooler */
+  /* Desativa scroll e garante 1 página sem corte no spooler */
   body, #__next, main, .min-h-screen {
     min-height: auto !important;
-    height: auto !important;
+    height: 100% !important;
+    max-height: 289mm !important;
     display: block !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
-  /* Container da folha de orçamento: cabe 100% na largura do A4 sem cortar nada */
+  /* Container da folha de orçamento: cabe 100% em 1 folha A4 */
   .folha-orcamento-container {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 100% !important;
+    height: 100% !important;
+    max-height: 285mm !important;
     margin: 0 !important;
     padding: 0 !important;
     box-sizing: border-box !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     border: none !important;
     box-shadow: none !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
   }
 
   /* Remove limitações de largura móvel na impressão */
-  body, #__next, main, .min-h-screen, [class*="max-w-"], [class*="overflow-"] {
+  body, #__next, main, .min-h-screen, [class*="max-w-"] {
     width: 100% !important;
     max-width: none !important;
-    overflow: visible !important;
   }
 
   /* Tabela de Cabeçalho na Impressão */
@@ -139,7 +156,7 @@ table { border-collapse: collapse; width: 100%; }
     width: 100% !important;
     border-collapse: collapse !important;
     border: none !important;
-    margin: 0 0 10px 0 !important;
+    margin: 0 0 4px 0 !important;
     padding: 0 !important;
     table-layout: fixed !important;
   }
@@ -159,9 +176,9 @@ table { border-collapse: collapse; width: 100%; }
   }
 
   .tabela-itens-print th {
-    font-size: 9.5pt !important;
+    font-size: 8pt !important;
     font-weight: 800 !important;
-    padding: 4px 6px !important;
+    padding: 2.5px 4px !important;
     text-align: left !important;
     white-space: nowrap !important;
     overflow: hidden !important;
@@ -171,13 +188,13 @@ table { border-collapse: collapse; width: 100%; }
   }
 
   .tabela-itens-print td {
-    padding: 2px 4px !important;
+    padding: 1.5px 3px !important;
     border: 1px solid #d1d5db !important;
     overflow: hidden !important;
   }
 
   .tabela-itens-print td input {
-    font-size: 9.5pt !important;
+    font-size: 8pt !important;
     font-weight: 600 !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -187,6 +204,7 @@ table { border-collapse: collapse; width: 100%; }
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    line-height: 1.15 !important;
   }
 
   input, textarea, select {
@@ -194,17 +212,17 @@ table { border-collapse: collapse; width: 100%; }
     background: transparent !important;
     box-shadow: none !important;
     color: #000000 !important;
-    font-size: 10pt !important;
+    font-size: 8.5pt !important;
     padding: 0 !important;
   }
 
   .total-geral-print {
-    font-size: 12pt !important;
+    font-size: 10.5pt !important;
     font-weight: 900 !important;
   }
 
   .garantia-item-print {
-    font-size: 10pt !important;
+    font-size: 8.5pt !important;
     font-weight: 700 !important;
   }
 }
