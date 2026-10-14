@@ -69,7 +69,7 @@ export function obterProximoNumero(lista: OrcamentoBalcao[]): string {
   return `${formatado}/${anoAtual}`;
 }
 
-// ---------- Salvar / Listar Orçamentos ----------
+// ---------- Salvar / Listar Orçamentos (Tabela Isolada: orcamentos_balcao) ----------
 
 export async function salvarOrcamentoBalcao(orc: OrcamentoBalcao): Promise<OrcamentoBalcao> {
   const agora = new Date().toISOString();
@@ -96,6 +96,33 @@ export async function salvarOrcamentoBalcao(orc: OrcamentoBalcao): Promise<Orcam
     }
   }
 
+  // 2. Salvar no Supabase na tabela dedicada orcamentos_balcao (100% isolada)
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from('orcamentos_balcao').upsert({
+      id: orcamentoFinal.id,
+      numero: orcamentoFinal.numero,
+      data_emissao: orcamentoFinal.data_emissao,
+      cliente: orcamentoFinal.cliente,
+      telefone: orcamentoFinal.telefone,
+      carro: orcamentoFinal.carro,
+      placa: orcamentoFinal.placa,
+      itens: orcamentoFinal.itens,
+      avarias: orcamentoFinal.avarias,
+      observacoes: orcamentoFinal.observacoes,
+      garantia: orcamentoFinal.garantia,
+      total_geral: orcamentoFinal.total_geral,
+      created_at: orcamentoFinal.created_at,
+      updated_at: orcamentoFinal.updated_at,
+    });
+
+    if (error) {
+      console.warn('Aviso: orcamentos_balcao no Supabase:', error.message);
+    }
+  } catch (err) {
+    console.warn('Erro de conexão com Supabase:', err);
+  }
+
   return orcamentoFinal;
 }
 
@@ -111,13 +138,77 @@ export function listarLocalmente(): OrcamentoBalcao[] {
 }
 
 export async function listarTodosOrcamentos(): Promise<OrcamentoBalcao[]> {
-  // Retorna os orçamentos do Balcão salvos de forma isolada, sem misturar com o sistema administrativo
-  return listarLocalmente();
+  const locais = listarLocalmente();
+
+  // Tenta buscar da tabela dedicada orcamentos_balcao no Supabase
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('orcamentos_balcao')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && data && Array.isArray(data)) {
+      const mapa = new Map<string, OrcamentoBalcao>();
+      
+      // Insere os remotos
+      for (const item of data) {
+        mapa.set(item.id, {
+          id: item.id,
+          numero: item.numero,
+          data_emissao: item.data_emissao,
+          cliente: item.cliente,
+          telefone: item.telefone,
+          carro: item.carro,
+          placa: item.placa,
+          itens: Array.isArray(item.itens) ? item.itens : [],
+          avarias: Array.isArray(item.avarias) ? item.avarias : [],
+          observacoes: item.observacoes || '',
+          garantia: item.garantia || '',
+          total_geral: Number(item.total_geral) || 0,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+      }
+
+      // Mescla com locais que porventura ainda não tenham subido
+      for (const loc of locais) {
+        if (loc.id && !mapa.has(loc.id)) {
+          mapa.set(loc.id, loc);
+        }
+      }
+
+      const listaCompleta = Array.from(mapa.values()).sort(
+        (a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
+      );
+
+      // Atualiza cache local
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY_ORCAMENTOS, JSON.stringify(listaCompleta));
+      }
+
+      return listaCompleta;
+    }
+  } catch (err) {
+    console.warn('Falha ao carregar do Supabase orcamentos_balcao:', err);
+  }
+
+  // Fallback offline
+  return locais;
 }
 
 export async function excluirOrcamentoBalcao(id: string): Promise<void> {
+  // 1. Remove localmente
   if (typeof window !== 'undefined') {
     const locais = listarLocalmente().filter((item) => item.id !== id);
     localStorage.setItem(STORAGE_KEY_ORCAMENTOS, JSON.stringify(locais));
+  }
+
+  // 2. Remove do Supabase
+  try {
+    const supabase = createClient();
+    await supabase.from('orcamentos_balcao').delete().eq('id', id);
+  } catch (err) {
+    console.warn('Erro ao excluir no Supabase:', err);
   }
 }
