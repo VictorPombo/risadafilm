@@ -188,7 +188,7 @@ export default function FolhaOrcamento({
       <header className="border-b-2 border-neutral-800 pb-3 mb-4 w-full">
         <div className="cabecalho-logos-print flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 w-full">
           {/* 1. Esquerda: Nova Logo Risada Film (Escudo) + Dados */}
-          <div className="flex items-center gap-2.5 sm:gap-4 justify-start w-full md:w-auto flex-shrink-0 min-w-0">
+          <div className="flex items-center gap-2.5 sm:gap-4 justify-start w-full md:w-auto print:!w-auto flex-shrink-0 min-w-0">
             <div className="relative w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 print:w-14 print:h-14 flex-shrink-0">
               <Image
                 src="/images/LogoNovoRisadaLimpo.png"
@@ -211,10 +211,10 @@ export default function FolhaOrcamento({
             </div>
           </div>
 
-          {/* Logos Parceiros: em celular ficam lado a lado num strip compacto; em desktop md+ ficam distribuídos no centro e direita */}
-          <div className="flex flex-row items-center justify-center md:justify-end gap-6 sm:gap-8 lg:gap-10 w-full md:w-auto py-1 md:py-0 border-y md:border-none border-neutral-100 flex-shrink-0">
+          {/* Logos Parceiros: em celular ficam lado a lado num strip compacto; em desktop md+ e print ficam alinhados à direita */}
+          <div className="flex flex-row items-center justify-center md:justify-end print:!justify-end gap-6 sm:gap-8 lg:gap-10 w-full md:w-auto print:!w-auto py-1 md:py-0 print:!py-0 border-y md:border-none print:!border-none border-neutral-100 flex-shrink-0">
             {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (Centralizado) */}
-            <div className="logo-3m-print flex flex-col items-center text-center justify-center py-0.5 flex-shrink-0">
+            <div className="logo-3m-print flex flex-col items-center text-center justify-center py-0.5 print:!py-0 flex-shrink-0">
               <div className="relative flex items-center justify-center">
                 <Image
                   src="/images/logo-3m-oficial.png"
@@ -234,7 +234,7 @@ export default function FolhaOrcamento({
             </div>
 
             {/* 3. Direita: Logo Tech-Cut Oficial */}
-            <div className="logo-techcut-print flex flex-col items-center md:items-end print:!items-end justify-center py-0.5 flex-shrink-0">
+            <div className="logo-techcut-print flex flex-col items-center md:items-end print:!items-end justify-center py-0.5 print:!py-0 flex-shrink-0">
               <div className="relative flex items-center justify-center">
                 <Image
                   src="/images/logo-tech-cut.png"
