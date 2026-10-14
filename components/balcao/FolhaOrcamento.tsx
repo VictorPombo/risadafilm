@@ -199,7 +199,7 @@ export default function FolhaOrcamento({
               />
             </div>
             <div>
-              <h1 className="font-cooper italic font-bold text-2xl sm:text-3xl print:text-xl tracking-tight text-neutral-950 uppercase leading-none">
+              <h1 className="font-cooper italic font-bold text-3xl sm:text-4xl print:text-2xl tracking-tight text-neutral-950 uppercase leading-none">
                 Risada Film
               </h1>
               <p className="text-[11px] sm:text-xs print:text-[10px] font-semibold text-neutral-700 mt-0.5">
