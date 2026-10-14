@@ -167,6 +167,66 @@ table { border-collapse: collapse; width: 100%; }
     vertical-align: middle !important;
   }
 
+  .cabecalho-tabela-print td:nth-child(1) {
+    width: 35% !important;
+    text-align: left !important;
+  }
+
+  .cabecalho-tabela-print td:nth-child(2) {
+    width: 30% !important;
+    text-align: center !important;
+  }
+
+  .cabecalho-tabela-print td:nth-child(3) {
+    width: 35% !important;
+    text-align: right !important;
+  }
+
+  /* Vistoria de Avarias na Impressão: Carro e Lista sempre lado a lado */
+  .vistoria-container-print {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 10px !important;
+    overflow: visible !important;
+  }
+
+  .vistoria-carro-print {
+    width: 230px !important;
+    max-width: 230px !important;
+    min-width: 230px !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+  }
+
+  .vistoria-carro-print svg {
+    width: 100% !important;
+    max-height: 120px !important;
+  }
+
+  .vistoria-lista-print {
+    flex: 1 1 auto !important;
+    width: calc(100% - 240px) !important;
+    min-width: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .vistoria-item-print {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 1.5px 4px !important;
+    margin-bottom: 2px !important;
+    background-color: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+    border-radius: 3px !important;
+    font-size: 7.5pt !important;
+    line-height: 1.15 !important;
+  }
+
   /* Tabela de Itens na Impressão */
   .tabela-itens-print {
     width: 100% !important;

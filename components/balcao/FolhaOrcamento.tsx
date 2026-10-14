@@ -195,34 +195,34 @@ export default function FolhaOrcamento({
             <tbody>
               <tr>
                 {/* 1. Esquerda: Logo Risada Film (Escudo) + Dados */}
-                <td className="w-[45%] text-left align-middle p-0">
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-14 h-14 flex-shrink-0">
+                <td className="w-[35%] text-left align-middle p-0">
+                  <div className="flex items-center gap-2.5">
+                    <div className="relative w-13 h-13 flex-shrink-0">
                       <Image
                         src="/images/LogoNovoRisadaLimpo.png"
                         alt="Risada Film Logo Oficial"
-                        width={56}
-                        height={56}
+                        width={52}
+                        height={52}
                         priority
                         className="object-contain"
                       />
                     </div>
                     <div className="min-w-0">
-                      <div className="font-cooper italic font-bold text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
+                      <div className="font-cooper italic font-bold text-2xl lg:text-3xl tracking-tight text-neutral-950 uppercase leading-none whitespace-nowrap">
                         Risada Film
                       </div>
-                      <div className="text-[10px] font-semibold text-neutral-700 mt-1 truncate">
+                      <div className="text-[9.5px] font-semibold text-neutral-700 mt-0.5 truncate">
                         {dadosLoja.razaoSocial}
                       </div>
-                      <div className="text-[9px] text-neutral-500 font-mono truncate">
+                      <div className="text-[8.5px] text-neutral-500 font-mono truncate">
                         CNPJ: {dadosLoja.cnpj} | IE: {dadosLoja.inscEstadual}
                       </div>
                     </div>
                   </div>
                 </td>
 
-                {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (CENTRALIZADO) */}
-                <td className="w-[28%] text-center align-middle p-0">
+                {/* 2. Centro: Logo 3M Aplicador Autorizado Oficial (EXATAMENTE NO CENTRO DA PÁGINA) */}
+                <td className="w-[30%] text-center align-middle p-0">
                   <div className="flex flex-col items-center justify-center text-center mx-auto">
                     <Image
                       src="/images/logo-3m-oficial.png"
@@ -232,17 +232,17 @@ export default function FolhaOrcamento({
                       priority
                       className="w-16 h-auto object-contain mx-auto"
                     />
-                    <span className="text-[9px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5 whitespace-nowrap">
+                    <span className="text-[8.5px] font-bold text-neutral-900 tracking-tight leading-tight mt-0.5 whitespace-nowrap">
                       Aplicador Autorizado
                     </span>
-                    <span className="text-[8px] text-neutral-600 font-medium leading-none whitespace-nowrap">
+                    <span className="text-[7.5px] text-neutral-600 font-medium leading-none whitespace-nowrap">
                       Películas para Vidros
                     </span>
                   </div>
                 </td>
 
                 {/* 3. Direita: Logo Tech-Cut Oficial com padding-left de 10 para o 3M */}
-                <td className="w-[27%] text-right align-middle p-0 pl-6">
+                <td className="w-[35%] text-right align-middle p-0 pl-10">
                   <div className="flex flex-col items-end justify-center text-right ml-auto">
                     <Image
                       src="/images/logo-tech-cut.png"
@@ -252,7 +252,7 @@ export default function FolhaOrcamento({
                       priority
                       className="w-28 h-auto object-contain ml-auto"
                     />
-                    <span className="text-[8px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5 whitespace-nowrap">
+                    <span className="text-[7.5px] font-semibold text-neutral-600 uppercase tracking-wider mt-0.5 whitespace-nowrap">
                       Corte Computadorizado
                     </span>
                   </div>
@@ -655,7 +655,7 @@ export default function FolhaOrcamento({
       {/* ========================================================= */}
       {/* 5. DIAGRAMA DO CARRO (VISTORIA DE RISCOS / AVARIAS) */}
       {/* ========================================================= */}
-      <div className="border border-neutral-300 rounded p-2.5 sm:p-3 mb-4 print:p-1 print:mb-1 bg-neutral-50/60 w-full min-w-0 overflow-hidden">
+      <div className="border border-neutral-300 rounded p-2.5 sm:p-3 mb-4 print:p-1 print:mb-1 bg-neutral-50/60 w-full min-w-0">
         <DiagramaCarro
           avarias={orcamento.avarias}
           onChange={(novasAvarias: AvariaItem[]) => onChange({ ...orcamento, avarias: novasAvarias })}

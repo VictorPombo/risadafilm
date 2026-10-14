@@ -132,12 +132,12 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
   const zonaAtivaConfig = ZONAS_CONFIG.find((z) => z.id === zonaSelecionada);
 
   return (
-    <div className="flex flex-col lg:flex-row print:flex-row gap-3 sm:gap-4 print:gap-2.5 items-center lg:items-start print:items-center w-full min-w-0">
+    <div className="vistoria-container-print flex flex-col lg:flex-row gap-3 sm:gap-4 items-center lg:items-start w-full min-w-0">
       {/* Blueprint SVG do Veículo (HORIZONTAL / VIRADO DE LADO) */}
-      <div className="relative w-full max-w-[340px] sm:max-w-[360px] print:w-[220px] print:max-w-[220px] mx-auto print:mx-0 flex-shrink-0 select-none flex flex-col items-center">
+      <div className="vistoria-carro-print relative w-full max-w-[340px] sm:max-w-[360px] mx-auto select-none flex flex-col items-center flex-shrink-0">
         <svg
           viewBox="0 0 390 200"
-          className="w-full h-auto aspect-[390/200] border border-neutral-300 rounded-lg bg-neutral-50 shadow-inner print:max-h-[115px]"
+          className="w-full h-auto aspect-[390/200] border border-neutral-300 rounded-lg bg-neutral-50 shadow-inner"
         >
           {/* Rodas do Carro (Pneus visíveis na lateral) */}
           <rect x="52" y="14" width="36" height="12" rx="3" fill="#222" stroke="#111" strokeWidth="1" />
@@ -314,7 +314,7 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
       </div>
 
       {/* Painel lateral: Edição e Lista de Avarias */}
-      <div className="flex-1 w-full min-w-0 text-xs">
+      <div className="vistoria-lista-print flex-1 w-full min-w-0 text-xs">
         {/* Editor de Avaria Aberto */}
         {zonaSelecionada && !somenteVisualizacao && (
           <div className="bg-amber-50 border border-amber-300 rounded-lg p-2.5 sm:p-3 mb-2.5 no-print animate-fade-in shadow-xs w-full min-w-0">
@@ -422,49 +422,49 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
         )}
 
         {/* Lista de Avarias Registradas */}
-        <div className="border border-neutral-200 rounded-lg bg-white p-2.5 print:p-1.5 min-h-[105px] print:min-h-0 print:max-h-[115px] print:overflow-hidden flex-1 w-full">
-          <div className="flex items-center justify-between pb-1.5 print:pb-1 border-b border-neutral-200 mb-1.5 print:mb-1">
-            <span className="font-bold text-neutral-900 tracking-wide uppercase text-[11px] print:text-[9.5px] flex items-center gap-1.5">
+        <div className="border border-neutral-200 rounded-lg bg-white p-2.5 print:p-1.5 min-h-[105px] print:min-h-0 w-full">
+          <div className="flex items-center justify-between pb-1.5 print:pb-0.5 border-b border-neutral-200 mb-1.5 print:mb-1">
+            <span className="font-bold text-neutral-900 tracking-wide uppercase text-[11px] print:text-[8pt] flex items-center gap-1.5">
               <span>📋</span> Vistoria de Entrada / Avarias Pré-Existentes
             </span>
-            <span className="text-[11px] print:text-[9.5px] text-neutral-500 font-mono font-bold">
+            <span className="text-[11px] print:text-[8pt] text-neutral-500 font-mono font-bold">
               {avarias.length} registrada(s)
             </span>
           </div>
 
           {avarias.length === 0 ? (
-            <p className="text-neutral-400 italic text-[11px] print:text-[9.5px] py-3 print:py-1.5 text-center">
+            <p className="text-neutral-400 italic text-[11px] print:text-[8pt] py-3 print:py-1.5 text-center">
               Nenhuma avaria ou risco registrado no veículo (veículo íntegro na entrada).
             </p>
           ) : (
-            <ul className="space-y-1.5 print:space-y-1">
+            <ul className="space-y-1.5 print:space-y-0.5">
               {avarias.map((a) => {
                 const conf = ZONAS_CONFIG.find((z) => z.id === a.zona);
                 return (
                   <li
                     key={a.zona}
-                    className="flex flex-col sm:flex-row print:flex-row sm:items-center print:items-center justify-between bg-red-50/70 border border-red-200/80 rounded-md p-2 print:p-1 text-neutral-900 gap-2 print:gap-1 text-xs print:text-[9.5px]"
+                    className="vistoria-item-print flex flex-col sm:flex-row sm:items-center justify-between bg-red-50/70 border border-red-200/80 rounded-md p-2 print:p-0.5 text-neutral-900 gap-2 print:gap-1 text-xs"
                   >
-                    <div className="flex flex-col gap-1 overflow-hidden flex-1">
+                    <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-                        <span className="font-bold text-red-950 text-[11px] print:text-[9.5px] whitespace-nowrap">
+                        <span className="w-2 h-2 print:w-1.5 print:h-1.5 rounded-full bg-red-500 flex-shrink-0" />
+                        <span className="font-bold text-red-950 text-[11px] print:text-[8pt] whitespace-nowrap">
                           {conf?.nome}:
                         </span>
-                        <span className="text-neutral-800 text-[11px] print:text-[9.5px]">
+                        <span className="text-neutral-800 text-[11px] print:text-[8pt] font-medium">
                           {a.detalhe}
                         </span>
                       </div>
 
-                      {/* Fotos registradas para esta avaria */}
+                      {/* Fotos registradas para esta avaria (ocultas na folha para caber 1 página e manter o texto limpo) */}
                       {a.fotos && a.fotos.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-1.5 pl-3.5 mt-0.5">
+                        <div className="flex flex-wrap items-center gap-1.5 pl-3.5 mt-0.5 no-print">
                           {a.fotos.map((foto, fIdx) => (
                             <button
                               type="button"
                               key={fIdx}
                               onClick={() => setFotoAmpliadaModal(foto)}
-                              className="w-10 h-10 print:w-12 print:h-12 rounded border border-neutral-300 overflow-hidden bg-white shadow-xs hover:ring-2 hover:ring-amber-500 transition-all flex-shrink-0 cursor-pointer"
+                              className="w-10 h-10 rounded border border-neutral-300 overflow-hidden bg-white shadow-xs hover:ring-2 hover:ring-amber-500 transition-all flex-shrink-0 cursor-pointer"
                               title="Clique para ampliar a foto da avaria"
                             >
                               <img
@@ -474,7 +474,7 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
                               />
                             </button>
                           ))}
-                          <span className="text-[10px] text-neutral-500 font-medium no-print">
+                          <span className="text-[10px] text-neutral-500 font-medium">
                             ({a.fotos.length} foto{a.fotos.length > 1 ? 's' : ''})
                           </span>
                         </div>
