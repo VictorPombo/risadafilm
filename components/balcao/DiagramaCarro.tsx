@@ -68,12 +68,6 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
           viewBox="0 0 390 200"
           className="w-[290px] h-[155px] sm:w-[350px] sm:h-[185px] border border-neutral-300 rounded-lg bg-neutral-50 shadow-inner"
         >
-          <defs>
-            <filter id="shadow-car" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="1" stdDeviation="1" floodOpacity="0.25" />
-            </filter>
-          </defs>
-
           {/* Rodas do Carro (Pneus visíveis na lateral) */}
           <rect x="52" y="14" width="36" height="12" rx="3" fill="#222" stroke="#111" strokeWidth="1" />
           <rect x="288" y="14" width="36" height="12" rx="3" fill="#222" stroke="#111" strokeWidth="1" />
@@ -234,7 +228,7 @@ export default function DiagramaCarro({ avarias, onChange, somenteVisualizacao =
             if (!mapaAvarias.has(z.id)) return null;
             return (
               <g key={z.id}>
-                <circle cx={z.x} cy={z.y} r="7" fill="#e53e3e" stroke="#ffffff" strokeWidth="2" filter="url(#shadow-car)" />
+                <circle cx={z.x} cy={z.y} r="7" fill="#e53e3e" stroke="#ffffff" strokeWidth="2" />
                 <text x={z.x} y={z.y + 2.5} fontSize="7" textAnchor="middle" fill="#ffffff" fontWeight="bold">
                   !
                 </text>

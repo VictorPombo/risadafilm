@@ -65,22 +65,23 @@ export default function HistoricoDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm no-print animate-fade-in">
-      <div className="bg-[#141414] border-l border-[#2e2e2e] w-full max-w-md h-full flex flex-col shadow-2xl text-neutral-100">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm no-print animate-fade-in">
+      <div className="bg-white border-l border-neutral-200 w-full max-w-md h-full flex flex-col shadow-2xl text-neutral-900">
         {/* Topo do Drawer */}
-        <div className="p-4 border-b border-[#2e2e2e] bg-[#1a1a1a]">
+        <div className="p-4 border-b border-neutral-200 bg-neutral-50">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h2 className="font-bold text-base text-[#f5c518] flex items-center gap-2">
-                <span>📁</span> Histórico de Orçamentos
+              <h2 className="font-bold text-base text-neutral-900 flex items-center gap-2">
+                <span className="p-1 bg-amber-400 rounded text-black text-sm">📁</span> Histórico de Orçamentos
               </h2>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-neutral-600 font-medium mt-0.5">
                 {orcamentos.length} orçamento(s) registrado(s)
               </p>
             </div>
             <button
               onClick={onFechar}
-              className="text-neutral-400 hover:text-white p-1 rounded hover:bg-neutral-800 text-lg leading-none"
+              className="text-neutral-500 hover:text-neutral-900 p-1.5 rounded hover:bg-neutral-200 text-lg leading-none transition-colors"
+              title="Fechar histórico"
             >
               ✕
             </button>
@@ -95,13 +96,13 @@ export default function HistoricoDrawer({
                 placeholder="Buscar por PLACA, cliente, carro ou tel..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-[#0a0a0a] border border-[#333] rounded text-xs text-white placeholder-neutral-500 focus:border-[#f5c518]"
+                className="w-full pl-8 pr-3 py-2 bg-white border border-neutral-300 rounded-lg text-xs text-neutral-900 placeholder-neutral-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 shadow-sm outline-none"
               />
-              <span className="absolute left-2.5 top-1.5 text-neutral-500 text-xs">🔍</span>
+              <span className="absolute left-2.5 top-2 text-neutral-400 text-xs">🔍</span>
               {busca && (
                 <button
                   onClick={() => setBusca('')}
-                  className="absolute right-2.5 top-1.5 text-neutral-400 hover:text-white text-xs"
+                  className="absolute right-2.5 top-2 text-neutral-400 hover:text-neutral-700 text-xs"
                 >
                   ✕
                 </button>
@@ -113,10 +114,10 @@ export default function HistoricoDrawer({
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                 <button
                   onClick={() => setMesFiltro('todos')}
-                  className={`px-2.5 py-1 rounded text-[11px] whitespace-nowrap transition-colors ${
+                  className={`px-2.5 py-1 rounded-md text-[11px] whitespace-nowrap transition-colors border ${
                     mesFiltro === 'todos'
-                      ? 'bg-[#f5c518] text-black font-bold'
-                      : 'bg-[#222] text-neutral-300 hover:bg-[#333]'
+                      ? 'bg-amber-400 border-amber-500 text-neutral-950 font-bold shadow-xs'
+                      : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-100'
                   }`}
                 >
                   Todos
@@ -125,10 +126,10 @@ export default function HistoricoDrawer({
                   <button
                     key={m}
                     onClick={() => setMesFiltro(m)}
-                    className={`px-2.5 py-1 rounded text-[11px] whitespace-nowrap transition-colors ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] whitespace-nowrap transition-colors border ${
                       mesFiltro === m
-                        ? 'bg-[#f5c518] text-black font-bold'
-                        : 'bg-[#222] text-neutral-300 hover:bg-[#333]'
+                        ? 'bg-amber-400 border-amber-500 text-neutral-950 font-bold shadow-xs'
+                        : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-100'
                     }`}
                   >
                     {formatarMesNome(m)}
@@ -140,11 +141,12 @@ export default function HistoricoDrawer({
         </div>
 
         {/* Lista de Registros */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+        <div className="flex-1 overflow-y-auto p-3 space-y-2.5 bg-neutral-100/50">
           {filtrados.length === 0 ? (
-            <div className="text-center py-12 text-neutral-500 text-xs">
-              <p className="text-2xl mb-1">🔍</p>
-              Nenhum orçamento encontrado com esses termos.
+            <div className="text-center py-16 text-neutral-500 text-xs">
+              <p className="text-3xl mb-2">🔍</p>
+              <p className="font-semibold text-neutral-700">Nenhum orçamento encontrado</p>
+              <p className="text-neutral-500 text-[11px] mt-0.5">Tente buscar por outra placa ou nome.</p>
             </div>
           ) : (
             filtrados.map((orc) => {
@@ -156,56 +158,56 @@ export default function HistoricoDrawer({
                     onSelecionar(orc);
                     onFechar();
                   }}
-                  className={`p-3 rounded-lg border transition-all cursor-pointer text-xs ${
+                  className={`p-3.5 rounded-lg border transition-all cursor-pointer text-xs shadow-xs ${
                     ativo
-                      ? 'bg-[#252210] border-[#f5c518] shadow-md'
-                      : 'bg-[#181818] border-[#2c2c2c] hover:border-neutral-500 hover:bg-[#1f1f1f]'
+                      ? 'bg-amber-50/80 border-amber-400 ring-2 ring-amber-400/30'
+                      : 'bg-white border-neutral-200 hover:border-amber-300 hover:bg-amber-50/30 hover:shadow'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-[#f5c518] font-mono text-[11px]">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-extrabold text-amber-700 font-mono text-[11px] bg-amber-100/80 px-1.5 py-0.5 rounded">
                       Nº {orc.numero}
                     </span>
-                    <span className="text-[10px] text-neutral-400">
+                    <span className="text-[11px] text-neutral-500 font-medium">
                       {orc.data_emissao}
                     </span>
                   </div>
 
-                  <div className="font-semibold text-white truncate text-sm mb-0.5">
+                  <div className="font-bold text-neutral-900 truncate text-sm mb-1">
                     {orc.cliente || 'Consumidor sem nome'}
                   </div>
 
                   {/* Detalhes do Carro e Placa em Destaque */}
                   <div className="flex flex-wrap gap-1.5 items-center my-1.5">
                     {orc.placa && (
-                      <span className="bg-amber-400/20 text-[#f5c518] font-bold px-1.5 py-0.5 rounded text-[10px] border border-amber-400/30 uppercase">
-                        Placa: {orc.placa}
+                      <span className="bg-amber-400 text-neutral-950 font-black px-2 py-0.5 rounded text-[11px] uppercase tracking-wider shadow-xs">
+                        {orc.placa}
                       </span>
                     )}
                     {orc.carro && (
-                      <span className="bg-neutral-800 text-neutral-300 px-1.5 py-0.5 rounded text-[10px]">
-                        {orc.carro}
+                      <span className="bg-neutral-100 text-neutral-800 px-2 py-0.5 rounded text-[11px] border border-neutral-200 font-semibold">
+                        🚗 {orc.carro}
                       </span>
                     )}
                     {orc.telefone && (
-                      <span className="text-neutral-400 text-[10px]">
-                        Tel: {orc.telefone}
+                      <span className="text-neutral-600 text-[11px] font-medium">
+                        📞 {orc.telefone}
                       </span>
                     )}
                   </div>
 
                   {/* Resumo de Avarias e Total */}
-                  <div className="flex items-center justify-between pt-2 border-t border-[#292929] mt-2">
-                    <div className="text-[10px] text-neutral-400">
+                  <div className="flex items-center justify-between pt-2 border-t border-neutral-100 mt-2">
+                    <div className="text-[11px]">
                       {orc.avarias?.length ? (
-                        <span className="text-red-400 font-semibold">
+                        <span className="text-red-600 font-bold flex items-center gap-1">
                           ⚠️ {orc.avarias.length} avaria(s)
                         </span>
                       ) : (
-                        <span className="text-neutral-500">Sem avarias</span>
+                        <span className="text-emerald-700 font-medium">✓ Sem avarias</span>
                       )}
                     </div>
-                    <div className="font-bold text-white text-xs">
+                    <div className="font-black text-neutral-950 text-sm">
                       {Number(orc.total_geral || 0).toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
@@ -214,7 +216,7 @@ export default function HistoricoDrawer({
                   </div>
 
                   {/* Botão de Excluir */}
-                  <div className="flex justify-end mt-2 pt-1 border-t border-[#222]">
+                  <div className="flex justify-end mt-2 pt-1.5 border-t border-neutral-100">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -223,7 +225,7 @@ export default function HistoricoDrawer({
                           if (orc.id) onExcluir(orc.id);
                         }
                       }}
-                      className="text-neutral-500 hover:text-red-400 text-[10px]"
+                      className="text-neutral-400 hover:text-red-600 hover:bg-red-50 px-2 py-0.5 rounded text-[11px] font-semibold transition-colors"
                     >
                       Excluir
                     </button>

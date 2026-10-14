@@ -76,12 +76,18 @@ table { border-collapse: collapse; width: 100%; }
 /* Print Styles para o Balcão */
 @media print {
   @page {
-    size: A4 portrait;
+    size: auto;
     margin: 6mm 8mm;
   }
   
   *, *::before, *::after {
     box-sizing: border-box !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+    transition: none !important;
+    animation: none !important;
   }
 
   html, body {

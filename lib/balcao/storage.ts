@@ -17,6 +17,9 @@ export function carregarConfigLoja(): DadosLojaConfig {
       if (parsed.endereco && (parsed.endereco.includes('Panamirim') || parsed.endereco.includes('Paramu'))) {
         parsed.endereco = DADOS_LOJA_PADRAO.endereco;
       }
+      if (parsed.telefone && !parsed.telefone.includes('94720')) {
+        parsed.telefone = DADOS_LOJA_PADRAO.telefone;
+      }
       if (!parsed.opcoesGarantia || !Array.isArray(parsed.opcoesGarantia) || parsed.opcoesGarantia.length === 0) {
         parsed.opcoesGarantia = [...DADOS_LOJA_PADRAO.opcoesGarantia];
       }
