@@ -20,6 +20,9 @@ export function carregarConfigLoja(): DadosLojaConfig {
       if (parsed.telefone && !parsed.telefone.includes('94720')) {
         parsed.telefone = DADOS_LOJA_PADRAO.telefone;
       }
+      if (!parsed.email || parsed.email.includes('biroquejunior')) {
+        parsed.email = DADOS_LOJA_PADRAO.email;
+      }
       if (!parsed.opcoesGarantia || !Array.isArray(parsed.opcoesGarantia) || parsed.opcoesGarantia.length === 0) {
         parsed.opcoesGarantia = [...DADOS_LOJA_PADRAO.opcoesGarantia];
       }

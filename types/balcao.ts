@@ -61,7 +61,7 @@ export const DADOS_LOJA_PADRAO: DadosLojaConfig = {
   inscEstadual: '120.057.831.117',
   endereco: 'Rua Costa Barros, 66 - São Paulo - SP',
   telefone: '(11) 98278-7205 / (11) 94720-4778',
-  email: 'biroquejunior@hotmail.com',
+  email: 'isroquejunior@hotmail.com',
   instagram: '@risadafilm',
   opcoesGarantia: ['6 Meses', '1 Ano', '5 Anos', '10 Anos', '15 Anos'],
 };
