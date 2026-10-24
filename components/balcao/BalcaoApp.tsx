@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { OrcamentoBalcao, DadosLojaConfig, ItemBalcao } from '@/types/balcao';
 import {
   carregarConfigLoja,
@@ -9,6 +9,8 @@ import {
   salvarOrcamentoBalcao,
   listarTodosOrcamentos,
   excluirOrcamentoBalcao,
+  exportarBackupJSON,
+  importarBackupJSON,
 } from '@/lib/balcao/storage';
 import FolhaOrcamento from './FolhaOrcamento';
 import HistoricoDrawer from './HistoricoDrawer';
@@ -46,19 +48,24 @@ export default function BalcaoApp() {
   const [modalConfigAberto, setModalConfigAberto] = useState(false);
   const [drawerHistoricoAberto, setDrawerHistoricoAberto] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [statusNuvem, setStatusNuvem] = useState<'online' | 'offline' | 'salvando'>('online');
   const [mensagemStatus, setMensagemStatus] = useState<string | null>(null);
 
   // PWA Install prompt
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [podeInstalar, setPodeInstalar] = useState(false);
 
+  // Referência para debounced auto-save
+  const timerAutoSaveRef = useRef<NodeJS.Timeout | null>(null);
+
   // 1. Carrega dados iniciais ao montar
   useEffect(() => {
     const config = carregarConfigLoja();
     setDadosLoja(config);
 
-    listarTodosOrcamentos().then((lista) => {
+    listarTodosOrcamentos().then(({ lista, nuvemOk }) => {
       setListaOrcamentos(lista);
+      setStatusNuvem(nuvemOk ? 'online' : 'offline');
       const proximo = obterProximoNumero(lista);
       setOrcamentoAtivo(criarOrcamentoVazio(proximo));
     });
@@ -84,26 +91,64 @@ export default function BalcaoApp() {
     }, 3500);
   }, []);
 
-  // Salvar Orçamento
-  const handleSalvar = useCallback(async () => {
+  // Salvar Orçamento explicitamente
+  const handleSalvar = useCallback(async (silencioso = false) => {
     if (!orcamentoAtivo) return;
     setSalvando(true);
+    if (!silencioso) setStatusNuvem('salvando');
+
     try {
-      const salvo = await salvarOrcamentoBalcao(orcamentoAtivo);
+      const { salvo, nuvemOk } = await salvarOrcamentoBalcao(orcamentoAtivo);
       setOrcamentoAtivo(salvo);
+      setStatusNuvem(nuvemOk ? 'online' : 'offline');
 
       // Atualiza lista em memória
-      const atualizados = await listarTodosOrcamentos();
-      setListaOrcamentos(atualizados);
+      const { lista } = await listarTodosOrcamentos();
+      setListaOrcamentos(lista);
 
-      exibirNotificacao(`✓ Orçamento Nº ${salvo.numero} salvo com sucesso!`);
+      if (!silencioso) {
+        exibirNotificacao(
+          nuvemOk
+            ? `✓ Orçamento Nº ${salvo.numero} salvo na nuvem!`
+            : `⚠️ Orçamento Nº ${salvo.numero} salvo localmente (offline).`
+        );
+      }
     } catch (err) {
       console.error(err);
-      exibirNotificacao('Erro ao salvar orçamento.');
+      if (!silencioso) exibirNotificacao('Erro ao salvar orçamento.');
     } finally {
       setSalvando(false);
     }
   }, [orcamentoAtivo, exibirNotificacao]);
+
+  // ANTI-PERDA: Auto-Save em segundo plano (Debounced)
+  useEffect(() => {
+    if (!orcamentoAtivo) return;
+
+    // Só auto-salva se houver dados mínimos preenchidos para não poluir
+    const temDados = Boolean(
+      orcamentoAtivo.cliente.trim() ||
+      orcamentoAtivo.carro.trim() ||
+      orcamentoAtivo.placa.trim() ||
+      orcamentoAtivo.total_geral > 0
+    );
+
+    if (!temDados) return;
+
+    if (timerAutoSaveRef.current) {
+      clearTimeout(timerAutoSaveRef.current);
+    }
+
+    timerAutoSaveRef.current = setTimeout(() => {
+      handleSalvar(true);
+    }, 3000);
+
+    return () => {
+      if (timerAutoSaveRef.current) {
+        clearTimeout(timerAutoSaveRef.current);
+      }
+    };
+  }, [orcamentoAtivo, handleSalvar]);
 
   // Novo Orçamento
   const handleNovo = useCallback(() => {
@@ -114,8 +159,24 @@ export default function BalcaoApp() {
     exibirNotificacao(`Novo orçamento iniciado (Nº ${proximo})`);
   }, [dadosLoja, listaOrcamentos, exibirNotificacao]);
 
-  // Imprimir
-  const handleImprimir = useCallback(() => {
+  // ANTI-PERDA: Imprimir SEMPRE salva primeiro
+  const handleImprimir = useCallback(async () => {
+    if (orcamentoAtivo) {
+      setSalvando(true);
+      try {
+        const { salvo, nuvemOk } = await salvarOrcamentoBalcao(orcamentoAtivo);
+        setOrcamentoAtivo(salvo);
+        setStatusNuvem(nuvemOk ? 'online' : 'offline');
+
+        const { lista } = await listarTodosOrcamentos();
+        setListaOrcamentos(lista);
+      } catch (err) {
+        console.warn('Erro ao salvar antes de imprimir:', err);
+      } finally {
+        setSalvando(false);
+      }
+    }
+
     if (typeof window === 'undefined') return;
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -123,17 +184,29 @@ export default function BalcaoApp() {
     window.focus();
     setTimeout(() => {
       window.print();
-    }, 80);
-  }, []);
+    }, 120);
+  }, [orcamentoAtivo]);
+
+  // Camada dupla anti-perda: listener nativo beforeprint
+  useEffect(() => {
+    const handleBeforePrint = () => {
+      if (orcamentoAtivo && (orcamentoAtivo.cliente || orcamentoAtivo.total_geral > 0)) {
+        salvarOrcamentoBalcao(orcamentoAtivo);
+      }
+    };
+    window.addEventListener('beforeprint', handleBeforePrint);
+    return () => window.removeEventListener('beforeprint', handleBeforePrint);
+  }, [orcamentoAtivo]);
 
   // Atalhos globais de teclado (Ctrl+S, Ctrl+P, Ctrl+N, Ctrl+H)
   useEffect(() => {
     function handleGlobalKeyDown(e: KeyboardEvent) {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        handleSalvar();
+        handleSalvar(false);
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
-        // window.print é chamado naturalmente, mas podemos garantir que salva antes se quiser
+        e.preventDefault();
+        handleImprimir();
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
         e.preventDefault();
         handleNovo();
@@ -145,9 +218,9 @@ export default function BalcaoApp() {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [handleSalvar, handleNovo]);
+  }, [handleSalvar, handleImprimir, handleNovo]);
 
-  // Salvar configurações da loja (Endereço, etc.)
+  // Salvar configurações da loja
   function handleSalvarConfig(novosDados: DadosLojaConfig) {
     setDadosLoja(novosDados);
     salvarConfigLoja(novosDados);
@@ -157,13 +230,33 @@ export default function BalcaoApp() {
   // Excluir orçamento
   async function handleExcluir(id: string) {
     await excluirOrcamentoBalcao(id);
-    const atualizados = await listarTodosOrcamentos();
-    setListaOrcamentos(atualizados);
+    const { lista, nuvemOk } = await listarTodosOrcamentos();
+    setListaOrcamentos(lista);
+    setStatusNuvem(nuvemOk ? 'online' : 'offline');
     if (orcamentoAtivo?.id === id) {
       handleNovo();
     }
     exibirNotificacao('Orçamento excluído.');
   }
+
+  // Exportar Backup
+  const handleExportarBackup = useCallback(() => {
+    exportarBackupJSON(listaOrcamentos);
+    exibirNotificacao('✓ Backup baixado com sucesso!');
+  }, [listaOrcamentos, exibirNotificacao]);
+
+  // Importar Backup
+  const handleImportarBackup = useCallback(async (conteudoJSON: string) => {
+    try {
+      const qtd = await importarBackupJSON(conteudoJSON);
+      const { lista, nuvemOk } = await listarTodosOrcamentos();
+      setListaOrcamentos(lista);
+      setStatusNuvem(nuvemOk ? 'online' : 'offline');
+      exibirNotificacao(`✓ ${qtd} orçamento(s) restaurado(s) com sucesso!`);
+    } catch (err: any) {
+      exibirNotificacao('Erro ao importar backup: ' + err.message);
+    }
+  }, [exibirNotificacao]);
 
   // Instalar PWA
   async function handleInstalarPWA() {
@@ -192,11 +285,40 @@ export default function BalcaoApp() {
       {/* ========================================================= */}
       <nav className="no-print sticky top-0 z-40 bg-[#161616] border-b border-[#282828] shadow-md px-2.5 sm:px-6 py-2 w-full">
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2">
-          {/* Lado Esquerdo: Número do orçamento */}
-          <div className="flex items-center min-w-0">
+          {/* Lado Esquerdo: Número do orçamento + Indicador de Nuvem */}
+          <div className="flex items-center gap-3 min-w-0">
             <span className="text-xs sm:text-sm font-semibold text-neutral-300 truncate">
               Orç. <strong className="text-[#f5c518] font-mono text-sm sm:text-base">#{orcamentoAtivo.numero}</strong>
             </span>
+
+            {/* Badge de Conexão com a Nuvem (Anti-Perda) */}
+            <div
+              className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide border transition-all ${
+                statusNuvem === 'online'
+                  ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400'
+                  : statusNuvem === 'salvando'
+                  ? 'bg-amber-950/60 border-amber-500/40 text-amber-300 animate-pulse'
+                  : 'bg-red-950/60 border-red-500/40 text-red-300'
+              }`}
+              title={
+                statusNuvem === 'online'
+                  ? 'Sincronizado com a nuvem'
+                  : statusNuvem === 'salvando'
+                  ? 'Sincronizando com a nuvem...'
+                  : 'Modo offline: salvo no PC local'
+              }
+            >
+              <span className={`w-2 h-2 rounded-full ${
+                statusNuvem === 'online'
+                  ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
+                  : statusNuvem === 'salvando'
+                  ? 'bg-amber-400'
+                  : 'bg-red-400'
+              }`} />
+              <span className="hidden md:inline">
+                {statusNuvem === 'online' ? 'Nuvem OK' : statusNuvem === 'salvando' ? 'Sincronizando...' : 'Offline (Local)'}
+              </span>
+            </div>
           </div>
 
           {/* Notificação central */}
@@ -230,7 +352,7 @@ export default function BalcaoApp() {
 
             <button
               type="button"
-              onClick={handleSalvar}
+              onClick={() => handleSalvar(false)}
               disabled={salvando}
               className="bg-[#f5c518] hover:bg-[#e6b800] text-black text-xs font-bold px-2.5 sm:px-4 py-1.5 rounded shadow transition-all flex items-center gap-1 disabled:opacity-50"
               title="Atalho: Ctrl + S"
@@ -241,8 +363,8 @@ export default function BalcaoApp() {
             <button
               type="button"
               onClick={handleImprimir}
-              className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded transition-colors flex items-center gap-1"
-              title="Atalho: Ctrl + P"
+              className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded transition-colors flex items-center gap-1 shadow"
+              title="Salva na nuvem e imprime (Atalho: Ctrl + P)"
             >
               <span>🖨️</span> <span className="hidden xs:inline">Imprimir</span>
             </button>
@@ -295,7 +417,7 @@ export default function BalcaoApp() {
       />
 
       {/* ========================================================= */}
-      {/* GAVETA DE HISTÓRICO E BUSCA (PLACA / MÊS / CLIENTE) */}
+      {/* GAVETA DE HISTÓRICO E BUSCA (PLACA / MÊS / CLIENTE / BACKUP) */}
       {/* ========================================================= */}
       <HistoricoDrawer
         aberto={drawerHistoricoAberto}
@@ -303,6 +425,8 @@ export default function BalcaoApp() {
         orcamentoAtivoId={orcamentoAtivo.id}
         onSelecionar={(orc) => setOrcamentoAtivo(orc)}
         onExcluir={handleExcluir}
+        onExportarBackup={handleExportarBackup}
+        onImportarBackup={handleImportarBackup}
         onFechar={() => setDrawerHistoricoAberto(false)}
       />
     </div>

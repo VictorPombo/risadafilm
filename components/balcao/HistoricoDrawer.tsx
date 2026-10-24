@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import type { OrcamentoBalcao } from '@/types/balcao';
 
 interface HistoricoDrawerProps {
@@ -9,6 +9,8 @@ interface HistoricoDrawerProps {
   orcamentoAtivoId?: string;
   onSelecionar: (orc: OrcamentoBalcao) => void;
   onExcluir: (id: string) => void;
+  onExportarBackup?: () => void;
+  onImportarBackup?: (conteudoJSON: string) => void;
   onFechar: () => void;
 }
 
@@ -18,17 +20,20 @@ export default function HistoricoDrawer({
   orcamentoAtivoId,
   onSelecionar,
   onExcluir,
+  onExportarBackup,
+  onImportarBackup,
   onFechar,
 }: HistoricoDrawerProps) {
   const [busca, setBusca] = useState('');
   const [mesFiltro, setMesFiltro] = useState('todos');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Extrai lista única de meses disponíveis (YYYY-MM)
   const mesesDisponiveis = useMemo(() => {
     const setMeses = new Set<string>();
     for (const orc of orcamentos) {
       if (orc.data_emissao) {
-        const pedaco = orc.data_emissao.substring(0, 7); // "2026-08"
+        const pedaco = orc.data_emissao.substring(0, 7);
         if (pedaco.length === 7) setMeses.add(pedaco);
       }
     }
@@ -64,6 +69,20 @@ export default function HistoricoDrawer({
     return `${nomes[idx] || mes}/${ano}`;
   }
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content && onImportarBackup) {
+        onImportarBackup(content);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm no-print animate-fade-in">
       <div className="bg-white border-l border-neutral-200 w-full max-w-md h-full flex flex-col shadow-2xl text-neutral-900">
@@ -87,8 +106,42 @@ export default function HistoricoDrawer({
             </button>
           </div>
 
+          {/* Botões de Ação de Backup (Anti-Perda) */}
+          <div className="flex items-center gap-2 my-2">
+            {onExportarBackup && (
+              <button
+                type="button"
+                onClick={onExportarBackup}
+                className="flex-1 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 text-[11px] font-semibold py-1.5 px-2 rounded flex items-center justify-center gap-1 transition-colors border border-neutral-300 shadow-2xs"
+                title="Baixar cópia de segurança de todos os orçamentos (para pendrive ou PC)"
+              >
+                <span>📥</span> Baixar Backup (.json)
+              </button>
+            )}
+
+            {onImportarBackup && (
+              <>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".json"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 text-[11px] font-semibold py-1.5 px-2 rounded flex items-center justify-center gap-1 transition-colors border border-neutral-300 shadow-2xs"
+                  title="Restaurar backup do pendrive"
+                >
+                  <span>📤</span> Importar Backup
+                </button>
+              </>
+            )}
+          </div>
+
           {/* Campo de Busca Rápida (Placa / Nome / Carro) */}
-          <div className="space-y-2 mt-3">
+          <div className="space-y-2 mt-2">
             <div className="relative">
               <input
                 type="text"

@@ -13,7 +13,6 @@ export function carregarConfigLoja(): DadosLojaConfig {
     const salvo = localStorage.getItem(STORAGE_KEY_CONFIG);
     if (salvo) {
       const parsed = JSON.parse(salvo);
-      // Se ainda estiver com o endereço antigo, atualiza automaticamente para o novo
       if (parsed.endereco && (parsed.endereco.includes('Panamirim') || parsed.endereco.includes('Paramu'))) {
         parsed.endereco = DADOS_LOJA_PADRAO.endereco;
       }
@@ -44,25 +43,19 @@ export function salvarConfigLoja(dados: DadosLojaConfig): void {
   }
 }
 
-// ---------- Numeração Sequencial ----------
+// ---------- Numeração Sequencial Robusta ----------
 
 export function obterProximoNumero(lista: OrcamentoBalcao[]): string {
   const anoAtual = new Date().getFullYear();
   let maiorNumero = 0;
 
   for (const orc of lista) {
-    // Formato esperado: "001/2026" ou "ORC-001/2026" ou apenas números
-    const match = orc.numero.match(/(\d+)\/(\d{4})/);
+    if (!orc.numero) continue;
+    const match = orc.numero.match(/(\d+)/);
     if (match) {
       const num = parseInt(match[1], 10);
-      const ano = parseInt(match[2], 10);
-      if (ano === anoAtual && num > maiorNumero) {
+      if (!isNaN(num) && num > maiorNumero) {
         maiorNumero = num;
-      }
-    } else {
-      const numApenas = parseInt(orc.numero.replace(/\D/g, ''), 10);
-      if (!isNaN(numApenas) && numApenas > maiorNumero) {
-        maiorNumero = numApenas;
       }
     }
   }
@@ -74,7 +67,7 @@ export function obterProximoNumero(lista: OrcamentoBalcao[]): string {
 
 // ---------- Salvar / Listar Orçamentos (Tabela Isolada: orcamentos_balcao) ----------
 
-export async function salvarOrcamentoBalcao(orc: OrcamentoBalcao): Promise<OrcamentoBalcao> {
+export async function salvarOrcamentoBalcao(orc: OrcamentoBalcao): Promise<{ salvo: OrcamentoBalcao; nuvemOk: boolean }> {
   const agora = new Date().toISOString();
   const orcamentoFinal: OrcamentoBalcao = {
     ...orc,
@@ -83,7 +76,7 @@ export async function salvarOrcamentoBalcao(orc: OrcamentoBalcao): Promise<Orcam
     updated_at: agora,
   };
 
-  // 1. Salvar no localStorage (acesso offline imediato)
+  // 1. Salvar no localStorage (acesso offline e imediato no PC físico)
   if (typeof window !== 'undefined') {
     try {
       const lista = listarLocalmente();
@@ -99,7 +92,8 @@ export async function salvarOrcamentoBalcao(orc: OrcamentoBalcao): Promise<Orcam
     }
   }
 
-  // 2. Salvar no Supabase na tabela dedicada orcamentos_balcao (100% isolada)
+  // 2. Salvar no Supabase na nuvem
+  let nuvemOk = false;
   try {
     const supabase = createClient();
     const { error } = await supabase.from('orcamentos_balcao').upsert({
@@ -119,14 +113,16 @@ export async function salvarOrcamentoBalcao(orc: OrcamentoBalcao): Promise<Orcam
       updated_at: orcamentoFinal.updated_at,
     });
 
-    if (error) {
+    if (!error) {
+      nuvemOk = true;
+    } else {
       console.warn('Aviso: orcamentos_balcao no Supabase:', error.message);
     }
   } catch (err) {
     console.warn('Erro de conexão com Supabase:', err);
   }
 
-  return orcamentoFinal;
+  return { salvo: orcamentoFinal, nuvemOk };
 }
 
 export function listarLocalmente(): OrcamentoBalcao[] {
@@ -140,10 +136,10 @@ export function listarLocalmente(): OrcamentoBalcao[] {
   return [];
 }
 
-export async function listarTodosOrcamentos(): Promise<OrcamentoBalcao[]> {
+export async function listarTodosOrcamentos(): Promise<{ lista: OrcamentoBalcao[]; nuvemOk: boolean }> {
   const locais = listarLocalmente();
+  let nuvemOk = false;
 
-  // Tenta buscar da tabela dedicada orcamentos_balcao no Supabase
   try {
     const supabase = createClient();
     const { data, error } = await supabase
@@ -152,9 +148,9 @@ export async function listarTodosOrcamentos(): Promise<OrcamentoBalcao[]> {
       .order('created_at', { ascending: false });
 
     if (!error && data && Array.isArray(data)) {
+      nuvemOk = true;
       const mapa = new Map<string, OrcamentoBalcao>();
       
-      // Insere os remotos
       for (const item of data) {
         mapa.set(item.id, {
           id: item.id,
@@ -174,10 +170,10 @@ export async function listarTodosOrcamentos(): Promise<OrcamentoBalcao[]> {
         });
       }
 
-      // Mescla com locais que porventura ainda não tenham subido
       for (const loc of locais) {
         if (loc.id && !mapa.has(loc.id)) {
           mapa.set(loc.id, loc);
+          supabase.from('orcamentos_balcao').upsert(loc).then(() => {}, () => {});
         }
       }
 
@@ -185,33 +181,63 @@ export async function listarTodosOrcamentos(): Promise<OrcamentoBalcao[]> {
         (a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
       );
 
-      // Atualiza cache local
       if (typeof window !== 'undefined') {
         localStorage.setItem(STORAGE_KEY_ORCAMENTOS, JSON.stringify(listaCompleta));
       }
 
-      return listaCompleta;
+      return { lista: listaCompleta, nuvemOk };
     }
   } catch (err) {
     console.warn('Falha ao carregar do Supabase orcamentos_balcao:', err);
   }
 
-  // Fallback offline
-  return locais;
+  return { lista: locais, nuvemOk: false };
 }
 
 export async function excluirOrcamentoBalcao(id: string): Promise<void> {
-  // 1. Remove localmente
   if (typeof window !== 'undefined') {
     const locais = listarLocalmente().filter((item) => item.id !== id);
     localStorage.setItem(STORAGE_KEY_ORCAMENTOS, JSON.stringify(locais));
   }
 
-  // 2. Remove do Supabase
   try {
     const supabase = createClient();
     await supabase.from('orcamentos_balcao').delete().eq('id', id);
   } catch (err) {
     console.warn('Erro ao excluir no Supabase:', err);
+  }
+}
+
+// ---------- Utilitários de Backup Anti-Perda (Exportar / Importar JSON) ----------
+
+export function exportarBackupJSON(lista: OrcamentoBalcao[]): void {
+  if (typeof window === 'undefined') return;
+  const hoje = new Date().toISOString().split('T')[0];
+  const blob = new Blob([JSON.stringify(lista, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `backup_orcamentos_risada_${hoje}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export async function importarBackupJSON(conteudoJSON: string): Promise<number> {
+  try {
+    const parsed = JSON.parse(conteudoJSON);
+    if (!Array.isArray(parsed)) throw new Error('Formato inválido: esperado um array de orçamentos');
+
+    let importados = 0;
+    for (const orc of parsed) {
+      if (orc.numero && (orc.cliente || orc.total_geral)) {
+        await salvarOrcamentoBalcao(orc);
+        importados++;
+      }
+    }
+    return importados;
+  } catch (err: any) {
+    throw new Error('Falha ao importar backup: ' + err.message);
   }
 }
