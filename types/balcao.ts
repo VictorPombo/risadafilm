@@ -59,7 +59,7 @@ export const DADOS_LOJA_PADRAO: DadosLojaConfig = {
   razaoSocial: 'Risada Comércio de Película Solar LTDA',
   cnpj: '33.574.274/0001-43',
   inscEstadual: '120.057.831.117',
-  endereco: 'Rua Costa Barros, 66 - São Paulo - SP',
+  endereco: 'Rua Costa Barros, 66 - Vila Alpina - SP - CEP: 03210-000',
   telefone: '(11) 98278-7205 / (11) 94720-4778',
   email: 'isroquejunior@hotmail.com',
   instagram: '@risadafilm',

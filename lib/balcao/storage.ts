@@ -13,7 +13,14 @@ export function carregarConfigLoja(): DadosLojaConfig {
     const salvo = localStorage.getItem(STORAGE_KEY_CONFIG);
     if (salvo) {
       const parsed = JSON.parse(salvo);
-      if (parsed.endereco && (parsed.endereco.includes('Panamirim') || parsed.endereco.includes('Paramu'))) {
+      // Se ainda estiver com o endereço antigo ou sem CEP/bairro atualizados, atualiza automaticamente para o novo
+      if (
+        parsed.endereco &&
+        (parsed.endereco.includes('Panamirim') ||
+          parsed.endereco.includes('Paramu') ||
+          parsed.endereco.includes('Paramy') ||
+          parsed.endereco === 'Rua Costa Barros, 66 - São Paulo - SP')
+      ) {
         parsed.endereco = DADOS_LOJA_PADRAO.endereco;
       }
       if (parsed.telefone && !parsed.telefone.includes('94720')) {
